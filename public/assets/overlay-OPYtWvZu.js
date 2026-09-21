@@ -1,6 +1,9 @@
 import{t as e}from"./logger-_0kcFG-y.js";import{d as t,h as n,m as r,p as i,r as a,u as o}from"./settings-store-ClY3sNI-.js";import{a as s,i as c,r as l}from"./i18n-lC03d84Z.js";import{t as u}from"./data-drawer-BsCG_WPg.js";var d=`
 :root {
-    --gp-font-ui: "Segoe UI", "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    @font-face{font-family:'PvZ2 Game';src:url('/assets/resources/native/86/86615cb2-9939-4358-b8e2-ec2d020efeea/FBUSV8C5EI.ttf') format('truetype');font-display:swap}
+--gp-font-game: 'PvZ2 Game', var(--gp-font-ui);
+.gp-pack-name { font-family: var(--gp-font-game); font-size: 14px; letter-spacing: .3px; }
+--gp-font-ui: "Segoe UI", "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     --gp-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
 }
 
@@ -197,6 +200,31 @@ import{t as e}from"./logger-_0kcFG-y.js";import{d as t,h as n,m as r,p as i,r as
 #gp-overlay ::-webkit-scrollbar-track { background: transparent; }
 #gp-overlay ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 #gp-overlay ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+/* ===== Unified theme: responsive controls, one visual language ===== */
+#gp-overlay .gp-btn { border-radius: 6px; font-weight: 600; letter-spacing: .2px;
+    transition: background .14s ease, border-color .14s ease, transform .08s ease, box-shadow .14s ease; }
+#gp-overlay .gp-btn:hover { box-shadow: 0 0 0 1px rgba(74,158,255,.35), 0 2px 10px rgba(74,158,255,.15); }
+#gp-overlay .gp-btn:active { transform: translateY(1px) scale(.98); }
+#gp-overlay .gp-tab { transition: color .14s ease, background .14s ease, border-color .14s ease; }
+#gp-overlay .gp-tab:hover { background: rgba(255,255,255,.05); }
+#gp-overlay .gp-toggle { transition: background .16s ease, border-color .16s ease; cursor: pointer; }
+#gp-overlay .gp-toggle .gp-toggle-knob { transition: transform .16s cubic-bezier(.34,1.56,.64,1); }
+#gp-overlay .gp-input, #gp-overlay select, #gp-overlay textarea {
+    transition: border-color .14s ease, box-shadow .14s ease; border-radius: 6px; }
+#gp-overlay .gp-input:focus, #gp-overlay select:focus, #gp-overlay textarea:focus {
+    border-color: rgba(74,158,255,.6); box-shadow: 0 0 0 2px rgba(74,158,255,.18); outline: none; }
+#gp-overlay .gp-slider { accent-color: #4a9eff; }
+#gp-overlay .gp-section { border-radius: 8px; overflow: hidden; }
+#gp-overlay .gp-section-title { transition: background .14s ease; border-radius: 6px; }
+#gp-overlay .gp-section-title:hover { background: rgba(255,255,255,.04); }
+#gp-overlay button:focus-visible, #gp-overlay input:focus-visible,
+#gp-overlay select:focus-visible, #gp-overlay [role="switch"]:focus-visible {
+    outline: 2px solid rgba(74,158,255,.7); outline-offset: 1px; }
+#gp-overlay ::-webkit-scrollbar { width: 8px; }
+#gp-overlay ::-webkit-scrollbar-thumb { border-radius: 4px; background: rgba(255,255,255,.18); }
+#gp-overlay ::-webkit-scrollbar-thumb:hover { background: rgba(74,158,255,.45); }
+
 
 /* ===== Hotkey Hint Badge ===== */
 .gp-f1-hint {
