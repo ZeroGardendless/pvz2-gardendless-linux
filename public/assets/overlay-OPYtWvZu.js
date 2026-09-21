@@ -1,9 +1,6 @@
 import{t as e}from"./logger-_0kcFG-y.js";import{d as t,h as n,m as r,p as i,r as a,u as o}from"./settings-store-ClY3sNI-.js";import{a as s,i as c,r as l}from"./i18n-lC03d84Z.js";import{t as u}from"./data-drawer-BsCG_WPg.js";var d=`
 :root {
-    @font-face{font-family:'PvZ2 Game';src:url('/assets/resources/native/86/86615cb2-9939-4358-b8e2-ec2d020efeea/FBUSV8C5EI.ttf') format('truetype');font-display:swap}
---gp-font-game: 'PvZ2 Game', var(--gp-font-ui);
-.gp-pack-name { font-family: var(--gp-font-game); font-size: 14px; letter-spacing: .3px; }
---gp-font-ui: "Segoe UI", "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --gp-font-ui: "Segoe UI", "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     --gp-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
 }
 
@@ -248,6 +245,10 @@ import{t as e}from"./logger-_0kcFG-y.js";import{d as t,h as n,m as r,p as i,r as
     opacity: 0;
     pointer-events: none;
 }
+
+@font-face{font-family:'PvZ2 Game';src:url('/assets/resources/native/86/86615cb2-9939-4358-b8e2-ec2d020efeea/FBUSV8C5EI.ttf') format('truetype');font-display:swap}
+#gp-overlay{--gp-font-game:'PvZ2 Game', var(--gp-font-ui)}
+.gp-pack-name{font-family:var(--gp-font-game);font-size:14px;letter-spacing:.3px}
 
 /* ===== Components: Button ===== */
 .gp-btn {
