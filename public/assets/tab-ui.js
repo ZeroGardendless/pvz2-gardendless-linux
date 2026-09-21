@@ -33,6 +33,7 @@ function apply() {
 }
 
 function render(container) {
+    const scalePct = Math.round(state.scale * 100);
     container.innerHTML = "";
     const root = document.createElement("div");
     root.style.cssText = "display:flex;flex-direction:column;gap:16px;max-width:560px;padding:10px";
