@@ -17,3 +17,10 @@ tauri-plugin-drpc = "0.1.6"
 tauri-plugin-fs = "2"
 tauri-plugin-deep-link = "2"
 tauri-plugin-dialog = "2.7.2"
+
+# Build speed + binary size: strip debug symbols (the release binary was 1.3GB),
+# keep incremental dev builds fast, and avoid full LTO link blowups.
+[profile.release]
+strip = true
+incremental = true
+debug = 0

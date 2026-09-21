@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "gardendless",
+  "productName": "PvZ2 Gardendless",
   "version": "0.1.0",
   "identifier": "com.zero.gardendless",
   "build": {
@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "gardendless",
+        "title": "PvZ2: Gardendless",
         "width": 800,
         "height": 600,
         "decorations": false
@@ -24,10 +24,6 @@
     "active": true,
     "targets": [],
     "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
       "icons/icon.ico"
     ]
   }
