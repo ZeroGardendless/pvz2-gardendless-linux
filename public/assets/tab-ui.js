@@ -16,9 +16,24 @@ function apply() {
     styleEl.textContent = `
         @font-face{font-family:'PvZ2 Game';src:url('/assets/resources/native/86/86615cb2-9939-4358-b8e2-ec2d020efeea/FBUSV8C5EI.ttf') format('truetype');font-display:swap}
         .gp-next{--gp-ctrl-h:${state.density}px;--gp-accent:${state.accent};font-size:${(state.fontScale * 100).toFixed(0)}%}
-        .gp-next button,.gp-next input,.gp-next select{border-radius:7px}
-        .gp-next button:focus-visible,.gp-next input:focus-visible,.gp-next select:focus-visible{outline:2px solid ${state.accent};outline-offset:1px}
-        ${state.gameFont ? `.gp-next h1,.gp-next h2,.gp-next h3,.gp-next .gp-header,.gp-next .gp-tabs button,.gp-next label{font-family:'PvZ2 Game',Inter,Segoe UI,Arial,sans-serif}` : ""}
+        /* unified controls */
+        .gp-next button,.gp-next input,.gp-next select,.gp-next textarea{border-radius:7px;transition:background .12s ease,border-color .12s ease,box-shadow .12s ease}
+        .gp-next .gp-btn:not(.gp-btn-danger):not(.gp-btn-success):hover{box-shadow:inset 0 0 0 999px ${state.accent}22}
+        .gp-next .gp-btn:active{transform:translateY(1px)}
+        .gp-next button:focus-visible,.gp-next input:focus-visible,.gp-next select:focus-visible,.gp-next [role="switch"]:focus-visible{outline:2px solid ${state.accent};outline-offset:1px}
+        .gp-next .gp-toggle{transition:background .12s ease}
+        .gp-next .gp-toggle.gp-toggle-on{background:${state.accent}}
+        .gp-next .gp-slider{accent-color:${state.accent}}
+        .gp-next .gp-input:focus,.gp-next select:focus{border-color:${state.accent}}
+        /* unified sections */
+        .gp-next .gp-section{border-radius:8px;overflow:hidden}
+        .gp-next .gp-section-title{transition:background .12s ease}
+        .gp-next .gp-section-title:hover{background:${state.accent}18}
+        /* unified scrollbars */
+        .gp-next ::-webkit-scrollbar{width:10px;height:10px}
+        .gp-next ::-webkit-scrollbar-thumb{border-radius:5px}
+        .gp-next ::-webkit-scrollbar-thumb:hover{background:${state.accent}88}
+        ${state.gameFont ? `.gp-next h1,.gp-next h2,.gp-next h3,.gp-next .gp-header,.gp-next .gp-tabs button,.gp-next .gp-section-title,.gp-next label{font-family:'PvZ2 Game',Inter,Segoe UI,Arial,sans-serif}` : ""}
     `;
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {}
 }
