@@ -32,6 +32,26 @@ fn read_audio(path: String) -> Result<tauri::ipc::Response, String> {
 // parallel.
 const ASSET_PORT: u16 = 8123;
 
+// The frontend must live next to the binary (or one level up for dev
+// layouts); the compiled-in path is only a dev-machine fallback.
+fn find_public_dir() -> std::path::PathBuf {
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            for cand in [dir.join("public"), dir.parent().unwrap_or(dir).join("public")] {
+                if cand.join("index.html").exists() {
+                    return cand;
+                }
+            }
+        }
+    }
+    if let Ok(cwd) = std::env::current_dir() {
+        if cwd.join("public").join("index.html").exists() {
+            return cwd.join("public");
+        }
+    }
+    std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../public")
+}
+
 fn spawn_asset_server(root: std::path::PathBuf) {
     std::thread::spawn(move || {
         use std::io::{Read, Write};
@@ -74,7 +94,7 @@ fn spawn_asset_server(root: std::path::PathBuf) {
                             _ => "application/octet-stream",
                         };
                         let head = format!(
-                            "HTTP/1.1 200 OK\r\nContent-Type: {mime}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                            "HTTP/1.1 200 OK\r\nContent-Type: {mime}\r\nContent-Length: {}\r\nAccess-Control-Allow-Origin: *\r\nConnection: close\r\n\r\n",
                             data.len()
                         );
                         let _ = stream.write_all(head.as_bytes());
@@ -102,7 +122,7 @@ fn main() {
     }
 
     // Serve the frontend over loopback HTTP for the media pipeline.
-    spawn_asset_server(std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../public"));
+    spawn_asset_server(find_public_dir());
 
     tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
