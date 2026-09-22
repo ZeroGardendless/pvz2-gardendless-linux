@@ -81,7 +81,7 @@ fn spawn_asset_server(root: std::path::PathBuf) {
                 let full = root.join(clean);
                 // Path traversal guard: only files under root are served.
                 if full.components().any(|c| c.as_os_str() == "..") {
-                    let _ = stream.write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n");
+                    let _ = stream.write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nAccess-Control-Allow-Origin: *\r\n\r\n");
                     return;
                 }
                 match std::fs::read(&full) {
@@ -101,7 +101,7 @@ fn spawn_asset_server(root: std::path::PathBuf) {
                         let _ = stream.write_all(&data);
                     }
                     Err(_) => {
-                        let _ = stream.write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n");
+                        let _ = stream.write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nAccess-Control-Allow-Origin: *\r\n\r\n");
                     }
                 }
             });
