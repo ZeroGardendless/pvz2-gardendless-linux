@@ -1,0 +1,1 @@
+import"./pack-snapshot-BQiaoXVH.js";import{n as e}from"./js-mod-loader-LPxg6mK4.js";export{e as createJsModLoader};

@@ -1,1 +1,0 @@
-import{o as e}from"./file-loader-CwId5kgu.js";export{e as getBasePath};

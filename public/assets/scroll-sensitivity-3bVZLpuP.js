@@ -1,0 +1,1 @@
+import{n as e,r as t,t as n}from"./scroll-sensitivity-BXagYUDd.js";export{n as applySettings,e as getConfig,t as install};

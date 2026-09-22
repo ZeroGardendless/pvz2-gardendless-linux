@@ -1,0 +1,1 @@
+import{t as e}from"./tab-settings-DOXqibKK.js";export{e as bindModSettingsRegistry};
