@@ -38,6 +38,49 @@
 
     <!-- Linux / WebKitGTK media playback fix (WebKit bug 146351) -->
     <script>
+// Hidden files (dot-entries like .vscode inside packs) break GPNext's
+                // directory walks with fs 'forbidden path' errors. The page wraps
+                // plugin:fs|invoke: reads/stats on hidden paths resolve as errors
+                // the loader already tolerates, and dir listings drop dot-entries.
+                (() => {
+                    const I = window.__TAURI_INTERNALS__;
+                    if (!I || !I.invoke) return;
+                    const raw = I.invoke.bind(I);
+                    const decode = (p) => {
+                        try { return decodeURIComponent(String(p || "")); } catch (_) { return String(p || ""); }
+                    };
+                    const hasHidden = (p) =>
+                        decode(p).split(/[\\/]+/).some((s) => s.startsWith(".") && s.length > 0);
+                    const hiddenName = (e) => {
+                        const n = decode((e && (e.name || e.path)) || "");
+                        return n.split(/[\\/]+/).pop().startsWith(".");
+                    };
+                    const READS = ["read_dir", "lstat", "stat", "read_file", "read_text_file", "read", "open", "exists"];
+                    I.invoke = async function (cmd, args, ...rest) {
+                        if (typeof cmd === "string" && cmd.startsWith("plugin:fs|")) {
+                            const op = cmd.slice("plugin:fs|".length);
+                            const path = args ? (args.path ?? (args.headers && args.headers.path)) : undefined;
+                            if (READS.includes(op) && hasHidden(path)) {
+                                if (op === "read_dir") return [];
+                                if (op === "exists") return false;
+                                const e = new Error("not found (hidden)"); e.code = "ENOENT"; throw e;
+                            }
+                            const r = await raw(cmd, args, ...rest);
+                            if (op === "read_dir" && r) {
+                                const arr = Array.isArray(r);
+                                const list = arr ? r : r.entries;
+                                if (Array.isArray(list)) {
+                                    const f = list.filter((e) => !hiddenName(e));
+                                    return arr ? f : (r.entries = f, r);
+                                }
+                            }
+                            return r;
+                        }
+                        return raw(cmd, args, ...rest);
+                    };
+                })();
+
+
         (() => {
             const tauriLog = (msg) => {
                 try {

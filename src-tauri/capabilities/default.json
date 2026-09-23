@@ -33,20 +33,16 @@
       "identifier": "fs:allow-read-file",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -54,20 +50,16 @@
       "identifier": "fs:allow-read-dir",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -75,20 +67,16 @@
       "identifier": "fs:allow-read-text-file",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -96,20 +84,16 @@
       "identifier": "fs:allow-write-file",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -117,20 +101,16 @@
       "identifier": "fs:allow-write-text-file",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -138,20 +118,16 @@
       "identifier": "fs:allow-exists",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -159,20 +135,16 @@
       "identifier": "fs:allow-mkdir",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -180,20 +152,16 @@
       "identifier": "fs:allow-lstat",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -201,20 +169,16 @@
       "identifier": "fs:allow-fstat",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -222,20 +186,16 @@
       "identifier": "fs:allow-ftruncate",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -243,20 +203,16 @@
       "identifier": "fs:allow-open",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -264,20 +220,16 @@
       "identifier": "fs:allow-read",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -285,20 +237,16 @@
       "identifier": "fs:allow-remove",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -306,20 +254,16 @@
       "identifier": "fs:allow-rename",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -327,20 +271,16 @@
       "identifier": "fs:allow-seek",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     },
@@ -348,20 +288,16 @@
       "identifier": "fs:allow-write",
       "allow": [
         {
-          "path": "$APPLOCALDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPLOCALDATA/**"
         },
         {
-          "path": "$APPDATA/**",
-          "requireLiteralLeadingDot": false
+          "path": "$APPDATA/**"
         },
         {
-          "path": "$HOME/**",
-          "requireLiteralLeadingDot": false
+          "path": "$HOME/**"
         },
         {
-          "path": "**",
-          "requireLiteralLeadingDot": false
+          "path": "**"
         }
       ]
     }
