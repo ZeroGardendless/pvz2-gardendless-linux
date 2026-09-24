@@ -119,6 +119,16 @@ fn main() {
                 "/usr/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0",
             );
         }
+
+        // WebKitGTK's DMABUF renderer crashes on many Wayland setups with
+        // "Error 71 (Protocol error) dispatching to Wayland display" - fine on
+        // the dev machine, fatal on others. Ship safe: disable unless the user
+        // opts back in with GARDENDLESS_DMABUF=1.
+        if std::env::var("WEBKIT_DISABLE_DMABUF_RENDERER").is_err()
+            && std::env::var("GARDENDLESS_DMABUF").ok().as_deref() != Some("1")
+        {
+            std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+        }
     }
 
     // Serve the frontend over loopback HTTP for the media pipeline.
