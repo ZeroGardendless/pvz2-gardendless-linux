@@ -300,6 +300,8 @@
           "path": "**"
         }
       ]
-    }
+    },
+    "dialog:allow-open",
+    "dialog:allow-save"
   ]
 }

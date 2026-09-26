@@ -1,0 +1,117 @@
+<!doctype html><meta charset="utf-8"><title>GPNext smoke test</title><main></main>
+<script type="module">
+try {
+  const assert = (condition, message) => {if (!condition) throw new Error(message);};
+  window.__TAURI_INTERNALS__ = {
+    metadata: {currentWindow: {label: 'main'}},
+    invoke: async (command) => {
+      if (command === 'plugin:drpc|is_running') return false;
+      if (['plugin:drpc|spawn_thread', 'plugin:drpc|set_activity'].includes(command)) return;
+      throw new Error(`Unexpected native call during import: ${command}`);
+    }
+  };
+  const modules = await (await fetch('/__checks/modules.json')).json();
+  for (const name of modules) if (name !== 'Main.js') await import(`/gpnext/${name}`);
+  const {getSettings} = await import('/gpnext/core/SettingsStore.js');
+  assert(getSettings().frameRate === '120', 'default frame rate');
+  const {renderFrameRate} = await import('/gpnext/ui/tabs/Settings.js');
+  const container = document.querySelector('main');
+  renderFrameRate(container);
+  const picker = container.querySelector('select');
+  assert(picker.options.length === 7 && picker.value === '120', 'FPS selector options');
+  picker.value='90'; picker.dispatchEvent(new Event('change'));
+  assert(getSettings().frameRate === '90', 'FPS selection persistence');
+  const {render: renderAbout} = await import('/gpnext/ui/tabs/About.js');
+  await renderAbout(container);
+  assert(container.querySelector(".gp-about-title, h1"), "About content");
+  const {render: renderLog, onActivate, onDeactivate} = await import('/gpnext/ui/tabs/Log.js');
+  renderLog(container); onActivate();
+  const {t: Logger} = await import('/gpnext/core/Logger.js');
+  const logger = new Logger('Smoke');
+  let mutations = 0;
+  const observer = new MutationObserver(() => mutations++);
+  observer.observe(container.querySelector('.gp-log-list'), {childList: true});
+  for (let i=0;i<200;i++) logger.info(`Burst ${i}`);
+  await new Promise(resolve => setTimeout(resolve, 160));
+  assert(container.querySelectorAll('.gp-log-entry').length===200, 'log retention');
+  assert(mutations===1, 'log burst must produce one DOM refresh');
+  observer.disconnect(); onDeactivate();
+  const {renderWidescreenSettings} = await import('/gpnext/runtime/Widescreen.js');
+  const canvas = document.createElement('canvas');
+  canvas.id = 'GameCanvas';
+  canvas.style.cssText = 'position:fixed;left:0;top:0;width:2560px;height:1080px;';
+  document.body.append(canvas);
+  const displayControls = document.createElement('section');
+  document.body.append(displayControls);
+  renderWidescreenSettings(displayControls);
+  const stylePicker = displayControls.querySelector('select');
+  stylePicker.value = 'fog'; stylePicker.dispatchEvent(new Event('change'));
+  const layer = document.getElementById('gd-widescreen');
+  for (let tries=0; tries<40 && layer.hidden; tries++) await new Promise(resolve=>setTimeout(resolve,50));
+  assert(!layer.hidden, 'fog loads from the original asset directory after module moves');
+  canvas.style.width = '1920px'; canvas.style.height = '1200px';
+  await new Promise(resolve=>setTimeout(resolve,100));
+  assert(layer.hidden && getComputedStyle(layer).display==='none', '1920-wide fog cutoff');
+  stylePicker.value='none'; stylePicker.dispatchEvent(new Event('change'));
+  assert(layer.firstChild.firstChild.style.backgroundImage==='none', 'None clears fog');
+  const {bindData,render:renderData} = await import('/gpnext/ui/tabs/Data.js');
+  let dataReads=0;
+  const gameData={PLANTS:Array.from({length:1000},(_,i)=>({CODENAME:`plant${i}`,NAME:`Plant ${i}`}))};
+  bindData({}, {getCurrent(){dataReads++; return gameData;},getOriginal(){return gameData;}});
+  container.replaceChildren(); renderData(container);
+  assert(container.querySelectorAll('.gp-data-item').length===100,'Data tab initial rows');
+  const search=container.querySelector('input');
+  search.value='plant99'; search.dispatchEvent(new Event('input'));
+  await new Promise(resolve=>setTimeout(resolve,300));
+  assert(dataReads===1,'Data searches reuse their game-data lookup');
+  assert(container.querySelectorAll('.gp-data-item').length===11,'Data search matches');
+  const {renderUuidGenerator} = await import('/gpnext/ui/tools/UuidGenerator.js');
+  container.replaceChildren(); renderUuidGenerator(container);
+  const uuidInput = container.querySelector('input');
+  assert(/^[0-9a-f-]{36}$/.test(uuidInput.value), 'UUID generation');
+  const firstUuid = uuidInput.value;
+  container.querySelector('button').click();
+  assert(uuidInput.value !== firstUuid && container.querySelector('select').options.length === 2, 'UUID history');
+  const {renderPreferenceTransfer} = await import('/gpnext/ui/tools/PreferenceTransfer.js');
+  const {exportPreferences} = await import('/gpnext/core/PreferenceTransfer.js');
+  container.replaceChildren(); renderPreferenceTransfer(container);
+  container.querySelector('textarea').value=exportPreferences();
+  [...container.querySelectorAll('button')].find(button=>button.textContent==='Preview import').click();
+  assert(![...container.querySelectorAll('button')].find(button=>button.textContent==='Apply & restart').disabled, 'preference import preview');
+  const {renderTroubleshooting,bindTroubleshooting} = await import('/gpnext/ui/tools/Troubleshooting.js');
+  bindTroubleshooting(()=>({status:{errors:['Invalid test pack']},diagnostics:{}}));
+  container.replaceChildren(); renderTroubleshooting(container);
+  assert(container.textContent.includes('Invalid test pack'), 'actionable diagnostics');
+  const {installRecoveryStorage} = await import('/gpnext/runtime/Recovery.js');
+  const permanent = window.localStorage;
+  permanent.setItem('test-save-marker','retained');
+  const isolated = installRecoveryStorage(window);
+  assert(isolated.getItem('test-save-marker')===null, 'recovery storage starts without real saves');
+  isolated.setItem('test-save-marker','temporary');
+  assert(permanent.getItem('test-save-marker')==='retained', 'recovery cannot overwrite real storage');
+  Object.defineProperty(window,'localStorage',{value:permanent,configurable:true});
+  const engine = await (await fetch('/cocos-js/_virtual_cc-9deb4621.js')).text();
+  const start = engine.indexOf('DD=function'), end = engine.indexOf(',BD=',start);
+  const Pacer = new Function('n', `return (${engine.slice(start+3,end)})`)((type, properties) => {
+    for(const {key,...descriptor} of properties) Object.defineProperty(type.prototype,key,{...descriptor,configurable:true});
+  });
+  const {applyFrameRate} = await import('/gpnext/runtime/FrameRate.js');
+  class Game {
+    _pacer = new Pacer();
+    get frameRate() {return this._frameRate;}
+    set frameRate(rate) {this._frameRate=rate; this._pacer.targetFrameRate=rate;}
+    setFrameRate(rate) {this.frameRate=rate;}
+  }
+  const game = new Game(), results = {};
+  for(const rate of [30,60,90,120,144,165,240]) {
+    let ticks=0; game._pacer.onTick=()=>ticks++;
+    applyFrameRate(game,rate); const before=performance.now(); game._pacer.start();
+    await new Promise(resolve=>setTimeout(resolve,800)); game._pacer.stop();
+    const measured=ticks*1000/(performance.now()-before);
+    results[rate]=Math.round(measured);
+    assert(measured<=rate*1.1+2, `frame rate exceeds ${rate}: ${measured}`);
+    assert(measured>=rate*.75, `frame rate fails to reach ${rate}: ${measured}; results ${JSON.stringify(results)}`);
+  }
+  document.title = `RESULT: PASS ${modules.length-1} modules, settings/log/about/UUID/preferences/recovery UI, fog loading/cutoff/None, FPS ${JSON.stringify(results)}`;
+} catch(error) {document.title=`RESULT: FAIL ${error.message} ${error.stack || error}`;}
+</script>

@@ -1,0 +1,65 @@
+import assert from 'node:assert/strict';
+import {createUuid} from '../../public/gpnext/core/Uuid.js';
+import {createTemporaryStorage, installRecoveryStorage, recoveryUrl} from '../../public/gpnext/runtime/Recovery.js';
+import {createListSnapshot} from '../../public/gpnext/data/ListSnapshot.js';
+import {normalizeFilePath} from '../../public/gpnext/platform/Paths.js';
+import {summarizeModProblems} from '../../public/gpnext/mods/Troubleshooting.js';
+
+const ids = Array.from({length:1000}, () => createUuid());
+assert.equal(new Set(ids).size,1000);
+for (const id of ids) assert.match(id,/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/);
+assert.equal(createUuid({getRandomValues(bytes) {bytes.fill(255); return bytes;}}),'ffffffff-ffff-4fff-bfff-ffffffffffff');
+assert.throws(()=>createUuid({}),/Secure random/);
+const real = createTemporaryStorage({'PvZ2_PlayerProperties':'real save','gpnext-ui':'{"blur":false}'});
+const host = {localStorage: real};
+const temporary = installRecoveryStorage(host);
+assert.equal(temporary.getItem('PvZ2_PlayerProperties'),null);
+assert.equal(temporary.getItem('gpnext-ui'),'{"blur":false}');
+temporary.setItem('PvZ2_PlayerProperties','test save'); temporary.gameValue='value';
+assert.equal(temporary.getItem('gameValue'),'value');
+assert.equal(Object.keys(temporary).length,3);
+delete temporary.gameValue; temporary.clear();
+assert.equal(temporary.length,0);
+assert.equal(real.getItem('PvZ2_PlayerProperties'),'real save');
+assert.match(recoveryUrl(true,'https://tauri.localhost/index.html?x=1#tab'),/x=1&gpnext-recovery=1#tab/);
+assert.equal(recoveryUrl(false,'https://tauri.localhost/index.html?gpnext-recovery=1'),'https://tauri.localhost/index.html');
+assert.throws(()=>installRecoveryStorage(Object.defineProperty({},'localStorage',{value:real,configurable:false})),TypeError);
+
+globalThis.localStorage = createTemporaryStorage();
+const {getSettings,setSettings} = await import('../../public/gpnext/core/SettingsStore.js');
+const {parsePreferences,exportPreferences,importPreferences} = await import('../../public/gpnext/core/PreferenceTransfer.js');
+setSettings({experimental:{jsModding:true},frameRate:'144'});
+localStorage.setItem('gpnext-ui',JSON.stringify({accent:[1,2,3],opacity:90}));
+const exported = exportPreferences();
+assert.equal(parsePreferences(exported).settings.frameRate,'144');
+assert.equal(parsePreferences(exported).settings.experimental,undefined);
+const payload = JSON.parse(exported);payload.settings.frameRate='90';payload.settings.experimental={jsModding:false};
+importPreferences(JSON.stringify(payload));
+assert.equal(getSettings().frameRate,'90');assert.equal(getSettings().experimental.jsModding,true);
+for(const bad of [null,{}, {format:'gpnext-preferences',version:2}, {...payload,appearance:{accent:['x',0,0]}}, {...payload,settings:{frameRate:'99999'}}]) assert.throws(()=>importPreferences(JSON.stringify(bad)));
+assert.equal(getSettings().frameRate,'90','failed imports must not mutate settings');
+assert.throws(()=>parsePreferences('x'.repeat(262145)),/256 KiB/);
+const entries = Array.from({length:10000},(_,index)=>({id:`p${index}`,label:`Plant ${index}`}));
+let comparisons=0;
+const snapshot = createListSnapshot(entries, id=>{comparisons++;return {id,power:1};},id=>({id,power:2}));
+for(let query=0;query<20;query++) {
+  assert.equal(snapshot.search('plant 99').length,111);
+  for(const entry of entries.slice(0,100)) assert.equal(snapshot.isModified(entry),true);
+}
+assert.equal(comparisons,100,'visible entries are compared once per view, not on every query');
+assert.equal(createListSnapshot(entries,()=>({n:2}),()=>({n:2})).isModified(entries[0]),false,'fresh views reflect edits');
+for (const [input,output] of [['C:\\Games\\GE\\packs','C:/Games/GE/packs'],['\\\\server\\share\\packs','//server/share/packs'],['/home/user//packs','/home/user/packs']]) assert.equal(normalizeFilePath(input),output);
+const problems=summarizeModProblems({packs:[{meta:{name:'Broken'},preflightErrors:['Missing dependency']}],errors:['Bad JSON']},{runtimes:[{namespace:'a',name:'First',errors:['Setup failed']},{namespace:'b',name:'Second'}],conflicts:[{key:'Plant.attack',owners:['a','b']}]});
+assert.equal(problems.length,4);assert.match(problems[2].name,/First.*Second/);assert.match(problems[2].advice,/potential conflict/);
+console.log('Passed: UUID v4, isolated recovery storage, preferences validation/round-trip, conflict explanations, Windows paths.');
+console.log('Data search fixture: 10,000 entries / 20 queries; 100 comparisons instead of 2,000 for the repeated visible rows.');
+
+const loaderModule = await import('../../public/gpnext/mods/JsModLoader.js');
+const Loader = Object.values(loaderModule).find(value => value?.prototype?.getStatus);
+let hookScans = 0;
+const runtimes = new Map(Array.from({length:50},(_,index)=>[String(index),{namespace:String(index),state:'active',errors:[],warnings:[],unmanagedDomains:[]}]));
+const status = Loader.prototype.getStatus.call({_runtimes:runtimes,_hookManager:{getConflicts(){hookScans++; return [{owners:['0','1']},{owners:['0','2']}];}}});
+assert.equal(hookScans,1);
+assert.equal(status.find(runtime=>runtime.namespace==='0').conflicts,2);
+assert.equal(status.find(runtime=>runtime.namespace==='1').conflicts,1);
+console.log('Mod status fixture: 50 runtimes require one hook scan instead of 50.');

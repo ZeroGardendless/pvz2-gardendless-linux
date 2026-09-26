@@ -1,0 +1,51 @@
+name: Windows binary
+on:
+  workflow_dispatch:
+    inputs:
+      resources_url:
+        description: HTTPS download URL of game-resources.zip produced by assets:bundle
+        required: true
+        type: string
+      resources_sha256:
+        description: SHA-256 printed by assets:bundle
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Select MSVC Rust toolchain
+        run: rustup default stable-x86_64-pc-windows-msvc
+      - name: Download game resources
+        shell: pwsh
+        env:
+          RESOURCES_URL: ${{ inputs.resources_url }}
+        run: |
+          $uri = [Uri]$env:RESOURCES_URL
+          if ($uri.Scheme -ne 'https') { throw 'A HTTPS resource URL is required' }
+          Invoke-WebRequest -Uri $uri -OutFile game-resources.zip
+      - name: Verify and unpack game resources
+        env:
+          RESOURCES_SHA256: ${{ inputs.resources_sha256 }}
+        run: python scripts/assets/game-bundle.py unpack --archive game-resources.zip --sha256 "$env:RESOURCES_SHA256"
+      - run: npm ci
+      - run: npm run check
+      - run: npm run check:assets
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --lib
+      - run: npm run build:binary
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Gardendless-Windows-x64
+          path: src-tauri/target/release/gardendless.exe
+          if-no-files-found: error

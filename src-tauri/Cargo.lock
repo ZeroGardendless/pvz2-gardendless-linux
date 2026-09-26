@@ -1187,6 +1187,7 @@ dependencies = [
  "tauri-plugin-drpc",
  "tauri-plugin-fs",
  "tauri-plugin-opener",
+ "webkit2gtk",
 ]
 
 [[package]]

@@ -17,7 +17,9 @@ src-tauri/target/
 *.local
 
 # game assets
-public/
+public/*
+!public/assets/
+public/assets/*
 
 # things
 .vscode/*
@@ -29,3 +31,13 @@ public/
 *.njsproj
 *.sln
 *.sw?
+
+!public/assets/widescreen/
+
+# GPNext source and local backups
+!public/gpnext/
+backups/
+
+# Python tool caches
+__pycache__/
+*.pyc

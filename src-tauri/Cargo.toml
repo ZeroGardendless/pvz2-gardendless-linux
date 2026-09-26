@@ -22,5 +22,13 @@ tauri-plugin-dialog = "2.7.2"
 # keep incremental dev builds fast, and avoid full LTO link blowups.
 [profile.release]
 strip = true
-incremental = true
+incremental = false
 debug = 0
+# Avoid the very long whole-program link step for this asset-heavy desktop app.
+# Disabling incremental release builds also avoids retaining compiler state in
+# target/ between releases.
+lto = false
+panic = "abort"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+webkit2gtk = "2.0.2"

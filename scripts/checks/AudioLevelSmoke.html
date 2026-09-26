@@ -1,0 +1,50 @@
+<!doctype html><meta charset="utf-8"><title>Audio level test</title>
+<script type="module">
+import {AudioEngine} from '/gpnext/audio/AudioEngine.js';
+const engine = new AudioEngine(window); engine.monitorFrames();
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const ids = [
+'d28a840e-c013-4bbd-a8ad-0647592bc275', '33ef438a-e75f-40ec-92e1-742a28129441',
+'ef4e37d4-9422-488d-8f80-8079f820d697', 'e0493253-7a87-4f93-a407-286e68c1f449',
+'7dd107c9-98b2-4442-9aee-f99d158cc9df', '9f88f6bb-ef29-4b92-bad0-026825a1d273',
+'41192ecc-a2f1-4066-b04b-1c2eace1b06c', '00176648-b136-41b8-982f-d1e12e8ae7c2',
+'008c456d-eac7-45fd-b662-432bf7c629f5',
+];
+const url = id => `/assets/resources/native/${id.slice(0,2)}/${id}.mp3`;
+const result = {requests:0, completed:0, dropped:0, maxReadMs:0, maxFrameMs:0, frames:0};
+let running = true;
+try {
+ await new Promise(resolve => {window.addEventListener('pointerdown', resolve, {once:true});document.title='READY';});
+ const music = await engine.load(url('01d0a66e-399a-4157-b60f-695f1fe73646'), {audioLoadMode:0});
+ music.volume=0.002;music.loop=true;await music.play();
+ let previous=performance.now();
+ const tick=() => {
+  if (!running) return;
+  const now=performance.now();
+  const time=music.currentTime;
+  result.maxReadMs=Math.max(result.maxReadMs,performance.now()-now);
+  result.maxFrameMs=Math.max(result.maxFrameMs,now-previous);
+  result.frames++;previous=now;requestAnimationFrame(tick);
+ };
+ requestAnimationFrame(tick);
+ const started=performance.now();
+ for(let i=0;i<300;i++) {
+  for(let j=0;j<2;j++) {
+   result.requests++;
+   engine.loadOneShotAudio(url(ids[(i*2+j)%ids.length]),0.002).then(voice=>{voice.play();result.completed++;},()=>result.dropped++);
+  }
+  await wait(100);
+  if(i%100===99) console.log('LEVEL AUDIO '+JSON.stringify({...result,elapsed:performance.now()-started,...engine.diagnostics()}));
+ }
+ result.elapsedMs=performance.now()-started;
+ if(result.maxReadMs>100 || result.maxFrameMs>1000 || result.elapsedMs>90000) throw new Error('Audio stalled the render thread');
+ document.title='RESULT: PASS '+JSON.stringify({...result,activeEffects:engine.activeEffects.size,idle:engine.idleEffectMedia.length,pipelines:engine.mediaResources.size,errors:engine.errors.length});
+} catch(error) {
+ document.title='RESULT: FAIL '+error.message+' '+JSON.stringify({...result,...engine.diagnostics()});
+} finally {
+ running=false;
+ for(const player of [...engine.players])player.destroy();
+ for(const media of [...engine.mediaResources])media.dispose();
+ await engine.audioContext?.close();
+}
+</script>

@@ -1,0 +1,127 @@
+<!doctype html><meta charset="utf-8"><title>Audio test running</title>
+<script type="module">
+import {AudioEngine} from '/gpnext/audio/AudioEngine.js';
+const assert = (value, message) => {if (!value) throw new Error(message);};
+const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+const engine = new AudioEngine(window);
+const results = {};
+try {
+  const context = engine.context();
+  await new Promise(resolve => {
+    window.addEventListener('pointerdown', () => context.resume().then(resolve), {once: true});
+    document.title = 'READY';
+  });
+  let decodes = 0;
+  const decode = context.decodeAudioData.bind(context);
+  context.decodeAudioData = (...args) => {decodes++; return decode(...args);};
+  const effectUrl = '/assets/resources/native/00/00176648-b136-41b8-982f-d1e12e8ae7c2.mp3';
+  const nativeEffectUrl = '/assets/resources/native/00/008c456d-eac7-45fd-b662-432bf7c629f5.mp3';
+  const trackUrl = '/assets/resources/native/01/01d0a66e-399a-4157-b60f-695f1fe73646.mp3';
+  const began = performance.now();
+  const effect = await engine.load(effectUrl);
+  results.effectLoadMs = Math.round(performance.now() - began);
+  const buffer = effect.asset.buffer;
+  let peak = 0;
+  for (const sample of buffer.getChannelData(0)) peak = Math.max(peak, Math.abs(sample));
+  assert(peak > 0.001, 'Real MP3 decoded to silence');
+  results.decodedPeak = peak;
+  const overlap = await engine.load(effectUrl);
+  effect.volume = overlap.volume = 0.002;
+  await Promise.all([effect.play(), overlap.play()]);
+  assert(effect.state === 1 && overlap.state === 1, 'Effects did not start');
+  assert(effect.source !== overlap.source, 'Effects reused a source');
+  const analyser = context.createAnalyser();
+  analyser.fftSize = 2048;
+  effect.source.connect(analyser);
+  const muted = context.createGain(); muted.gain.value = 0;
+  analyser.connect(muted); muted.connect(context.destination);
+  let outputPeak = 0;
+  const samples = new Float32Array(analyser.fftSize);
+  for (let i=0; i<12; i++) {
+    await wait(60); analyser.getFloatTimeDomainData(samples);
+    for (const sample of samples) outputPeak = Math.max(outputPeak, Math.abs(sample));
+  }
+  results.renderedPeak = outputPeak;
+  assert(outputPeak > 0.001, 'Effects produced no rendered PCM samples');
+  assert(context.currentTime > 0.2, 'Audio clock did not advance');
+  effect.volume = 0.1; assert(effect.gain.gain.value > 0.09, 'Live gain failed');
+  await effect.pause(); const offset = effect.currentTime;
+  await effect.play(); assert(effect.currentTime >= offset, 'Effect lost its resume offset');
+  await effect.stop(); await effect.play();
+  effect.destroy(); overlap.destroy(); analyser.disconnect(); muted.disconnect();
+  const beforeMusic = decodes;
+  const musicStart = performance.now();
+  const music = await engine.load(trackUrl, {audioLoadMode: 0});
+  results.musicLoadMs = Math.round(performance.now() - musicStart);
+  assert(decodes === beforeMusic, 'Music was fully decoded into PCM');
+  music.volume = 0.002;
+  await music.play();
+  await wait(700);
+  results.musicTime = music.currentTime;
+  assert(music.currentTime > 0.1 && !music.media.audio.paused, 'Native music pipeline did not advance');
+  const shot = await engine.loadOneShotAudio(nativeEffectUrl, 0.002, {audioLoadMode: 1});
+  const shotPlayer = [...engine.players].at(-1);
+  assert(shotPlayer.asset.kind === 'stream', 'one-shot effect did not select native media');
+  let shotStarted = false;
+  shot.onPlay = () => { shotStarted = true; };
+  const musicBeforeShot = music.currentTime;
+  shot.play();
+  await wait(300);
+  assert(shotStarted && shotPlayer.media && !shotPlayer.media.audio.paused && shotPlayer.currentTime > 0.05,
+    'native one-shot effect did not advance alongside music');
+  assert(music.currentTime > musicBeforeShot, 'music stalled while an effect played');
+  shot.stop();
+  const reusedMedia = engine.idleEffectMedia.at(-1).media.audio;
+  const repeat = await engine.loadOneShotAudio(nativeEffectUrl, 0.002, {audioLoadMode: 1});
+  const repeatPlayer = [...engine.players].at(-1);
+  assert(repeatPlayer.media.audio === reusedMedia, 'repeated SFX created a new media pipeline');
+  repeat.stop();
+  const burst = [];
+  for (let i = 0; i < 20; i++) {
+    const voice = await engine.loadOneShotAudio(nativeEffectUrl, 0.002, {audioLoadMode: 1});
+    voice.play();
+    burst.push(voice);
+  }
+  assert(engine.activeEffects.size <= engine.maxEffectVoices, 'effect voices exceeded their limit');
+  assert(engine.mediaResources.size <= engine.maxEffectVoices + engine.maxIdleEffectMedia + 1,
+    'effect pipelines grew without a bound');
+  for (const voice of burst) voice.stop();
+  assert(engine.idleEffectMedia.length <= engine.maxIdleEffectMedia, 'idle media pool exceeded its limit');
+  const stressStarted = performance.now();
+  const musicBeforeStress = music.currentTime;
+  let slowestEffectMs = 0;
+  for (let i = 0; i < 220; i++) {
+    const effectStarted = performance.now();
+    const voice = await engine.loadOneShotAudio(nativeEffectUrl, 0.002, {audioLoadMode: 1});
+    voice.play();
+    await wait(90);
+    slowestEffectMs = Math.max(slowestEffectMs, performance.now() - effectStarted);
+    assert(engine.activeEffects.size <= engine.maxEffectVoices, 'active effects grew during sustained play');
+    assert(engine.mediaResources.size <= engine.maxEffectVoices + engine.maxIdleEffectMedia + 1,
+      'media pipelines accumulated during sustained play');
+  }
+  results.stressElapsedMs = Math.round(performance.now() - stressStarted);
+  results.slowestEffectMs = Math.round(slowestEffectMs);
+  assert(results.stressElapsedMs < 40000, 'sustained SFX overloaded the WebKit event loop');
+  assert(music.currentTime > musicBeforeStress + 10, 'music stopped advancing during sustained SFX');
+  for (const voice of [...engine.activeEffects]) voice.stop();
+  const musicPipeline = music.media;
+  await music.seek(3);
+  assert(music.media === musicPipeline && Math.abs(music.currentTime - 3) < 0.1,
+    'Seeking music recreated its media pipeline or missed the requested position');
+  await music.pause(); const musicOffset = music.currentTime;
+  await music.play(); await wait(150);
+  assert(music.currentTime >= musicOffset, 'Music resume lost its offset');
+  music.destroy();
+  assert(engine.mediaResources.size === engine.idleEffectMedia.length, 'active native media leaked');
+  assert(engine.diagnostics().errors.length === 0, 'Audio errors: ' + JSON.stringify(engine.diagnostics().errors));
+  console.log('AUDIO RESULTS ' + JSON.stringify(results));
+  document.title = 'RESULT: PASS ' + JSON.stringify(results);
+} catch (error) {
+  console.error(error);
+  document.title = 'RESULT: FAIL ' + error.message + ' ' + JSON.stringify(engine.diagnostics());
+} finally {
+  for (const player of [...engine.players]) player.destroy();
+  await engine.audioContext?.close();
+}
+</script>

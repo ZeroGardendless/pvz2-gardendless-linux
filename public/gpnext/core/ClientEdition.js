@@ -1,0 +1,4 @@
+var e = `standard`;
+export {
+  e as t
+};

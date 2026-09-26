@@ -13,7 +13,7 @@
         "title": "PvZ2: Gardendless",
         "width": 800,
         "height": 600,
-        "decorations": false
+        "decorations": true
       }
     ],
     "security": {

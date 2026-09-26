@@ -9,3 +9,21 @@ Updates are planned to come out within a day of official releases (or earlier if
 > If you encounter any **Linux-specific bugs**, please report them in the Issues tab! You can also DM me or ping `@gardendless` on the official GE Discord server.
 
 Have fun!
+
+
+## Development
+
+GPNext source is organized under `public/gpnext/`; game resources stay under
+`public/assets/`. Native application setup lives in `src-tauri/src/`, and reusable
+checks/build tools live in `scripts/`. See [the GPNext development guide](docs/gpnext/README.md).
+
+Run `npm run check` (also `npm run build`) to validate the ready-to-serve frontend.
+`npm run dev` serves `public/` for browser previews; native features require Tauri.
+Run `npm run build:binary` to validate and build one embedded executable without an
+AppImage or installer. Linux output: `src-tauri/target/release/gardendless`.
+The build reapplies Gardendless's Cocos audio and frame-rate compatibility hooks
+if `public/cocos-js/` has been replaced with an upstream copy.
+
+Windows build instructions and the manual binary workflow are documented in
+[Windows builds](docs/platforms/Windows.md). The future version/mod/GPU launcher
+is outlined in [the launcher roadmap](docs/LauncherRoadmap.md).
