@@ -19,8 +19,8 @@ checks/build tools live in `scripts/`. See [the GPNext development guide](docs/g
 
 Run `npm run check` (also `npm run build`) to validate the ready-to-serve frontend.
 `npm run dev` serves `public/` for browser previews; native features require Tauri.
-Run `npm run build:binary` to validate and build one embedded executable without an
-AppImage or installer. Linux output: `src-tauri/target/release/gardendless`.
+Run `npm run build:binary` to validate and build one embedded executable.
+Linux output: `src-tauri/target/release/gardendless`.
 The build reapplies Gardendless's Cocos audio and frame-rate compatibility hooks
 if `public/cocos-js/` has been replaced with an upstream copy.
 

@@ -12,8 +12,8 @@ npm ci
 npm run build:binary
 ```
 
-The plain executable is `src-tauri/target/release/gardendless.exe`. No installer or
-AppImage is produced. Windows uses WebView2's native audio; Linux keeps the
+The plain executable is `src-tauri/target/release/gardendless.exe`.
+Windows uses WebView2's native audio; Linux keeps the
 WebKitGTK audio workaround and GPU selection. Windows GPU preference is currently
 managed by Windows Graphics settings; an in-app Windows GPU chooser is future work.
 Windows uses the native titlebar. On Linux, the native titlebar is hidden at
@@ -46,6 +46,7 @@ settings export, recovery sessions, fullscreen and save persistence on Windows.
 
 The Windows GNU target passed the native-library compile check and produced an
 experimental executable. It imports `WebView2Loader.dll`; keep that DLL beside
-the EXE. The local test package is `src-tauri/target/Gardendless-Windows-test.zip`,
-containing both files. It has not been launched on a Windows host. The MSVC
-workflow uses the dependency's static loader and is the preferred release path.
+the EXE. The local test package is
+`src-tauri/target/gardendless-windows-x64-test.zip`, containing both files and
+a README. It has not been launched on a Windows host. The MSVC workflow uses
+the dependency's static loader and is the preferred release path.
