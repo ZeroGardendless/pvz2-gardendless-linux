@@ -11,21 +11,21 @@ const NVIDIA: &str = "0x10de";
 const POLICY_VERSION: u32 = 1;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-struct Gpu {
-    pci: String,
-    vendor: String,
-    device: String,
-    driver: String,
-    render_node: PathBuf,
-    primary: bool,
-    internal_display: bool,
+pub(crate) struct Gpu {
+    pub(crate) pci: String,
+    pub(crate) vendor: String,
+    pub(crate) device: String,
+    pub(crate) driver: String,
+    pub(crate) render_node: PathBuf,
+    pub(crate) primary: bool,
+    pub(crate) internal_display: bool,
 }
 impl Gpu {
-    fn mesa(&self) -> bool {
+    pub(crate) fn mesa(&self) -> bool {
         matches!(self.vendor.as_str(), AMD | INTEL)
             && matches!(self.driver.as_str(), "amdgpu" | "radeon" | "i915" | "xe")
     }
-    fn prime_id(&self) -> String {
+    pub(crate) fn prime_id(&self) -> String {
         format!("pci-{}", self.pci.replace([':', '.'], "_"))
     }
     fn identity(&self) -> String {
@@ -49,7 +49,7 @@ fn read(path: impl AsRef<Path>) -> String {
         .trim()
         .to_owned()
 }
-fn discover(drm: &Path, dev_dri: &Path) -> Vec<Gpu> {
+pub(crate) fn discover(drm: &Path, dev_dri: &Path) -> Vec<Gpu> {
     let mut gpus = Vec::new();
     let Ok(entries) = fs::read_dir(drm) else {
         return gpus;
@@ -133,7 +133,7 @@ fn valid_pci(pci: &str) -> bool {
             .enumerate()
             .all(|(i, b)| matches!(i, 4 | 7 | 10) || b.is_ascii_hexdigit())
 }
-fn preferred(gpus: &[Gpu]) -> Option<&Gpu> {
+pub(crate) fn preferred(gpus: &[Gpu]) -> Option<&Gpu> {
     // Primary AMD wins, even if an Intel integrated GPU is also present.
     // Built-in panel ownership is evidence of integrated graphics; Intel bus 00
     // is a secondary hint. Do not classify every Intel GPU as integrated (Arc).
@@ -204,9 +204,20 @@ fn configure_dmabuf(nvidia: bool) {
     }
 }
 
+fn needs_dmabuf_fallback(gpus: &[Gpu], nvidia_module: bool) -> bool {
+    // Rendering on Intel does not imply that the compositor uses Intel. On a
+    // hybrid system buffers may still cross the NVIDIA presentation device.
+    nvidia_module || gpus.iter().any(|gpu| gpu.vendor == NVIDIA)
+}
+
 /// Call once from main, before GTK/WebKit and any graphics threads start.
 pub fn configure() {
+    if env::var("GARDENDLESS_GPU_MODE").as_deref() == Ok("system") {
+        configure_dmabuf(Path::new("/sys/module/nvidia").exists());
+        return;
+    }
     let gpus = discover(Path::new("/sys/class/drm"), Path::new("/dev/dri"));
+    let hybrid_fallback = needs_dmabuf_fallback(&gpus, Path::new("/sys/module/nvidia").exists());
     // Explicit launch options take precedence over automatic selection. Avoid
     // partially applying auto settings on top of a user's different GPU choice.
     let manual = [
@@ -233,7 +244,7 @@ pub fn configure() {
                 || env::var("__GLX_VENDOR_LIBRARY_NAME").as_deref() == Ok("nvidia")
                 || gpus.iter().any(|gpu| gpu.primary && gpu.vendor == NVIDIA)
         });
-        configure_dmabuf(nvidia);
+        configure_dmabuf(nvidia || hybrid_fallback);
         eprintln!("[GPU] Keeping explicit graphics environment overrides");
         return;
     }
@@ -250,13 +261,10 @@ pub fn configure() {
     if gpu.mesa() {
         env::set_var("DRI_PRIME", gpu.prime_id());
         env::set_var("WEBKIT_WEB_RENDER_DEVICE_FILE", &gpu.render_node);
-        // Prevent GLVND from loading NVIDIA's EGL implementation on hybrid PCs.
-        let mesa_egl = Path::new("/usr/share/glvnd/egl_vendor.d/50_mesa.json");
-        if gpus.iter().any(|gpu| gpu.vendor == NVIDIA) && mesa_egl.is_file() {
-            env::set_var("__EGL_VENDOR_LIBRARY_FILENAMES", mesa_egl);
-        }
+        // Keep GLVND's vendor discovery intact: the compositor may own an NVIDIA
+        // device even when WebGL renders on this Mesa device.
     }
-    configure_dmabuf(gpu.vendor == NVIDIA);
+    configure_dmabuf(hybrid_fallback);
     if let Some(path) = path {
         if let Err(error) = save(&path, gpu, &gpus) {
             eprintln!("[GPU] Could not save automatic selection: {error}");
@@ -268,7 +276,7 @@ pub fn configure() {
         gpu.pci,
         gpu.driver,
         gpu.render_node.display(),
-        gpu.vendor == NVIDIA
+        env::var("WEBKIT_DISABLE_DMABUF_RENDERER").as_deref() == Ok("1")
     );
 }
 
@@ -317,6 +325,17 @@ mod tests {
         let gpus = [gpu("0000:01:00.0", NVIDIA, true, false)];
         assert_eq!(preferred(&gpus).unwrap().vendor, NVIDIA);
         assert!(preferred(&[]).is_none());
+    }
+    #[test]
+    fn hybrid_presentation_needs_fallback_even_when_intel_renders() {
+        let gpus = [
+            gpu("0000:00:02.0", INTEL, true, true),
+            gpu("0000:01:00.0", NVIDIA, false, false),
+        ];
+        assert_eq!(preferred(&gpus).unwrap().vendor, INTEL);
+        assert!(needs_dmabuf_fallback(&gpus, false));
+        assert!(!needs_dmabuf_fallback(&gpus[..1], false));
+        assert!(needs_dmabuf_fallback(&gpus[..1], true));
     }
     #[test]
     fn cache_survives_render_node_renumbering_but_not_hardware_changes() {

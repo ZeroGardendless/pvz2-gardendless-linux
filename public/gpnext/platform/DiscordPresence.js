@@ -567,10 +567,28 @@ var P = class {
 }, on: function(e3, t2) {
 } }, shell: { openExternal: async function(e3) {
   return r(e3);
-} } }, B = new F().setLargeImage(`pvzge_logo`).setLargeText(`PvZ2 Gardendless`).setSmallImage(`pvzge_logo`).setSmallText(`PvZ2 Gardendless`), V = new L().setButton([new I(`Download`, `https://pvzge.com`), new I(`Join Server`, `https://discord.gg/ZEfb2tBQFW`)]).setDetails(`Playing version 0.14.0`).setAssets(B).setTimestamps(new P(Date.now())), updateActivity = async (e3, t2 = ``) => {
-  V.setState(e3), t2 && V.setDetails(t2), await N(V);
+} } }, B = new F().setLargeImage(`pvzge_logo`).setLargeText(`PvZ2 Gardendless`).setSmallImage(`pvzge_logo`).setSmallText(`PvZ2 Gardendless`), V = new L().setButton([new I(`Download`, `https://pvzge.com`), new I(`Join Server`, `https://discord.gg/ZEfb2tBQFW`)]).setDetails(`Playing version 0.14.4`).setAssets(B).setTimestamps(new P(Date.now())), updateActivity = async (e3, t2 = ``) => {
+  V.setState(e3), t2 && V.setDetails(t2);
+  if (presenceReady) {
+    try { await N(V); } catch { presenceReady = false; }
+  }
 };
-await j(`1354392876724785243`), await N(V), window.electron = z;
+// Discord is optional. It must never delay the game or repeatedly probe sockets
+// unavailable inside a sandbox (or when no Discord client is running).
+let presenceReady = false;
+window.electron = z;
+(async () => {
+  try {
+    let available = true;
+    try { available = await t(`game_discord_available`); } catch { /* Older host. */ }
+    if (!available) return;
+    await j(`1354392876724785243`);
+    await N(V);
+    presenceReady = true;
+  } catch (error) {
+    console.debug(`[Discord] Presence unavailable`, error);
+  }
+})();
 export {
   updateActivity
 };

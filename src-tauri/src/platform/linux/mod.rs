@@ -1,9 +1,23 @@
 mod discord;
-mod gpu_selection;
+pub(crate) mod gpu_selection;
 pub mod rendering;
 mod window;
 
 pub fn configure_environment() {
+    // Match the desktop entry on Wayland and X11, including isolated save profiles.
+    // The storage identifier may vary per profile; desktop identity must not.
+    webkit2gtk::glib::set_prgname(Some("com.zero.gardendless"));
+    webkit2gtk::glib::set_application_name("PvZ2 Gardendless");
+    if std::env::args().any(|argument| argument == "--safe-graphics") {
+        std::env::set_var("GARDENDLESS_GPU_MODE", "system");
+        std::env::set_var("GARDENDLESS_DMABUF", "0");
+        // XWayland is a useful escape hatch for compositor/driver interop bugs.
+        // Never request it on a session which has no X display.
+        if std::env::var_os("DISPLAY").is_some() {
+            std::env::set_var("GDK_BACKEND", "x11");
+        }
+        eprintln!("[GPU] Compatibility mode: system GPU, DMA-BUF disabled");
+    }
     // Request unsynchronized swaps for this app and its WebKit children.
     // Mesa and NVIDIA use different options. Preserve explicit user overrides;
     // Wayland/compositor presentation may still follow the monitor refresh.
@@ -12,12 +26,8 @@ pub fn configure_environment() {
             std::env::set_var(variable, "0");
         }
     }
-    if std::env::var("GST_PLUGIN_SYSTEM_PATH_1_0").is_err() {
-        std::env::set_var(
-            "GST_PLUGIN_SYSTEM_PATH_1_0",
-            "/usr/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0",
-        );
-    }
+    // Let GStreamer discover its distribution's plugin directories. Overriding
+    // GST_PLUGIN_SYSTEM_PATH_1_0 hides defaults such as /usr/lib64 on Fedora.
 
     gpu_selection::configure();
 }

@@ -1,7 +1,7 @@
 {
   "name": "gardendless",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.15.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,11 +10,15 @@
     "gpnext:readable": "node scripts/gpnext/Format.mjs && node scripts/gpnext/NameExports.mjs",
     "gpnext:readable:check": "node scripts/gpnext/Format.mjs --check && node scripts/gpnext/NameExports.mjs --check && node scripts/checks/ModuleGraph.mjs",
     "tauri": "node scripts/assets/PatchCocos.mjs && tauri",
-    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs",
+    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs && npm run check:launcher",
     "assets:optimize": "python scripts/assets/optimize-pngs.py",
     "build:binary": "npm run check && node scripts/native/Build.mjs",
     "assets:bundle": "python scripts/assets/game-bundle.py pack",
-    "check:assets": "python scripts/checks/ResourceBundle.py"
+    "check:assets": "python scripts/checks/ResourceBundle.py",
+    "check:launcher": "node --experimental-vm-modules scripts/checks/Launcher.mjs && node scripts/checks/Editors.mjs && node scripts/launcher/Themes.mjs --check && node scripts/launcher/SaveCatalog.mjs --check",
+    "build:flatpak": "node scripts/native/Flatpak.mjs",
+    "launcher:themes": "node scripts/launcher/Themes.mjs",
+    "launcher:catalog": "node scripts/launcher/SaveCatalog.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
@@ -24,6 +28,7 @@
     "tauri-plugin-drpc": "^1.0.3"
   },
   "devDependencies": {
+    "@material/material-color-utilities": "0.4.0",
     "@tauri-apps/cli": "^2",
     "esbuild": "^0.25.0",
     "typescript": "~5.6.2",

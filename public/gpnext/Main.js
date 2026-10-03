@@ -1,4 +1,6 @@
+import { connectLauncherOverlay } from "./platform/Launcher.js";
 import "./audio/Bootstrap.js";
+import { renderAudioTuning } from "./audio/AudioTuning.js";
 import { isRecoverySession, renderRecoveryControl } from "./runtime/Recovery.js";
 import { renderPreferenceTransfer } from "./ui/tools/PreferenceTransfer.js";
 import { bindTroubleshooting } from "./ui/tools/Troubleshooting.js";
@@ -469,6 +471,7 @@ Q(Z.find((e2) => e2.id === `log`), async () => {
   return { render: e2.render, onActivate: e2.onActivate, onDeactivate: e2.onDeactivate };
 });
 window.gpNext = { version: y, clientEdition: oe, debug: J.debug === true, toggle: Y.toggle, show: Y.show, hide: Y.hide, dailyLevel: { openFromUrl: z, status: He } }, ct(), K.info(`Phase 1 complete \u2014 overlay mounted. Press ${Ze()} to toggle.`);
+connectLauncherOverlay(Y);
 initWidescreen();
 var $ = `phase-2:engine-import`;
 (async () => {
@@ -581,6 +584,7 @@ var $ = `phase-2:engine-import`;
       settingsUi.renderGeneralSettings(mk(a(`settings.general`)));
       const gameplay = mk(a(`settings.gameplay`));
       settingsUi.renderFrameRate(gameplay);
+      if (window.__gdAudio) renderAudioTuning(mk('Audio'));
       renderWidescreenSettings(mk(a(`settings.widescreen`)));
       settingsUi.renderHealthOverlay(mk(a(`settings.hpOverlay`)));
       exp.render(mk(a(`experimental.title`)));

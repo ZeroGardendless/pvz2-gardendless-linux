@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "launcher",
+  "description": "Launcher window utilities; game and version management use scoped native commands",
+  "windows": ["launcher"],
+  "permissions": ["core:default", "opener:allow-open-url", "dialog:allow-open"]
+}

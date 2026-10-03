@@ -1,3 +1,4 @@
+import { getLauncherContext } from "../../platform/Launcher.js";
 import { a, n as documentationUrl } from "../Translations.js";
 import { n as toast } from "../Toast.js";
 import { F } from "../../mods/FileLoader.js";
@@ -94,6 +95,12 @@ async function render(container) {
   });
   actions.appendChild(guide);
   page.appendChild(actions);
+  const launch = getLauncherContext();
+  if (launch?.profile) {
+    const profile = document.createElement("p");
+    profile.textContent = `Launcher profile: ${launch.profile.name}. Launch settings apply when saved in the launcher; in-game changes are kept between sessions. The launcher remains open in its own window.`;
+    page.appendChild(profile);
+  }
   container.appendChild(page);
 }
 export {

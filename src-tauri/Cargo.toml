@@ -1,9 +1,10 @@
 [package]
 name = "gardendless"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.15.0"
+description = "Gardendless game and launcher"
+authors = ["ZeroGardendless"]
 edition = "2021"
+rust-version = "1.89"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
@@ -17,6 +18,9 @@ tauri-plugin-drpc = "0.1.6"
 tauri-plugin-fs = "2"
 tauri-plugin-deep-link = "2"
 tauri-plugin-dialog = "2.7.2"
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "json", "rustls"] }
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
 
 # Build speed + binary size: strip debug symbols (the release binary was 1.3GB),
 # keep incremental dev builds fast, and avoid full LTO link blowups.
@@ -32,3 +36,4 @@ panic = "abort"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 webkit2gtk = "2.0.2"
+rusqlite = { version = "0.37", features = ["bundled"] }

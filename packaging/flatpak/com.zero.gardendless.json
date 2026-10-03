@@ -1,0 +1,32 @@
+{
+  "app-id": "com.zero.gardendless",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "50",
+  "sdk": "org.gnome.Sdk",
+  "sdk-extensions": ["org.freedesktop.Sdk.Extension.rust-stable"],
+  "command": "gardendless",
+  "finish-args": [
+    "--filesystem=~/.local/state/caelestia:ro",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--socket=pulseaudio",
+    "--share=ipc",
+    "--share=network",
+    "--device=dri"
+  ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
+    "env": {
+      "CARGO_HOME": "/run/build/gardendless/cargo-home",
+      "CARGO_BUILD_JOBS": "2"
+    }
+  },
+  "modules": [
+    {
+      "name": "gardendless",
+      "buildsystem": "simple",
+      "build-commands": ["sh packaging/flatpak/Build.sh"],
+      "sources": [{"type": "dir", "path": "source"}]
+    }
+  ]
+}

@@ -57,6 +57,10 @@ const host = {
   }
 };
 const engine = new AudioEngine(host);
+assert.equal(engine.audioProfile, 'balanced');
+engine.configure('rich');
+assert.equal(engine.maxEffectVoices, 12);
+engine.configure('balanced');
 const [left, right] = await Promise.all([engine.load('sfx.mp3'), engine.load('sfx.mp3')]);
 assert.equal(fetches, 1, 'concurrent loads share fetch and decode');
 const context = engine.context();
@@ -290,7 +294,9 @@ for (const time of [100, 400, 700]) frames.shift()(time);
 assert.equal(engine.activeEffects.size, 0, 'sustained slow frames stop active effect voices');
 assert.equal(engine.idleEffectMedia.length, 0, 'recovery releases idle native pipelines');
 assert.equal(engine.audioRecoveries, 1);
-await assert.rejects(engine.loadOneShotAudio('backoff.mp3'), /recover frame rate/);
+const duringRecovery = await engine.loadOneShotAudio('backoff.mp3');
+assert.equal(engine.effectVoiceLimit(), 2, 'recovery reduces overlap without muting new effects');
+duringRecovery.play(); duringRecovery.stop();
 frameTime = 3701;
 const afterRecovery = await engine.loadOneShotAudio('backoff.mp3');
 afterRecovery.stop();

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.zero.gardendless</id>
+  <name>PvZ2 Gardendless</name>
+  <summary>Play Gardendless and manage game profiles</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+  <launchable type="desktop-id">com.zero.gardendless.desktop</launchable>
+  <url type="homepage">https://github.com/ZeroGardendless/pvz2-gardendless-linux</url>
+  <url type="bugtracker">https://github.com/ZeroGardendless/pvz2-gardendless-linux/issues</url>
+  <description>
+    <p>Gardendless includes the game, GP-Next overlay, and a launcher for separate save profiles and game preferences.</p>
+    <p>The launcher provides local save and keybind editors, automatic backups before edits, and audio runtime checks.</p>
+  </description>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <releases>
+    <release version="0.15.0" date="2026-10-03">
+      <description><p>Introduces the launcher, profile save and keybind editors, GP-Next launch controls, and configurable Linux audio presets.</p></description>
+    </release>
+  </releases>
+</component>

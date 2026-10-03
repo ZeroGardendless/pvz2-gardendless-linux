@@ -1,5 +1,7 @@
 import {constants} from 'node:fs';
-import {cp, mkdir, mkdtemp, rm} from 'node:fs/promises';
+import {cp, copyFile, mkdir, mkdtemp, rm, writeFile} from 'node:fs/promises';
+import {createReadStream} from 'node:fs';
+import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {applyCocosPatches} from '../assets/PatchCocos.mjs';
@@ -22,6 +24,15 @@ try {
     child.once('error', reject);
     child.once('exit', code => resolve(code ?? 1));
   });
+  if (result === 0 && process.platform === 'linux') {
+    const source = path.join(target, 'release', 'gardendless');
+    const artifact = path.join(target, 'release', 'gardendless-linux-x64');
+    await copyFile(source, artifact, constants.COPYFILE_FICLONE);
+    const hash = createHash('sha256');
+    for await (const chunk of createReadStream(artifact)) hash.update(chunk);
+    await writeFile(`${artifact}.sha256`, `${hash.digest('hex')}  ${path.basename(artifact)}\n`);
+    console.log(`Linux binary: ${artifact}`);
+  }
   process.exitCode = result;
 } finally {
   await rm(snapshot, {recursive: true, force: true});

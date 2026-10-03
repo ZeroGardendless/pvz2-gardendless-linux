@@ -41,3 +41,6 @@ backups/
 # Python tool caches
 __pycache__/
 *.pyc
+
+# Embedded launcher UI
+!public/launcher/

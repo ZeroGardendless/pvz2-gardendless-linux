@@ -1,5 +1,6 @@
 import {AudioAssets, WorkQueue, deadline} from './AudioAssets.js';
 import {AudioPlayer} from './AudioPlayer.js';
+import {AUDIO_PROFILES, readAudioProfile} from './AudioTuning.js';
 
 export class AudioEngine {
   constructor(host = globalThis) {
@@ -16,9 +17,7 @@ export class AudioEngine {
     this.effectPreparation = new WorkQueue(2);
     this.pendingEffects = 0;
     this.droppedEffects = 0;
-    this.maxEffectVoices = 4;
-    this.maxPendingEffects = 8;
-    this.maxIdleEffectMedia = 4;
+    this.configure(readAudioProfile(host.localStorage));
     this.effectBackoffUntil = 0;
     this.audioRecoveries = 0;
     this.monitoringFrames = false;
@@ -42,6 +41,15 @@ export class AudioEngine {
       this.activeEffects.clear();
       this.assets.clear();
     });
+  }
+  configure(profile) {
+    const choice = AUDIO_PROFILES[profile] || AUDIO_PROFILES.balanced;
+    this.audioProfile = profile in AUDIO_PROFILES ? profile : 'balanced';
+    this.maxEffectVoices = choice.voices;
+    this.maxPendingEffects = choice.pending;
+    this.maxIdleEffectMedia = choice.idle;
+    if (this.effectPreparation) this.effectPreparation.limit = choice.preparation;
+    while (this.idleEffectMedia.length > this.maxIdleEffectMedia) this.idleEffectMedia.shift().media.dispose();
   }
   context() {
     if (!this.audioContext) {
@@ -182,10 +190,6 @@ export class AudioEngine {
   async loadOneShotAudio(url, volume = 1, options) {
     // Web Audio renders PCM on WebKitGTK but may produce no audible device output.
     // Limit media pipeline creation so a sound-heavy level cannot stall WebKit.
-    if (this.host.performance?.now?.() < this.effectBackoffUntil) {
-      this.droppedEffects++;
-      throw new Error('Effects paused to recover frame rate');
-    }
     if (this.pendingEffects >= this.maxPendingEffects) {
       this.droppedEffects++;
       throw new Error('Effect preparation queue is full');
@@ -195,7 +199,7 @@ export class AudioEngine {
     try {
       player = await this.load(url, {...options, audioLoadMode: 0});
       player.isEffect = true;
-      if (this.activeEffects.size >= this.maxEffectVoices) {
+      if (this.activeEffects.size >= this.effectVoiceLimit()) {
         this.activeEffects.values().next().value.stop();
       }
       await this.effectPreparation.run(() => player.prepareMedia());
@@ -205,7 +209,7 @@ export class AudioEngine {
         onPlay: null, onEnd: null,
         play: (rate = 1) => {
           if (stopped) return;
-          if (this.activeEffects.size >= this.maxEffectVoices) {
+          if (this.activeEffects.size >= this.effectVoiceLimit()) {
             this.activeEffects.values().next().value.stop();
           }
           this.activeEffects.add(shot);
@@ -231,6 +235,9 @@ export class AudioEngine {
     } finally {
       this.pendingEffects--;
     }
+  }
+  effectVoiceLimit() {
+    return this.host.performance?.now?.() < this.effectBackoffUntil ? Math.min(2, this.maxEffectVoices) : this.maxEffectVoices;
   }
   bindGame(game, pauseEvent, resumeEvent) {
     if (this.game === game) return;
@@ -270,7 +277,8 @@ export class AudioEngine {
       if (slowFrames >= 2) {
         for (const effect of [...this.activeEffects]) effect.stop();
         for (const entry of this.idleEffectMedia.splice(0)) entry.media.dispose();
-        this.effectBackoffUntil = now + 3000;
+        // Keep effects audible after a stall, but briefly use fewer simultaneous pipelines.
+        this.effectBackoffUntil = now + 1500;
         this.audioRecoveries++;
         slowFrames = 0;
         this.host.console.warn('[Audio] Released effect pipelines after sustained frame stalls');
@@ -286,7 +294,7 @@ export class AudioEngine {
       pending: this.assets.pending.size, waitingForGesture: this.waiting.size,
       activeEffects: this.activeEffects.size, pendingEffects: this.pendingEffects,
       idleEffectMedia: this.idleEffectMedia.length, mediaPipelines: this.mediaResources.size,
-      droppedEffects: this.droppedEffects, audioRecoveries: this.audioRecoveries,
+      audioProfile: this.audioProfile, droppedEffects: this.droppedEffects, audioRecoveries: this.audioRecoveries,
       errors: this.errors.slice()};
   }
 }

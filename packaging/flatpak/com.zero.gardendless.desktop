@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=PvZ2 Gardendless
+Comment=Play Gardendless and manage game profiles
+Exec=gardendless
+Icon=com.zero.gardendless
+Terminal=false
+Categories=Game;StrategyGame;
+StartupNotify=true
+StartupWMClass=com.zero.gardendless
+Keywords=PvZ;Plants;Zombies;Gardendless;GP-Next;Launcher;
