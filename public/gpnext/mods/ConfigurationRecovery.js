@@ -1,5 +1,5 @@
 import { i as e } from "./PackPreparation.js";
-import { createNativeSaveBoundary } from "./ModSaveProtection.js";
+import { n } from "./ModSaveProtection.js";
 async function restoreLastActiveSelection({ configurationState: t2, installStore: n2, assertCandidateAllowed: r2 }) {
   let i = t2.getState();
   if (i.journal || i.recovery?.required) throw Error(`Interrupted operation requires verified recovery`);
@@ -10,7 +10,7 @@ async function recoverLastActiveConfiguration({ configurationState: n2, installS
   let l = n2.getState(), u = () => {
     if (!s() || n2.getState() !== l) throw Error(`Recovery state changed; restart before trying again`);
   };
-  if (u(), l.journal || !l.recovery?.required) throw Error(`No interrupted configuration is awaiting recovery`);
+  if (u(), l.journal || !l.recovery) throw Error(`No failed configuration is available for recovery`);
   let d = l.active.entityLedger, f = [d, ...l.failedEntityTargets.map((e2) => e2.entityLedger)];
   if (f.some((e2) => !Array.isArray(e2))) throw Error(`Unknown legacy entity identities prevent automatic recovery`);
   let p = i, m = null, h = null;
@@ -18,7 +18,7 @@ async function recoverLastActiveConfiguration({ configurationState: n2, installS
     if (m = l.recovery.failedTarget.backupId, !m || !a) throw Error(`Startup save backup is unavailable`);
     let e2 = await a.read(m);
     if (u(), !e2) throw Error(`Startup save backup is missing`);
-    p = createNativeSaveBoundary({ storage: { getItem: () => e2.raw } });
+    p = n({ storage: { getItem: () => e2.raw } });
   }
   let g = () => {
     for (let e2 of f) p.checkAvailable(e2, d);
@@ -26,7 +26,7 @@ async function recoverLastActiveConfiguration({ configurationState: n2, installS
   g();
   let _ = await e({ configuration: l.active.configuration, installStore: r2 });
   if (u(), c(_), g(), o) {
-    let e2 = await i.capture();
+    let e2 = await i.captureRaw();
     u(), h = e2.id;
     let t2 = await i.restore(m);
     if (u(), !t2.restored || t2.digest !== m) throw Error(`Save restoration could not be verified`);

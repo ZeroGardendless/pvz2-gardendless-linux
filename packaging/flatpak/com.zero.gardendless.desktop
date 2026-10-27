@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=PvZ2 Gardendless
-Comment=Play Gardendless and manage game profiles
+Comment=A refined PvZ2 desktop experience
 Exec=gardendless
 Icon=com.zero.gardendless
 Terminal=false

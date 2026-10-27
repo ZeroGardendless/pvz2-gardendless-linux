@@ -23,6 +23,7 @@ static void resource(WebKitURISchemeRequest *request, gpointer unused) {
 }
 static void changed(GObject *object,GParamSpec *spec,gpointer data){
  const char *title=webkit_web_view_get_title(WEBKIT_WEB_VIEW(object));
+ if(title&&g_str_has_prefix(title,"PHASE:")){g_print("%s\n",title);fflush(stdout);}
  if(title&&strcmp(title,"READY")==0){
   gtk_widget_grab_focus(GTK_WIDGET(object));
   GdkWindow *window=gtk_widget_get_window(GTK_WIDGET(object));

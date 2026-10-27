@@ -6,8 +6,12 @@ pub struct Profile {
     pub id: String,
     pub name: String,
     pub gpu: String,
+    #[serde(default = "default_window_backend")]
+    pub window_backend: String,
     pub frame_rate: u16,
     pub widescreen: String,
+    #[serde(default = "default_render_scale")]
+    pub render_scale: u16,
     #[serde(default = "default_audio_profile")]
     pub audio_profile: String,
     pub recovery: bool,
@@ -26,8 +30,10 @@ impl Default for Profile {
             id: "default".into(),
             name: "Existing save".into(),
             gpu: "auto".into(),
+            window_backend: default_window_backend(),
             frame_rate: 120,
             widescreen: "none".into(),
+            render_scale: 100,
             audio_profile: default_audio_profile(),
             recovery: false,
             js_modding: false,
@@ -37,6 +43,10 @@ impl Default for Profile {
             updated_at: 0,
         }
     }
+}
+
+fn default_window_backend() -> String {
+    "auto".into()
 }
 
 fn default_audio_profile() -> String {
@@ -114,4 +124,8 @@ impl Default for Library {
             profiles: vec![Profile::default()],
         }
     }
+}
+
+fn default_render_scale() -> u16 {
+    100
 }

@@ -1,6 +1,6 @@
 import { n as e } from "../vendor/ModuleHelpers.js";
 import { t } from "../core/Logger.js";
-import { a as n } from "./Engine.js";
+import { d as n } from "../ui/Translations.js";
 var r = e({ bridgePlantLevelStates: () => bridgePlantLevelStates, ensurePlantLevelState: () => ensurePlantLevelState, ensurePlantLevelStates: () => ensurePlantLevelStates, getPlantLevelState: () => getPlantLevelState, isPlantObtained: () => isPlantObtained, setSelectedLevel: () => setSelectedLevel, setUnlockedLevel: () => setUnlockedLevel }), i = new t(`plant-level-state`), a = { progress: 0, tutorialLevel: 0, medal: false, costume: -1, costumes: [], boost: 0 };
 function o() {
   return n() || null;
@@ -175,7 +175,7 @@ export {
   ensurePlantLevelStates,
   getPlantLevelState,
   isPlantObtained,
-  r as o,
   setSelectedLevel,
-  setUnlockedLevel
+  setUnlockedLevel,
+  r as t
 };

@@ -1,5 +1,5 @@
 import { getSettings, setSettings } from "../core/SettingsStore.js";
-import { a } from "../ui/Translations.js";
+import { o } from "../ui/Translations.js";
 import { u, i } from "../ui/Components.js";
 let layer, canvas, left, right, observer, pendingFrame = 0, generation = 0;
 let artwork = null;
@@ -123,20 +123,20 @@ function initWidescreen() {
 }
 function renderWidescreenSettings(container) {
   initWidescreen();
-  const status = i(a(statusKey));
+  const status = i(o(statusKey));
   status.setAttribute("role", "status");
   const choices = ["none", "fog", "bushes"].map((value) => ({
     value,
-    label: a(`settings.widescreen${value[0].toUpperCase()}${value.slice(1)}`)
+    label: o(`settings.widescreen${value[0].toUpperCase()}${value.slice(1)}`)
   }));
-  const picker = u(a("settings.widescreenStyle"), choices, getSettings().widescreen, async (style) => {
+  const picker = u(o("settings.widescreenStyle"), choices, getSettings().widescreen, async (style) => {
     setSettings({ widescreen: style });
     const result = applyStyle(style);
-    status.textContent = a(statusKey);
+    status.textContent = o(statusKey);
     await result;
-    status.textContent = a(statusKey);
+    status.textContent = o(statusKey);
   });
-  container.append(picker, i(a("settings.widescreenDesc")), status);
+  container.append(picker, i(o("settings.widescreenDesc")), status);
 }
 export {
   initWidescreen,

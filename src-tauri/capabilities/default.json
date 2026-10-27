@@ -302,6 +302,8 @@
       ]
     },
     "dialog:allow-open",
-    "dialog:allow-save"
+    "dialog:allow-save",
+    "core:window:allow-center",
+    "core:window:allow-close"
   ]
 }

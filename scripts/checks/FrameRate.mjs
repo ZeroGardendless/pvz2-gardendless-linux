@@ -4,7 +4,8 @@ import {runInNewContext} from 'node:vm';
 import {applyFrameRate, FRAME_RATE_OPTIONS, normalizeFrameRate} from '../../public/gpnext/runtime/FrameRate.js';
 
 // Exercise the exact Pacer shipped with Cocos against a deterministic clock.
-const engine = await readFile(new URL('../../public/cocos-js/_virtual_cc-9deb4621.js', import.meta.url), 'utf8');
+const {findEngineFile} = await import('../assets/PatchCocos.mjs');
+const engine = await readFile(await findEngineFile(), 'utf8');
 const start = engine.indexOf('DD=function');
 const end = engine.indexOf(',BD=', start);
 assert.ok(start >= 0 && end > start, 'update the Pacer fixture after a Cocos upgrade');

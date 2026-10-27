@@ -1,5 +1,5 @@
 import {constants} from 'node:fs';
-import {cp, mkdir, readFile, readdir, rm, writeFile} from 'node:fs/promises';
+import {cp, mkdir, readFile, readdir, rename, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {spawn} from 'node:child_process';
 
@@ -34,6 +34,21 @@ try {
   }
   await run('npm', ['run', 'check']);
   await mkdir(target, {recursive: true});
+  // Preserve verified vendored crates and their mtimes across frontend builds.
+  // Re-vendoring identical dependencies makes Cargo rebuild the entire SDK graph.
+  const cachedVendor = path.join(target, 'vendor-cache');
+  let reuseVendor = false;
+  try {
+    const [previousLock, currentLock] = await Promise.all([
+      readFile(path.join(source, 'src-tauri/Cargo.lock'), 'utf8'),
+      readFile(path.join(root, 'src-tauri/Cargo.lock'), 'utf8'),
+    ]);
+    if (previousLock === currentLock) {
+      await rm(cachedVendor, {recursive: true, force: true});
+      await rename(path.join(source, 'vendor'), cachedVendor);
+      reuseVendor = true;
+    }
+  } catch (error) { if (error.code !== 'ENOENT') throw error; }
   await rm(source, {recursive: true, force: true});
   await mkdir(source, {recursive: true});
   for (const entry of ['public', 'packaging']) {
@@ -55,7 +70,8 @@ try {
   await mkdir(path.join(source, '.cargo'), {recursive: true});
   // Cargo verifies every vendored crate against Cargo.lock. All compilation
   // happens offline; neither a registry token nor the host Cargo home is mounted.
-  await run('cargo', ['vendor', '--locked', '--offline', '--manifest-path', 'src-tauri/Cargo.toml', 'vendor'], {cwd: source});
+  if (reuseVendor) await rename(cachedVendor, path.join(source, 'vendor'));
+  else await run('cargo', ['vendor', '--locked', '--offline', '--manifest-path', 'src-tauri/Cargo.toml', 'vendor'], {cwd: source});
   await writeFile(path.join(source, '.cargo/config.toml'), '[source.crates-io]\nreplace-with = "vendored-sources"\n[source.vendored-sources]\ndirectory = "vendor"\n');
   await writeFile(path.join(target, 'com.zero.gardendless.json'), JSON.stringify(manifest, null, 2) + '\n');
   if (!prepareOnly) {
@@ -66,7 +82,7 @@ try {
     await run('flatpak', [
       'build', '--unshare=network', `--bind-mount=/run/build/gardendless=${source}`,
       `--bind-mount=/run/build/target=${buildTarget}`, '--build-dir=/run/build/gardendless',
-      '--env=CARGO_TARGET_DIR=/run/build/target', '--env=CARGO_BUILD_JOBS=2',
+      '--env=CARGO_TARGET_DIR=/run/build/target', `--env=CARGO_BUILD_JOBS=${process.env.CARGO_BUILD_JOBS || '2'}`,
       '--env=CARGO_HOME=/run/build/gardendless/cargo-home',
       '--env=PATH=/usr/lib/sdk/rust-stable/bin:/usr/bin',
       app, 'sh', 'packaging/flatpak/Build.sh',

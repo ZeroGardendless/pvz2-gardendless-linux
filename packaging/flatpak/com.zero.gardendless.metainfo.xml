@@ -17,6 +17,7 @@
     <control>pointing</control>
   </supports>
   <releases>
+    <release version="0.16.1" date="2026-10-27"><description><p>Updates the game and GP-Next 1.5.5, adds Gardenest mod installation and updates in the launcher, and improves rendering, audio integration and interface responsiveness.</p></description></release>
     <release version="0.15.0" date="2026-10-03">
       <description><p>Introduces the launcher, profile save and keybind editors, GP-Next launch controls, and configurable Linux audio presets.</p></description>
     </release>

@@ -21,12 +21,13 @@ export function installControls(root = document) {
             select.dataset.enhanced = 'true';
             const button = document.createElement('button');
             button.type = 'button'; button.className = 'select-control';
+            if (select.id) button.id = `${select.id}-control`;
             button.setAttribute('role', 'combobox');
             button.setAttribute('aria-haspopup', 'listbox');
             button.setAttribute('aria-expanded', 'false');
             button.setAttribute('aria-controls', `select-menu-${++sequence}`);
             const label = select.closest('label');
-            button.setAttribute('aria-label', select.getAttribute('aria-label') ||
+            button.setAttribute('aria-label', select.getAttribute('aria-label') || select.title ||
                 [...(label?.childNodes || [])].filter(node => node !== select).map(node => node.textContent).join(' ').trim() || select.name || 'Choose an option');
             button.append(document.createElement('span'));
             const arrow = document.createElement('span'); arrow.className = 'select-arrow'; arrow.setAttribute('aria-hidden', 'true'); button.append(arrow);
@@ -111,10 +112,21 @@ export function installControls(root = document) {
         button.append(ripple); ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
         setTimeout(() => ripple.remove(), 700);
     }, true);
+    if (root !== document) document.addEventListener('pointerdown', event => { if (open && !open.menu.contains(event.target) && !open.button.contains(event.target)) close(); }, true);
     root.addEventListener('change', sync);
     root.addEventListener('scroll', event => { if (open && !open.menu.contains(event.target)) close(); }, true);
     window.addEventListener('resize', () => close());
-    const observer = new MutationObserver(sync);
+    // Ripples and dropdown options never change the underlying form controls.
+    // Coalesce actual form changes, without rescanning the page for every animation node.
+    const decoration = node => node.nodeType === 1 && node.matches('.press-ripple, .select-menu, .select-option, .select-control');
+    const observer = new MutationObserver(records => {
+        const changed = records.some(record => record.type === 'attributes'
+            ? record.target.matches('select')
+            : [...record.addedNodes, ...record.removedNodes].some(node => !decoration(node)));
+        // MutationObserver already batches changes. Enhance here, before the
+        // renderer's queued focus restoration looks for the replacement button.
+        if (changed) sync();
+    });
     observer.observe(root.body || root, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
     sync();
 }

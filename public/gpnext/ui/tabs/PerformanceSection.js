@@ -1,17 +1,15 @@
-import { FrameHistory } from "../../runtime/FrameHistory.js";
-import { n as e } from "../../core/Logger.js";
+import { f as e } from "../../platform/CloudJson.js";
+import { d as t } from "../../platform/FileSystem.js";
+import { c as n } from "../../mods/GameConfiguration.js";
+import { n as r } from "../../core/Logger.js";
 import { isJsModdingRuntimeEnabled, getSettings } from "../../core/SettingsStore.js";
-import { c as r, d as i, f as a, l as o, m as s, o as c, s as l, u, v as ee } from "../../runtime/Engine.js";
-import { a as d } from "../Translations.js";
-import { n as f } from "../Toast.js";
-import { r as p } from "../../platform/Bridge.js";
-import { n as m } from "../../platform/Dialog.js";
-import { u as te } from "../../platform/FileSystem.js";
-import { showOverlay, isOverlayOpen, hideOverlay } from "../Overlay.js";
-import { n as h, r as ae, t } from "../Components.js";
-import { F as oe } from "../../mods/FileLoader.js";
-import { o as se, renderFrameRate, s as le } from "./Settings.js";
-var ue = 1500, _ = null, v = 0, y = null;
+import { C as o, _ as s, b as c, f as l, g as u, h as ee, m as te, o as d, p as f, v as p } from "../Translations.js";
+import { n as m, r as ne, t as h } from "../Components.js";
+import { n as g } from "../Toast.js";
+import { a, r as ie, t as ae } from "../Overlay.js";
+import { i, r as se } from "../../runtime/HpOverlay.js";
+import { n as ce } from "../../platform/Dialog.js";
+var le = 1500, _ = null, v = 0, y = null;
 function b() {
   return typeof window < `u` && !!(window.__TAURI_INTERNALS__ || window.__TAURI__);
 }
@@ -21,41 +19,52 @@ function x() {
 function S(e2, t2 = null) {
   return { source: `tauri`, status: `unavailable`, reason: e2, details: t2, collectedAtMs: Date.now(), os: null, app: null, process: null, system: null };
 }
-function de(e2) {
+function ue(e2) {
   return !e2 || typeof e2 != `object` ? S(`empty-native-snapshot`) : { ...e2, source: e2.source || `tauri/sysinfo`, status: e2.status || `available` };
 }
-function fe(e2 = {}) {
+function de(e2 = {}) {
   let t2 = e2.refresh !== false;
-  return _ ||= S(b() ? `not-sampled-yet` : `tauri-runtime-unavailable`), t2 && pe().catch(() => {
+  return _ ||= S(b() ? `not-sampled-yet` : `tauri-runtime-unavailable`), t2 && fe().catch(() => {
   }), _;
 }
-async function pe(e2 = {}) {
-  let t2 = e2.force === true, n2 = x() - v;
-  return !t2 && _ && n2 < ue ? _ : y || (b() ? (y = p(`get_native_performance_snapshot`).then((e3) => (_ = de(e3), v = x(), _)).catch((e3) => (_ = S(`tauri-invoke-failed`, String(e3)), v = x(), _)).finally(() => {
+async function fe(t2 = {}) {
+  let n2 = t2.force === true, r2 = x() - v;
+  return !n2 && _ && r2 < le ? _ : y || (b() ? (y = e(`get_native_performance_snapshot`).then((e2) => (_ = ue(e2), v = x(), _)).catch((e2) => (_ = S(`tauri-invoke-failed`, String(e2)), v = x(), _)).finally(() => {
     y = null;
   }), y) : (_ = S(`tauri-runtime-unavailable`), v = x(), _));
 }
-var me = 5e3, he = 8, ge = false, C = [], w = null, _e = 0, ve = ``;
-function ye() {
+var pe = class {
+  constructor(e2) {
+    if (!Number.isInteger(e2) || e2 < 1) throw RangeError(`Invalid frame history capacity`);
+    this.capacity = e2, this.values = Array(e2), this.count = 0, this.next = 0;
+  }
+  push(e2) {
+    this.values[this.next] = e2, this.next = (this.next + 1) % this.capacity, this.count = Math.min(this.count + 1, this.capacity);
+  }
+  snapshot() {
+    return Array.from({ length: this.count }, (e2, t2) => this.values[(this.next - this.count + t2 + this.capacity) % this.capacity]);
+  }
+}, me = 5e3, he = 8, ge = false, C = [], w = null, T = 0, E = ``;
+function _e() {
   return performance?.now?.() ?? Date.now();
 }
-function be(e2, t2 = 1) {
+function ve(e2, t2 = 1) {
   if (!Number.isFinite(e2)) return null;
   let n2 = 10 ** t2;
   return Math.round(e2 * n2) / n2;
 }
-function xe(e2) {
+function ye(e2) {
   return e2 ? Number.isFinite(Number(e2.count)) ? Number(e2.count) : e2._map && typeof e2._map == `object` ? Object.keys(e2._map).length : e2.map && typeof e2.map == `object` ? Object.keys(e2.map).length : null : null;
 }
-function Se() {
-  let e2 = l(), t2 = e2?.game?._frameRate ?? e2?.game?.frameRate ?? null, r2 = Number(t2);
-  if (Number.isFinite(r2) && r2 > 0) return r2;
-  let i2 = getSettings()?.frameRate;
-  if (i2 === `0`) return null;
-  let a2 = Number(i2);
-  return Number.isFinite(a2) && a2 > 0 ? a2 : null;
+function be() {
+  let e2 = f(), t2 = e2?.game?._frameRate ?? e2?.game?.frameRate ?? null, n2 = Number(t2);
+  if (Number.isFinite(n2) && n2 > 0) return n2;
+  let r2 = getSettings()?.frameRate;
+  if (r2 === `0`) return null;
+  let i2 = Number(r2);
+  return Number.isFinite(i2) && i2 > 0 ? i2 : null;
 }
-function Ce(e2) {
+function xe(e2) {
   switch (e2) {
     case `inGameScene`:
       return `inGame`;
@@ -69,35 +78,35 @@ function Ce(e2) {
       return e2 ? `unknown` : `unavailable`;
   }
 }
-function T() {
-  ge || !s() || (ge = true, ee((e2) => {
-    for (C.push({ sceneName: e2 || `unknown`, family: Ce(e2), time: Date.now() }); C.length > he; ) C.shift();
+function Se() {
+  ge || !c() || (ge = true, o((e2) => {
+    for (C.push({ sceneName: e2 || `unknown`, family: xe(e2), time: Date.now() }); C.length > he; ) C.shift();
     w = null;
   }));
 }
-function we() {
-  if (T(), !s()) return { source: `cocos`, status: `unavailable`, reason: `engine-not-ready` };
-  let e2 = l(), t2 = u(), n2 = c(), r2 = e2?.assetManager?.bundles, a2 = null;
+function Ce() {
+  if (Se(), !c()) return { source: `cocos`, status: `unavailable`, reason: `engine-not-ready` };
+  let e2 = f(), t2 = u(), n2 = l(), r2 = e2?.assetManager?.bundles, i2 = null;
   try {
-    a2 = i().length;
+    i2 = s().length;
   } catch {
-    a2 = null;
+    i2 = null;
   }
-  return { source: `cocos`, status: `available`, sceneName: t2 || null, sceneFamily: Ce(t2), assetCount: xe(n2), jsonAssetCount: a2, bundleCount: xe(r2), targetFrameRate: be(Se(), 0), schedulerTimeScale: be(Number(e2?.director?._scheduler?._timeScale), 3), sceneHistory: C.slice(-8) };
+  return { source: `cocos`, status: `available`, sceneName: t2 || null, sceneFamily: xe(t2), assetCount: ye(n2), jsonAssetCount: i2, bundleCount: ye(r2), targetFrameRate: ve(be(), 0), schedulerTimeScale: ve(Number(e2?.director?._scheduler?._timeScale), 3), sceneHistory: C.slice(-8) };
 }
-function Te() {
-  let e2 = we();
+function we() {
+  let e2 = Ce();
   return { source: `cocos`, status: e2.status, capturedAt: (/* @__PURE__ */ new Date()).toISOString(), capturedAtMs: Date.now(), sceneName: e2.sceneName || null, sceneFamily: e2.sceneFamily || `unavailable` };
 }
-function Ee(e2, t2 = Date.now()) {
-  T();
+function Te(e2, t2 = Date.now()) {
+  Se();
   let n2 = Number(e2), r2 = Number(t2);
   return Number.isFinite(n2) ? C.filter((e3) => {
     let t3 = Number(e3?.time);
     return Number.isFinite(t3) && t3 >= n2 && (!Number.isFinite(r2) || t3 <= r2);
   }).map((e3) => ({ ...e3 })) : [];
 }
-function De(e2) {
+function Ee(e2) {
   let t2 = [e2], n2 = 0, r2 = 0;
   for (; t2.length; ) {
     let e3 = t2.pop();
@@ -110,8 +119,8 @@ function De(e2) {
   }
   return { nodeCount: n2, componentCount: r2 };
 }
-function Oe(e2, t2) {
-  let n2 = t2 === `Zombie` ? a(`chunks:///_virtual/Zombie.ts`, `Zombie`) : r(t2);
+function De(e2, t2) {
+  let n2 = t2 === `Zombie` ? p(`chunks:///_virtual/Zombie.ts`, `Zombie`) : te(t2);
   if (!n2 || !e2?.getComponentsInChildren) return { status: `unavailable`, count: null, reason: `class-unavailable` };
   try {
     let t3 = e2.getComponentsInChildren(n2);
@@ -120,41 +129,41 @@ function Oe(e2, t2) {
     return { status: `unavailable`, count: null, reason: `scan-failed` };
   }
 }
-function E(e2, t2, n2) {
+function Oe(e2, t2, n2) {
   let r2 = t2?.counts?.[n2], i2 = t2?.fallbackUsed?.[n2] === true;
   return t2?.status === `available` && Number.isFinite(Number(r2)) ? { status: `available`, count: Number(r2), source: i2 ? `fallback-scan` : `class-scan`, reason: null, classAvailable: t2?.classAvailable?.[n2] === true } : { ...e2, source: `class-scan` };
 }
 function ke(e2 = {}) {
-  let t2 = e2.force === true, n2 = Number.isFinite(Number(e2.maxAgeMs)) ? Number(e2.maxAgeMs) : me, r2 = o(), i2 = u() || ``, a2 = ye();
-  if (!t2 && w && ve === i2 && a2 - _e <= n2) return w;
-  if (!s() || !r2) return w = { source: `cocos`, status: `unavailable`, reason: s() ? `scene-unavailable` : `engine-not-ready`, capturedAt: (/* @__PURE__ */ new Date()).toISOString() }, _e = a2, ve = i2, w;
-  let c2 = ye(), l2 = De(r2), ee2 = Oe(r2, `Plant`), d2 = Oe(r2, `Zombie`), f2 = Oe(r2, `Tomb`), p2 = typeof se == `function` ? se() : null, m2 = typeof le == `function` ? le(r2) : null, te2 = ye() - c2;
-  return w = { source: `cocos`, status: `available`, capturedAt: (/* @__PURE__ */ new Date()).toISOString(), sceneName: i2 || null, sceneFamily: Ce(i2), scanDurationMs: be(te2, 2), nodeCount: l2.nodeCount, componentCount: l2.componentCount, entityCounts: { source: m2?.source || `class-scan`, status: m2?.status || `available`, reason: m2?.reason || null, plant: E(ee2, m2, `plant`), zombie: E(d2, m2, `zombie`), tomb: E(f2, m2, `tomb`) }, hpOverlay: p2 ? { source: `gp-next`, status: `available`, ...p2 } : { source: `gp-next`, status: `unavailable`, reason: `debug-info-unavailable` } }, _e = a2, ve = i2, w;
+  let t2 = e2.force === true, n2 = Number.isFinite(Number(e2.maxAgeMs)) ? Number(e2.maxAgeMs) : me, r2 = ee(), i2 = u() || ``, a2 = _e();
+  if (!t2 && w && E === i2 && a2 - T <= n2) return w;
+  if (!c() || !r2) return w = { source: `cocos`, status: `unavailable`, reason: c() ? `scene-unavailable` : `engine-not-ready`, capturedAt: (/* @__PURE__ */ new Date()).toISOString() }, T = a2, E = i2, w;
+  let o2 = _e(), s2 = Ee(r2), l2 = De(r2, `Plant`), te2 = De(r2, `Zombie`), d2 = De(r2, `Tomb`), f2 = typeof se == `function` ? se() : null, p2 = typeof i == `function` ? i(r2) : null, m2 = _e() - o2;
+  return w = { source: `cocos`, status: `available`, capturedAt: (/* @__PURE__ */ new Date()).toISOString(), sceneName: i2 || null, sceneFamily: xe(i2), scanDurationMs: ve(m2, 2), nodeCount: s2.nodeCount, componentCount: s2.componentCount, entityCounts: { source: p2?.source || `class-scan`, status: p2?.status || `available`, reason: p2?.reason || null, plant: Oe(l2, p2, `plant`), zombie: Oe(te2, p2, `zombie`), tomb: Oe(d2, p2, `tomb`) }, hpOverlay: f2 ? { source: `gp-next`, status: `available`, ...f2 } : { source: `gp-next`, status: `unavailable`, reason: `debug-info-unavailable` } }, T = a2, E = i2, w;
 }
-var Ae = 1, je = 900, D = 1e3, Me = [33, 50, 100], Ne = `0.14.0`;
-function O() {
+var Ae = 1, je = 900, Me = 1e3, Ne = [33, 50, 100], Pe = `0.16.1`;
+function D() {
   return performance?.now?.() ?? Date.now();
 }
-function k(e2, t2 = 1) {
+function O(e2, t2 = 1) {
   if (!Number.isFinite(e2)) return null;
   let n2 = 10 ** t2;
   return Math.round(e2 * n2) / n2;
 }
-function A(e2) {
+function k(e2) {
   return e2.length ? e2.reduce((e3, t2) => e3 + t2, 0) / e2.length : null;
 }
-function Pe(e2, t2) {
+function Fe(e2, t2) {
   if (!e2.length) return null;
   let n2 = [...e2].sort((e3, t3) => e3 - t3);
   return n2[Math.min(n2.length - 1, Math.max(0, Math.ceil(t2 / 100 * n2.length) - 1))];
 }
-function Fe(e2) {
-  let t2 = A(e2);
+function A(e2) {
+  let t2 = k(e2);
   return t2 && t2 > 0 ? 1e3 / t2 : null;
 }
 function Ie(e2, t2) {
   if (!e2.length) return null;
-  let n2 = [...e2].sort((e3, t3) => t3 - e3), r2 = Math.max(1, Math.ceil(n2.length * t2)), i2 = A(n2.slice(0, r2));
+  let n2 = [...e2].sort((e3, t3) => t3 - e3), r2 = Math.max(1, Math.ceil(n2.length * t2)), i2 = k(n2.slice(0, r2));
   return i2 && i2 > 0 ? 1e3 / i2 : null;
 }
 function Le(e2, t2, n2) {
@@ -162,25 +171,25 @@ function Le(e2, t2, n2) {
   return e2.filter((e3) => e3.ts >= r2);
 }
 function Re() {
-  let e2 = window.cc, t2 = e2?.game?._frameRate ?? e2?.game?.frameRate ?? null, r2 = Number(t2);
-  if (Number.isFinite(r2) && r2 > 0) return r2;
-  let i2 = getSettings()?.frameRate;
-  if (i2 === `0`) return null;
-  let a2 = Number(i2);
-  return Number.isFinite(a2) && a2 > 0 ? a2 : null;
+  let e2 = window.cc, t2 = e2?.game?._frameRate ?? e2?.game?.frameRate ?? null, n2 = Number(t2);
+  if (Number.isFinite(n2) && n2 > 0) return n2;
+  let r2 = getSettings()?.frameRate;
+  if (r2 === `0`) return null;
+  let i2 = Number(r2);
+  return Number.isFinite(i2) && i2 > 0 ? i2 : null;
 }
 function ze(e2, t2, n2) {
   let r2 = e2.map((e3) => e3.duration).filter(Number.isFinite), i2 = Le(e2, n2, 1e3).map((e3) => e3.duration), a2 = Le(e2, n2, 5e3).map((e3) => e3.duration), o2 = {};
-  for (let e3 of Me) o2[`gt${e3}ms`] = r2.filter((t3) => t3 > e3).length;
+  for (let e3 of Ne) o2[`gt${e3}ms`] = r2.filter((t3) => t3 > e3).length;
   let s2 = Re(), c2 = s2 && s2 < 240 ? 1e3 / s2 : null;
-  return { source: `cocos`, status: r2.length ? `available` : `unavailable`, frameCount: r2.length, durationMs: k(n2 - t2, 0), targetFps: s2 ? k(s2, 0) : null, frameBudgetMs: k(c2, 2), avgFps: k(Fe(r2), 1), fps1s: k(Fe(i2), 1), fps5s: k(Fe(a2), 1), onePercentLowFps: k(Ie(r2, 0.01), 1), zeroOnePercentLowFps: k(Ie(r2, 1e-3), 1), minFrameMs: k(r2.length ? Math.min(...r2) : null, 2), maxFrameMs: k(r2.length ? Math.max(...r2) : null, 2), avgFrameMs: k(A(r2), 2), p95FrameMs: k(Pe(r2, 95), 2), p99FrameMs: k(Pe(r2, 99), 2), longFrames: o2, recentFrameMs: r2.slice(-120).map((e3) => k(e3, 2)) };
+  return { source: `cocos`, status: r2.length ? `available` : `unavailable`, frameCount: r2.length, durationMs: O(n2 - t2, 0), targetFps: s2 ? O(s2, 0) : null, frameBudgetMs: O(c2, 2), avgFps: O(A(r2), 1), fps1s: O(A(i2), 1), fps5s: O(A(a2), 1), onePercentLowFps: O(Ie(r2, 0.01), 1), zeroOnePercentLowFps: O(Ie(r2, 1e-3), 1), minFrameMs: O(r2.length ? Math.min(...r2) : null, 2), maxFrameMs: O(r2.length ? Math.max(...r2) : null, 2), avgFrameMs: O(k(r2), 2), p95FrameMs: O(Fe(r2, 95), 2), p99FrameMs: O(Fe(r2, 99), 2), longFrames: o2, recentFrameMs: r2.slice(-120).map((e3) => O(e3, 2)) };
 }
 function Be() {
   return typeof PerformanceObserver < `u` && Array.isArray(PerformanceObserver.supportedEntryTypes) && PerformanceObserver.supportedEntryTypes.includes(`longtask`);
 }
 function Ve(e2, t2, n2, r2, i2) {
   let a2 = Math.max(1, r2 - n2), o2 = e2.map((e3) => e3.duration).filter(Number.isFinite), s2 = o2.reduce((e3, t3) => e3 + t3, 0), c2 = i2 ? Math.min(100, s2 / a2 * 100) : null;
-  return { source: `browser`, status: i2 ? `available` : `unavailable`, longTaskSupported: i2, longTaskCount: o2.length, totalLongTaskMs: k(s2, 1), maxLongTaskMs: k(o2.length ? Math.max(...o2) : 0, 1), busyRatio: k(c2, 1), timerDriftAvgMs: k(A(t2), 1), timerDriftMaxMs: k(t2.length ? Math.max(...t2.map((e3) => Math.abs(e3))) : null, 1), recentLongTasks: e2.slice(-8).map((e3) => ({ startTime: k(e3.startTime, 1), duration: k(e3.duration, 1), name: e3.name || `longtask` })) };
+  return { source: `browser`, status: i2 ? `available` : `unavailable`, longTaskSupported: i2, longTaskCount: o2.length, totalLongTaskMs: O(s2, 1), maxLongTaskMs: O(o2.length ? Math.max(...o2) : 0, 1), busyRatio: O(c2, 1), timerDriftAvgMs: O(k(t2), 1), timerDriftMaxMs: O(t2.length ? Math.max(...t2.map((e3) => Math.abs(e3))) : null, 1), recentLongTasks: e2.slice(-8).map((e3) => ({ startTime: O(e3.startTime, 1), duration: O(e3.duration, 1), name: e3.name || `longtask` })) };
 }
 function He() {
   return document.getElementById(`GameCanvas`) || document.querySelector(`canvas`);
@@ -189,7 +198,7 @@ function Ue() {
   let e2 = He();
   if (!e2) return { source: `browser`, status: `unavailable`, reason: `canvas-not-found` };
   let t2 = e2.getBoundingClientRect();
-  return { source: `browser`, status: `available`, id: e2.id || ``, cssWidth: k(t2.width, 0), cssHeight: k(t2.height, 0), backingWidth: Number(e2.width) || null, backingHeight: Number(e2.height) || null, devicePixelRatio: k(window.devicePixelRatio || 1, 2), renderedPixels: (Number(e2.width) || 0) * (Number(e2.height) || 0) };
+  return { source: `browser`, status: `available`, id: e2.id || ``, cssWidth: O(t2.width, 0), cssHeight: O(t2.height, 0), backingWidth: Number(e2.width) || null, backingHeight: Number(e2.height) || null, devicePixelRatio: O(window.devicePixelRatio || 1, 2), renderedPixels: (Number(e2.width) || 0) * (Number(e2.height) || 0) };
 }
 function We(e2) {
   if (!e2?.getContext) return { gl: null, type: null };
@@ -230,8 +239,8 @@ function Je() {
   return { source: `gp-next-settings`, status: `available`, frameRate: e2.frameRate, hpOverlay: { showPlant: e2.hpOverlay?.showPlant === true, showZombie: e2.hpOverlay?.showZombie === true, showTomb: e2.hpOverlay?.showTomb === true }, scrollSensitivity: { enabled: e2.scrollSensitivity?.enabled !== false, wheel: e2.scrollSensitivity?.wheel ?? null, discreteMinIntervalMs: e2.scrollSensitivity?.discreteMinIntervalMs ?? null }, dynamicPlantRegistry: e2.dynamicPlantRegistry !== false, shopExtensions: e2.shopExtensions !== false, experimental: { worldMapJson: e2.experimental?.worldMapJson === true, plantLevelSystem: e2.experimental?.plantLevelSystem === true, jsModding: isJsModdingRuntimeEnabled() } };
 }
 function Ye() {
-  let t2 = e(), n2 = t2.filter((e2) => e2.level === `warn`), r2 = t2.filter((e2) => e2.level === `error`), i2 = t2.filter((e2) => e2.level === `warn` || e2.level === `error`).slice(-10).map((e2) => ({ level: e2.level, module: e2.module, time: e2.time, msg: qe(e2.msg).slice(0, 500) }));
-  return { source: `gp-next-logger`, status: `available`, warningCount: n2.length, errorCount: r2.length, recentIssues: i2 };
+  let e2 = r(), t2 = e2.filter((e3) => e3.level === `warn`), n2 = e2.filter((e3) => e3.level === `error`), i2 = e2.filter((e3) => e3.level === `warn` || e3.level === `error`).slice(-10).map((e3) => ({ level: e3.level, module: e3.module, time: e3.time, msg: qe(e3.msg).slice(0, 500) }));
+  return { source: `gp-next-logger`, status: `available`, warningCount: t2.length, errorCount: n2.length, recentIssues: i2 };
 }
 function Xe(e2) {
   return { browser: { status: `available`, mainThread: e2.mainThread?.status || `unavailable`, canvas: e2.canvas?.status || `unavailable`, webgl: e2.webgl?.status || `unavailable`, environment: e2.environment?.status || `unavailable` }, cocos: { fps: e2.fps?.status || `unavailable`, runtime: e2.gameRuntime?.status || `unavailable`, sceneScan: e2.sceneScan?.status || `unavailable`, sampleContext: e2.sampleContext?.status || `unavailable` }, tauri: { native: e2.native?.status || `unavailable` } };
@@ -240,19 +249,19 @@ function Ze(e2) {
   return { source: `gp-next`, status: `available`, supportPackageVersion: 1, availability: Xe(e2), runtimeExtensions: Je(), logSummary: Ye() };
 }
 function Qe(e2, t2) {
-  let n2 = Date.now(), r2 = Number(e2?.capturedAtMs), i2 = Number.isFinite(r2) ? Ee(r2, n2) : [], a2 = e2?.sceneName || null, o2 = t2?.sceneName || null, s2 = !!(a2 && o2 && a2 !== o2), c2 = i2.some((e3) => e3.sceneName && e3.sceneName !== a2);
-  return { source: `cocos`, status: e2?.status === `available` || t2?.status === `available` ? `available` : `unavailable`, start: e2 || null, end: { source: `cocos`, status: t2?.status || `unavailable`, capturedAt: (/* @__PURE__ */ new Date()).toISOString(), capturedAtMs: n2, sceneName: o2, sceneFamily: t2?.sceneFamily || `unavailable` }, sceneChangedDuringSample: s2 || c2, transitionCount: i2.length, transitions: i2.map((e3) => ({ sceneName: e3.sceneName || `unknown`, family: e3.family || `unknown`, time: e3.time, relativeMs: Number.isFinite(r2) ? k(e3.time - r2, 0) : null })) };
+  let n2 = Date.now(), r2 = Number(e2?.capturedAtMs), i2 = Number.isFinite(r2) ? Te(r2, n2) : [], a2 = e2?.sceneName || null, o2 = t2?.sceneName || null, s2 = !!(a2 && o2 && a2 !== o2), c2 = i2.some((e3) => e3.sceneName && e3.sceneName !== a2);
+  return { source: `cocos`, status: e2?.status === `available` || t2?.status === `available` ? `available` : `unavailable`, start: e2 || null, end: { source: `cocos`, status: t2?.status || `unavailable`, capturedAt: (/* @__PURE__ */ new Date()).toISOString(), capturedAtMs: n2, sceneName: o2, sceneFamily: t2?.sceneFamily || `unavailable` }, sceneChangedDuringSample: s2 || c2, transitionCount: i2.length, transitions: i2.map((e3) => ({ sceneName: e3.sceneName || `unknown`, family: e3.family || `unknown`, time: e3.time, relativeMs: Number.isFinite(r2) ? O(e3.time - r2, 0) : null })) };
 }
 var $e = class {
   constructor(e2 = {}) {
-    this.maxFrames = e2.maxFrames || je, this.onUpdate = typeof e2.onUpdate == `function` ? e2.onUpdate : null, this.frames = new FrameHistory(this.maxFrames), this.longTasks = [], this.timerDrifts = [], this.running = false, this.startTime = 0, this.endTime = 0, this._uiTimerId = null, this._frameDirector = null, this._frameEvent = null, this._onGameFrame = () => this._onFrame(O()), this._lastFrameTs = null, this._observer = null, this._timerId = null, this._expectedTimerTs = 0, this._longTaskSupported = Be(), this._sampleStartRuntime = null;
+    this.maxFrames = e2.maxFrames || je, this.onUpdate = typeof e2.onUpdate == `function` ? e2.onUpdate : null, this.frames = new pe(this.maxFrames), this.longTasks = [], this.timerDrifts = [], this.running = false, this.startTime = 0, this.endTime = 0, this._uiTimerId = null, this._frameDirector = null, this._frameEvent = null, this._onGameFrame = () => this._onFrame(D()), this._lastFrameTs = null, this._observer = null, this._timerId = null, this._expectedTimerTs = 0, this._longTaskSupported = Be(), this._sampleStartRuntime = null;
   }
   start({ reset: e2 = true } = {}) {
-    this.running || (e2 && this.reset(), this.running = true, this.startTime = O(), this.endTime = this.startTime, this._lastFrameTs = null, this._sampleStartRuntime = Te(), this._startLongTaskObserver(), this._startTimerProbe(), this._refreshFrameSource(), this._uiTimerId = setTimeout(() => this._updateUi(), 250));
+    this.running || (e2 && this.reset(), this.running = true, this.startTime = D(), this.endTime = this.startTime, this._lastFrameTs = null, this._sampleStartRuntime = we(), this._startLongTaskObserver(), this._startTimerProbe(), this._refreshFrameSource(), this._uiTimerId = setTimeout(() => this._onBrowserFrame(), 250));
   }
   stop() {
     if (this.running) {
-      if (this.running = false, this.endTime = O(), this._detachFrameSource(), this._uiTimerId !== null && (clearTimeout(this._uiTimerId), this._uiTimerId = null), this._observer) {
+      if (this.running = false, this.endTime = D(), this._detachFrameSource(), this._uiTimerId !== null && (clearTimeout(this._uiTimerId), this._uiTimerId = null), this._observer) {
         try {
           this._observer.disconnect();
         } catch {
@@ -263,25 +272,25 @@ var $e = class {
     }
   }
   reset() {
-    this.frames = new FrameHistory(this.maxFrames), this.longTasks = [], this.timerDrifts = [], this.startTime = O(), this.endTime = this.startTime, this._lastFrameTs = null, this._sampleStartRuntime = null;
+    this.frames = new pe(this.maxFrames), this.longTasks = [], this.timerDrifts = [], this.startTime = D(), this.endTime = this.startTime, this._lastFrameTs = null, this._sampleStartRuntime = null;
   }
   getSnapshot() {
-    let e2 = this.running ? O() : this.endTime || O();
-    return M({ startTime: this.startTime || e2, endTime: e2, frames: this.frames.toArray(), longTasks: this.longTasks, timerDrifts: this.timerDrifts, longTaskSupported: this._longTaskSupported, sampleStartRuntime: this._sampleStartRuntime });
+    let e2 = this.running ? D() : this.endTime || D();
+    return M({ startTime: this.startTime || e2, endTime: e2, frames: this.frames.snapshot(), longTasks: this.longTasks, timerDrifts: this.timerDrifts, longTaskSupported: this._longTaskSupported, sampleStartRuntime: this._sampleStartRuntime });
   }
   getReportSnapshot() {
-    let e2 = this.running ? O() : this.endTime || O();
-    return M({ startTime: this.startTime || e2, endTime: e2, frames: this.frames.toArray(), longTasks: this.longTasks, timerDrifts: this.timerDrifts, longTaskSupported: this._longTaskSupported, forceSceneScan: true, sampleStartRuntime: this._sampleStartRuntime });
+    let e2 = this.running ? D() : this.endTime || D();
+    return M({ startTime: this.startTime || e2, endTime: e2, frames: this.frames.snapshot(), longTasks: this.longTasks, timerDrifts: this.timerDrifts, longTaskSupported: this._longTaskSupported, forceSceneScan: true, sampleStartRuntime: this._sampleStartRuntime });
   }
   async getReportSnapshotAsync() {
-    let e2 = this.running ? O() : this.endTime || O(), t2 = this.startTime || e2, n2 = await pe({ force: true });
-    return M({ startTime: t2, endTime: e2, frames: this.frames.toArray(), longTasks: this.longTasks, timerDrifts: this.timerDrifts, longTaskSupported: this._longTaskSupported, forceSceneScan: true, sampleStartRuntime: this._sampleStartRuntime, nativeSnapshot: n2 });
+    let e2 = this.running ? D() : this.endTime || D(), t2 = this.startTime || e2, n2 = await fe({ force: true });
+    return M({ startTime: t2, endTime: e2, frames: this.frames.snapshot(), longTasks: this.longTasks, timerDrifts: this.timerDrifts, longTaskSupported: this._longTaskSupported, forceSceneScan: true, sampleStartRuntime: this._sampleStartRuntime, nativeSnapshot: n2 });
   }
   _onFrame(e2) {
     if (this.running) {
       if (this._lastFrameTs !== null) {
         let t2 = e2 - this._lastFrameTs;
-        if (Number.isFinite(t2) && t2 > 0) this.frames.push({ ts: e2, duration: t2 });
+        Number.isFinite(t2) && t2 > 0 && this.frames.push({ ts: e2, duration: t2 });
       }
       this._lastFrameTs = e2, this.endTime = e2;
     }
@@ -293,8 +302,8 @@ var $e = class {
     let e2 = window.cc, t2 = e2?.director, n2 = e2?.Director?.EVENT_AFTER_DRAW;
     t2 === this._frameDirector && n2 === this._frameEvent || (this._detachFrameSource(), !(!n2 || typeof t2?.on != `function` || typeof t2?.off != `function`) && (this._frameDirector = t2, this._frameEvent = n2, t2.on(n2, this._onGameFrame)));
   }
-  _updateUi() {
-    this.running && (this._refreshFrameSource(), this.onUpdate && this.onUpdate(), this._uiTimerId = setTimeout(() => this._updateUi(), 250));
+  _onBrowserFrame() {
+    this.running && (this._refreshFrameSource(), this.onUpdate && this.onUpdate(), this._uiTimerId = setTimeout(() => this._onBrowserFrame(), 250));
   }
   _startLongTaskObserver() {
     if (this._longTaskSupported) try {
@@ -307,16 +316,16 @@ var $e = class {
     }
   }
   _startTimerProbe() {
-    this._expectedTimerTs = O() + D, this._timerId = setInterval(() => {
-      let e2 = O();
+    this._expectedTimerTs = D() + Me, this._timerId = setInterval(() => {
+      let e2 = D();
       for (this.timerDrifts.push(e2 - this._expectedTimerTs); this.timerDrifts.length > 120; ) this.timerDrifts.shift();
-      this._expectedTimerTs += D;
-    }, D);
+      this._expectedTimerTs += Me;
+    }, Me);
   }
 };
 function M(e2) {
-  T();
-  let t2 = e2.startTime || O(), n2 = e2.endTime || O(), r2 = Array.isArray(e2.frames) ? e2.frames : [], i2 = Array.isArray(e2.longTasks) ? e2.longTasks : [], a2 = Array.isArray(e2.timerDrifts) ? e2.timerDrifts : [], o2 = we(), s2 = ze(r2, t2, n2), c2 = Ve(i2, a2, t2, n2, !!e2.longTaskSupported), l2 = Ue(), u2 = Ge(), ee2 = Ke(), d2 = Qe(e2.sampleStartRuntime, o2), f2 = ke({ force: e2.forceSceneScan === true, maxAgeMs: e2.forceSceneScan === true ? 0 : 5e3 }), p2 = e2.nativeSnapshot || fe(), m2 = { performanceReportVersion: Ae, collectedAt: (/* @__PURE__ */ new Date()).toISOString(), gpNextVersion: oe, gameVersion: Ne, sample: { source: `browser`, status: `available`, startTime: k(t2, 1), endTime: k(n2, 1), durationMs: k(Math.max(0, n2 - t2), 0) }, fps: s2, mainThread: c2, canvas: l2, webgl: u2, environment: ee2, sampleContext: d2, gameRuntime: o2, sceneScan: f2, native: p2 };
+  Se();
+  let t2 = e2.startTime || D(), r2 = e2.endTime || D(), i2 = Array.isArray(e2.frames) ? e2.frames : [], a2 = Array.isArray(e2.longTasks) ? e2.longTasks : [], o2 = Array.isArray(e2.timerDrifts) ? e2.timerDrifts : [], s2 = Ce(), c2 = ze(i2, t2, r2), l2 = Ve(a2, o2, t2, r2, !!e2.longTaskSupported), u2 = Ue(), ee2 = Ge(), te2 = Ke(), d2 = Qe(e2.sampleStartRuntime, s2), f2 = ke({ force: e2.forceSceneScan === true, maxAgeMs: e2.forceSceneScan === true ? 0 : 5e3 }), p2 = e2.nativeSnapshot || de(), m2 = { performanceReportVersion: Ae, collectedAt: (/* @__PURE__ */ new Date()).toISOString(), gpNextVersion: n, gameVersion: Pe, sample: { source: `browser`, status: `available`, startTime: O(t2, 1), endTime: O(r2, 1), durationMs: O(Math.max(0, r2 - t2), 0) }, fps: c2, mainThread: l2, canvas: u2, webgl: ee2, environment: te2, sampleContext: d2, gameRuntime: s2, sceneScan: f2, native: p2 };
   return m2.support = Ze(m2), m2;
 }
 function et(e2 = 3e4) {
@@ -400,7 +409,7 @@ function q(e2) {
     let e3 = B(`div`, `gp-perf-kv-row`);
     e3.appendChild(B(`span`, `gp-perf-kv-label`, n2));
     let a2 = B(`span`, `gp-perf-kv-value`);
-    a2.textContent = r2, i2 && a2.appendChild(t(i2.text, i2.type)), e3.appendChild(a2), t2.appendChild(e3);
+    (!i2 || String(r2) !== i2.text) && (a2.textContent = r2), i2 && a2.appendChild(h(i2.text, i2.type)), e3.appendChild(a2), t2.appendChild(e3);
   }
   return t2;
 }
@@ -410,15 +419,15 @@ function ht(e2) {
   let r2 = document.createElementNS(`http://www.w3.org/2000/svg`, `rect`);
   r2.setAttribute(`x`, `0`), r2.setAttribute(`y`, `0`), r2.setAttribute(`width`, String(N)), r2.setAttribute(`height`, String(P)), r2.setAttribute(`rx`, `8`), r2.setAttribute(`class`, `gp-perf-chart-bg`), n2.appendChild(r2);
   for (let e3 of [16.7, 33.3, 50]) {
-    let t3 = J(e3), r3 = document.createElementNS(`http://www.w3.org/2000/svg`, `line`);
+    let t3 = gt(e3), r3 = document.createElementNS(`http://www.w3.org/2000/svg`, `line`);
     r3.setAttribute(`x1`, `0`), r3.setAttribute(`x2`, String(N)), r3.setAttribute(`y1`, String(t3)), r3.setAttribute(`y2`, String(t3)), r3.setAttribute(`class`, `gp-perf-chart-grid`), n2.appendChild(r3);
   }
   if (e2?.fps?.frameBudgetMs) {
-    let t3 = J(e2.fps.frameBudgetMs), r3 = document.createElementNS(`http://www.w3.org/2000/svg`, `line`);
+    let t3 = gt(e2.fps.frameBudgetMs), r3 = document.createElementNS(`http://www.w3.org/2000/svg`, `line`);
     r3.setAttribute(`x1`, `0`), r3.setAttribute(`x2`, String(N)), r3.setAttribute(`y1`, String(t3)), r3.setAttribute(`y2`, String(t3)), r3.setAttribute(`class`, `gp-perf-chart-budget`), n2.appendChild(r3);
   }
   if (t2.length > 1) {
-    let e3 = t2.map((e4, n3) => `${(n3 / (t2.length - 1) * N).toFixed(1)},${J(e4).toFixed(1)}`).join(` `), r3 = document.createElementNS(`http://www.w3.org/2000/svg`, `polyline`);
+    let e3 = t2.map((e4, n3) => `${(n3 / (t2.length - 1) * N).toFixed(1)},${gt(e4).toFixed(1)}`).join(` `), r3 = document.createElementNS(`http://www.w3.org/2000/svg`, `polyline`);
     r3.setAttribute(`points`, e3), r3.setAttribute(`class`, `gp-perf-chart-line`), n2.appendChild(r3);
   } else {
     let e3 = document.createElementNS(`http://www.w3.org/2000/svg`, `text`);
@@ -426,10 +435,10 @@ function ht(e2) {
   }
   return n2;
 }
-function J(e2) {
+function gt(e2) {
   return P - Math.max(0, Math.min(rt, Number(e2) || 0)) / rt * (P - 12) - 6;
 }
-function gt(e2) {
+function _t(e2) {
   let t2 = B(`div`, `gp-perf-bars`), n2 = Math.max(1, e2?.fps?.frameCount || 0), r2 = [[`>33ms`, e2?.fps?.longFrames?.gt33ms || 0], [`>50ms`, e2?.fps?.longFrames?.gt50ms || 0], [`>100ms`, e2?.fps?.longFrames?.gt100ms || 0]];
   for (let [e3, i2] of r2) {
     let r3 = B(`div`, `gp-perf-bar-row`), a2 = B(`div`, `gp-perf-bar-top`);
@@ -439,37 +448,37 @@ function gt(e2) {
   }
   return t2;
 }
-function _t(e2) {
+function vt(e2) {
   let t2 = e2?.mainThread || {};
   return t2.longTaskSupported ? U(t2.busyRatio) : H(t2.timerDriftAvgMs);
 }
-function vt(e2) {
+function yt(e2) {
   let t2 = e2?.mainThread || {};
   return t2.longTaskSupported ? d(`performance.longTaskCountValue`, t2.longTaskCount ?? 0) : d(`performance.timerDriftEstimate`);
 }
-function yt(e2) {
+function bt(e2) {
   let t2 = e2?.mainThread || {};
   return t2.longTaskSupported ? ft(t2.busyRatio, true) : pt(t2.timerDriftAvgMs);
 }
-function bt(e2) {
+function xt(e2) {
   let t2 = e2?.mainThread || {};
   if (t2.longTaskSupported) return U(t2.busyRatio);
   let n2 = H(t2.timerDriftAvgMs);
   return n2 === d(`performance.unavailable`) ? n2 : d(`performance.driftValue`, n2);
 }
-function xt(e2) {
+function St(e2) {
   return e2?.status === `available` ? V(e2.count, ``, 0) : d(`performance.unavailable`);
 }
-function Y(e2) {
+function J(e2) {
   if (!e2) return d(`performance.unavailable`);
   let t2 = `performance.reason.${e2}`, n2 = d(t2);
   return n2 === t2 ? e2 : n2;
 }
-function X(e2) {
+function Y(e2) {
   return e2 === `available` ? { text: d(`performance.available`), type: `success` } : e2 === `warming` ? { text: d(`performance.nativeWarming`), type: `warning` } : { text: d(`performance.unavailable`), type: `warning` };
 }
-function St(e2) {
-  return !e2 || e2.status !== `available` ? { text: Y(e2?.reason), type: `warning` } : e2.source === `fallback-scan` ? { text: d(`performance.entitySource.fallback`), type: `warning` } : { text: d(`performance.entitySource.class`), type: `info` };
+function X(e2) {
+  return !e2 || e2.status !== `available` ? { text: J(e2?.reason), type: `warning` } : e2.source === `fallback-scan` ? { text: d(`performance.entitySource.fallback`), type: `warning` } : { text: d(`performance.entitySource.class`), type: `info` };
 }
 function Ct(e2) {
   return e2 === `class+fallback-scan` ? d(`performance.entitySource.classFallback`) : e2 === `fallback-scan` ? d(`performance.entitySource.fallback`) : e2 === `class-scan` ? d(`performance.entitySource.class`) : e2 || d(`performance.unavailable`);
@@ -493,7 +502,7 @@ function Et(e2) {
 }
 function Dt(e2) {
   let t2 = B(`div`, `gp-perf-metric-grid`);
-  t2.appendChild(G(d(`performance.avgFps`), V(e2?.fps?.avgFps), d(`performance.targetValue`, V(e2?.fps?.targetFps, ` FPS`, 0)), ut(e2))), t2.appendChild(G(d(`performance.frameP95`), H(e2?.fps?.p95FrameMs), d(`performance.frameP99Value`, H(e2?.fps?.p99FrameMs)), dt(e2?.fps?.p95FrameMs))), t2.appendChild(G(d(`performance.onePercentLow`), V(e2?.fps?.onePercentLowFps), d(`performance.zeroOneLowValue`, V(e2?.fps?.zeroOnePercentLowFps)), ut({ fps: { avgFps: e2?.fps?.onePercentLowFps, targetFps: e2?.fps?.targetFps } }))), t2.appendChild(G(d(`performance.mainThreadBusy`), _t(e2), vt(e2), yt(e2))), Q(I.metrics, t2);
+  t2.appendChild(G(d(`performance.avgFps`), V(e2?.fps?.avgFps), d(`performance.targetValue`, V(e2?.fps?.targetFps, ` FPS`, 0)), ut(e2))), t2.appendChild(G(d(`performance.frameP95`), H(e2?.fps?.p95FrameMs), d(`performance.frameP99Value`, H(e2?.fps?.p99FrameMs)), dt(e2?.fps?.p95FrameMs))), t2.appendChild(G(d(`performance.onePercentLow`), V(e2?.fps?.onePercentLowFps), d(`performance.zeroOneLowValue`, V(e2?.fps?.zeroOnePercentLowFps)), ut({ fps: { avgFps: e2?.fps?.onePercentLowFps, targetFps: e2?.fps?.targetFps } }))), t2.appendChild(G(d(`performance.mainThreadBusy`), vt(e2), yt(e2), bt(e2))), Q(I.metrics, t2);
 }
 function Ot(e2) {
   let t2 = B(`div`, `gp-perf-chart-wrap`);
@@ -503,7 +512,7 @@ function Ot(e2) {
 }
 function kt(e2) {
   let t2 = B(`div`, ``);
-  t2.appendChild(gt(e2)), Q(I.longFrames, K(d(`performance.longFrames`), t2));
+  t2.appendChild(_t(e2)), Q(I.longFrames, K(d(`performance.longFrames`), t2));
 }
 function At(e2) {
   let t2 = e2?.mainThread || {}, n2 = [[d(`performance.longTaskSupport`), t2.longTaskSupported ? d(`performance.available`) : d(`performance.unavailable`)], [d(`performance.mainThreadMetricSource`), t2.longTaskSupported ? d(`performance.longTaskBusyRatio`) : d(`performance.timerDriftEstimate`)], [d(`performance.longTaskTotal`), H(t2.totalLongTaskMs)], [d(`performance.longTaskMax`), H(t2.maxLongTaskMs)], [d(`performance.timerDriftAvg`), H(t2.timerDriftAvgMs)], [d(`performance.timerDriftMax`), H(t2.timerDriftMaxMs)]];
@@ -514,7 +523,7 @@ function jt(e2) {
   Q(I.gameRuntime, K(d(`performance.gameRuntime`), q(i2)));
 }
 function Mt(e2) {
-  let t2 = e2?.sceneScan || {}, n2 = t2.entityCounts || {}, r2 = t2.hpOverlay || {}, i2 = t2.status === `available` ? [[d(`performance.scanScene`), t2.sceneName || d(`performance.unavailable`), Z(t2.sceneFamily)], [d(`performance.nodeCount`), V(t2.nodeCount, ``, 0)], [d(`performance.componentCount`), V(t2.componentCount, ``, 0)], [d(`performance.scanDuration`), H(t2.scanDurationMs), wt(t2.scanDurationMs)], [d(`performance.entityCountSource`), Ct(n2.source)], [d(`performance.plantCount`), xt(n2.plant), St(n2.plant)], [d(`performance.zombieCount`), xt(n2.zombie), St(n2.zombie)], [d(`performance.tombCount`), xt(n2.tomb), St(n2.tomb)], [d(`performance.hpOverlayLabels`), r2.status === `available` ? V(r2.labelCount, ``, 0) : d(`performance.unavailable`)]] : [[d(`performance.scanStatus`), d(`performance.unavailable`)], [d(`performance.scanReason`), Y(t2.reason)]];
+  let t2 = e2?.sceneScan || {}, n2 = t2.entityCounts || {}, r2 = t2.hpOverlay || {}, i2 = t2.status === `available` ? [[d(`performance.scanScene`), t2.sceneName || d(`performance.unavailable`), Z(t2.sceneFamily)], [d(`performance.nodeCount`), V(t2.nodeCount, ``, 0)], [d(`performance.componentCount`), V(t2.componentCount, ``, 0)], [d(`performance.scanDuration`), H(t2.scanDurationMs), wt(t2.scanDurationMs)], [d(`performance.entityCountSource`), Ct(n2.source)], [d(`performance.plantCount`), St(n2.plant), X(n2.plant)], [d(`performance.zombieCount`), St(n2.zombie), X(n2.zombie)], [d(`performance.tombCount`), St(n2.tomb), X(n2.tomb)], [d(`performance.hpOverlayLabels`), r2.status === `available` ? V(r2.labelCount, ``, 0) : d(`performance.unavailable`)]] : [[d(`performance.scanStatus`), d(`performance.unavailable`)], [d(`performance.scanReason`), J(t2.reason)]];
   Q(I.sceneScan, K(d(`performance.sceneScan`), q(i2)));
 }
 function Nt(e2) {
@@ -530,17 +539,17 @@ function Ft(e2) {
   Q(I.environment, K(d(`performance.environment`), q(r2)));
 }
 function It(e2) {
-  let t2 = e2?.native || {}, n2 = t2.process || {}, r2 = t2.system || {}, i2 = t2.os || {}, a2 = t2.app || {}, o2 = n2.cpuStatus || t2.status, s2 = r2.cpuStatus || t2.status, c2 = t2.status === `available` ? [[d(`performance.nativeStatus`), d(`performance.available`), X(t2.status)], [d(`performance.nativeSource`), t2.source || d(`performance.unavailable`)], [d(`performance.osName`), i2.longVersion || i2.name || d(`performance.unavailable`)], [d(`performance.osArch`), i2.arch || d(`performance.unavailable`)], [d(`performance.appVersion`), a2.version || d(`performance.unavailable`)], [d(`performance.processPid`), V(n2.pid, ``, 0)], [d(`performance.processCpu`), o2 === `available` ? U(n2.cpuUsage) : d(`performance.nativeWarming`), X(o2)], [d(`performance.systemCpu`), s2 === `available` ? U(r2.cpuUsage) : d(`performance.nativeWarming`), X(s2)], [d(`performance.processMemory`), W(n2.memoryBytes)], [d(`performance.systemMemory`), ot(r2.usedMemoryBytes, r2.totalMemoryBytes)]] : [[d(`performance.nativeStatus`), d(`performance.unavailable`), X(t2.status)], [d(`performance.nativeSource`), t2.source || `tauri`], [d(`performance.scanReason`), Y(t2.reason)]];
+  let t2 = e2?.native || {}, n2 = t2.process || {}, r2 = t2.system || {}, i2 = t2.os || {}, a2 = t2.app || {}, o2 = n2.cpuStatus || t2.status, s2 = r2.cpuStatus || t2.status, c2 = t2.status === `available` ? [[d(`performance.nativeStatus`), d(`performance.available`), Y(t2.status)], [d(`performance.nativeSource`), t2.source || d(`performance.unavailable`)], [d(`performance.osName`), i2.longVersion || i2.name || d(`performance.unavailable`)], [d(`performance.osArch`), i2.arch || d(`performance.unavailable`)], [d(`performance.appVersion`), a2.version || d(`performance.unavailable`)], [d(`performance.processPid`), V(n2.pid, ``, 0)], [d(`performance.processCpu`), o2 === `available` ? U(n2.cpuUsage) : d(`performance.nativeWarming`), Y(o2)], [d(`performance.systemCpu`), s2 === `available` ? U(r2.cpuUsage) : d(`performance.nativeWarming`), Y(s2)], [d(`performance.processMemory`), W(n2.memoryBytes)], [d(`performance.systemMemory`), ot(r2.usedMemoryBytes, r2.totalMemoryBytes)]] : [[d(`performance.nativeStatus`), d(`performance.unavailable`), Y(t2.status)], [d(`performance.nativeSource`), t2.source || `tauri`], [d(`performance.scanReason`), J(t2.reason)]];
   Q(I.native, K(d(`performance.nativeMetrics`), q(c2)));
 }
 function Lt(e2) {
   let t2 = L || e2, n2 = (t2?.support || {}).logSummary || {}, r2 = t2?.native?.status || `unavailable`, i2 = B(`div`, `gp-perf-report`), a2 = B(`div`, `gp-perf-report-summary`);
-  a2.appendChild(t(d(L ? `performance.reportPinned` : `performance.reportLive`), L ? `info` : `success`)), t2?.sampleContext?.sceneChangedDuringSample && a2.appendChild(t(d(`performance.sceneChangedBadge`), `warning`)), Number(n2.errorCount) > 0 ? a2.appendChild(t(d(`performance.reportErrorsBadge`, n2.errorCount), `error`)) : Number(n2.warningCount) > 0 && a2.appendChild(t(d(`performance.reportWarningsBadge`, n2.warningCount), `warning`)), a2.appendChild(B(`span`, `gp-text-muted`, d(`performance.reportDuration`, V(t2?.sample?.durationMs, `ms`, 0)))), a2.appendChild(B(`span`, `gp-text-muted`, d(`performance.reportFrames`, t2?.fps?.frameCount ?? 0))), i2.appendChild(a2);
-  let o2 = [[d(`performance.reportNativeStatus`), r2 === `available` ? d(`performance.available`) : Y(t2?.native?.reason), X(r2)]];
+  t2?.sampleContext?.sceneChangedDuringSample && a2.appendChild(h(d(`performance.sceneChangedBadge`), `warning`)), a2.appendChild(B(`span`, `gp-text-muted`, d(`performance.reportDuration`, V(t2?.sample?.durationMs, `ms`, 0)))), a2.appendChild(B(`span`, `gp-text-muted`, d(`performance.reportFrames`, t2?.fps?.frameCount ?? 0))), i2.appendChild(a2);
+  let o2 = [[d(`performance.reportNativeStatus`), r2 === `available` ? d(`performance.available`) : J(t2?.native?.reason), Y(r2)]];
   (Number(n2.warningCount) > 0 || Number(n2.errorCount) > 0) && o2.push([d(`performance.reportLogSummary`), d(`performance.reportWarningsErrors`, n2.warningCount ?? 0, n2.errorCount ?? 0)]), i2.appendChild(q(o2)), Q(I.report, K(d(`performance.report`), i2));
 }
 function Rt(e2) {
-  I.modeBadge.textContent = lt(), I.modeBadge.className = `gp-badge ${L ? `gp-badge-info` : `gp-badge-success`}`, I.heroFps.textContent = V(e2?.fps?.avgFps), I.heroMeta.textContent = d(`performance.heroMeta`, H(e2?.fps?.p95FrameMs), e2?.fps?.longFrames?.gt50ms ?? 0, bt(e2));
+  I.modeBadge.textContent = lt(), I.modeBadge.className = `gp-badge ${L ? `gp-badge-info` : `gp-badge-success`}`, I.heroFps.textContent = V(e2?.fps?.avgFps), I.heroMeta.textContent = d(`performance.heroMeta`, H(e2?.fps?.p95FrameMs), e2?.fps?.longFrames?.gt50ms ?? 0, xt(e2));
 }
 function zt() {
   I.sampleBtn && (I.sampleBtn.disabled = R, I.quickBtn.disabled = R, I.resetBtn.disabled = R || !L, I.copyBtn.disabled = R, I.saveBtn.disabled = R, I.sampleStatus.textContent = R ? d(`performance.sampleRunning`) : ``);
@@ -562,23 +571,23 @@ function Vt() {
 async function Ht() {
   let e2 = L || await z.getReportSnapshotAsync(), t2 = JSON.stringify(e2, null, 2);
   try {
-    await Wt(t2), f(d(`performance.reportCopied`));
+    await Wt(t2), g(d(`performance.reportCopied`));
   } catch (e3) {
-    f(d(`performance.reportCopyFailed`) + `: ` + e3, `error`);
+    g(d(`performance.reportCopyFailed`) + `: ` + e3, `error`);
   }
 }
 async function Ut() {
   if (!b()) {
-    f(d(`performance.reportSaveUnavailable`));
+    g(d(`performance.reportSaveUnavailable`));
     return;
   }
-  let e2 = L || await z.getReportSnapshotAsync(), t2 = st();
+  let e2 = L || await z.getReportSnapshotAsync(), n2 = st();
   try {
-    let n2 = await m({ defaultPath: t2, filters: [{ name: `JSON`, extensions: [`json`] }] });
-    if (!n2) return;
-    await te(n2, JSON.stringify(e2, null, 2)), f(d(`performance.reportSaved`));
+    let r2 = await ce({ defaultPath: n2, filters: [{ name: `JSON`, extensions: [`json`] }] });
+    if (!r2) return;
+    await t(r2, JSON.stringify(e2, null, 2)), g(d(`performance.reportSaved`));
   } catch (e3) {
-    f(d(`performance.reportSaveFailed`) + `: ` + e3, `error`);
+    g(d(`performance.reportSaveFailed`) + `: ` + e3, `error`);
   }
 }
 function Wt(e2) {
@@ -600,23 +609,23 @@ function Gt(e2) {
 async function Kt() {
   if (R) return;
   R = true, zt();
-  let e2 = isOverlayOpen();
-  I.sampleStatus.textContent = d(`performance.samplePreparing`), await Gt(650), e2 && hideOverlay(), L = await et(tt), R = false, e2 ? showOverlay() : $(), f(d(`performance.sampleComplete`));
+  let e2 = ie();
+  I.sampleStatus.textContent = d(`performance.samplePreparing`), await Gt(650), e2 && ae(), L = await et(tt), R = false, e2 ? a() : $(), g(d(`performance.sampleComplete`));
 }
 function qt(e2) {
   F = e2, I = {};
   let t2 = B(`div`, `gp-perf-shell`), n2 = B(`div`, `gp-perf-hero`), r2 = B(`div`, `gp-perf-hero-main`), i2 = B(`div`, `gp-perf-title-row`);
-  i2.appendChild(B(`span`, `gp-perf-title`, d(`performance.title`))), I.modeBadge = t(lt(), L ? `info` : `success`), i2.appendChild(I.modeBadge), r2.appendChild(i2);
+  i2.appendChild(B(`span`, `gp-perf-title`, d(`performance.title`))), I.modeBadge = h(lt(), L ? `info` : `success`), i2.appendChild(I.modeBadge), r2.appendChild(i2);
   let a2 = B(`div`, `gp-perf-hero-fps-row`);
   I.heroFps = B(`span`, `gp-perf-hero-fps`, `--`), a2.appendChild(I.heroFps), a2.appendChild(B(`span`, `gp-perf-hero-unit`, `FPS`)), r2.appendChild(a2), I.heroMeta = B(`div`, `gp-perf-hero-meta`, ``), r2.appendChild(I.heroMeta);
   let o2 = B(`div`, `gp-perf-actions`);
-  I.quickBtn = h(d(`performance.quickSnapshot`), async () => Bt(await z.getReportSnapshotAsync()), { small: true }), I.sampleBtn = h(d(`performance.sample30s`), () => {
+  I.quickBtn = m(d(`performance.quickSnapshot`), async () => Bt(await z.getReportSnapshotAsync()), { small: true }), I.sampleBtn = m(d(`performance.sample30s`), () => {
     Kt();
-  }, { small: true, variant: `success` }), I.resetBtn = h(d(`performance.resetSample`), Vt, { small: true }), I.copyBtn = h(d(`performance.copyReport`), () => {
+  }, { small: true, variant: `success` }), I.resetBtn = m(d(`performance.resetSample`), Vt, { small: true }), I.copyBtn = m(d(`performance.copyReport`), () => {
     Ht();
-  }, { small: true }), I.saveBtn = h(d(`performance.saveReport`), () => {
+  }, { small: true }), I.saveBtn = m(d(`performance.saveReport`), () => {
     Ut();
-  }, { small: true }), o2.appendChild(ae(I.quickBtn, I.sampleBtn, I.resetBtn, I.copyBtn, I.saveBtn)), I.sampleStatus = B(`div`, `gp-perf-sample-status`), o2.appendChild(I.sampleStatus), n2.appendChild(r2), n2.appendChild(o2), t2.appendChild(n2), I.metrics = B(`div`), I.chart = B(`div`), I.longFrames = B(`div`), I.sampleContext = B(`div`), I.gameRuntime = B(`div`), I.sceneScan = B(`div`), I.mainThread = B(`div`), I.webgl = B(`div`), I.canvas = B(`div`), I.environment = B(`div`), I.native = B(`div`), I.report = B(`div`), t2.appendChild(I.metrics);
+  }, { small: true }), I.resetBtn.classList.add(`gp-perf-reset`), i2.appendChild(I.resetBtn), o2.appendChild(ne(I.quickBtn, I.sampleBtn, I.copyBtn, I.saveBtn)), I.sampleStatus = B(`div`, `gp-perf-sample-status`), o2.appendChild(I.sampleStatus), n2.appendChild(r2), n2.appendChild(o2), t2.appendChild(n2), I.metrics = B(`div`), I.chart = B(`div`), I.longFrames = B(`div`), I.sampleContext = B(`div`), I.gameRuntime = B(`div`), I.sceneScan = B(`div`), I.mainThread = B(`div`), I.webgl = B(`div`), I.canvas = B(`div`), I.environment = B(`div`), I.native = B(`div`), I.report = B(`div`), t2.appendChild(I.metrics);
   let s2 = B(`div`, `gp-perf-two-col`);
   s2.appendChild(I.chart), s2.appendChild(I.longFrames), t2.appendChild(s2);
   let c2 = B(`div`, `gp-perf-detail-grid`);
@@ -629,10 +638,7 @@ function Yt() {
   z.stop(), F = null, I = {};
 }
 function createPerformanceTab() {
-  return { render(e2) {
-    let t2 = document.createElement(`div`);
-    t2.className = `gp-section`, renderFrameRate(t2), e2.appendChild(t2), qt(e2);
-  }, onActivate: Jt, onDeactivate: Yt };
+  return { render: qt, onActivate: Jt, onDeactivate: Yt };
 }
 export {
   createPerformanceTab

@@ -30,7 +30,19 @@ directly (useful for Steam shortcuts). Both remain in one embedded executable.
   in-game preference changes persist until the profile is saved again.
 - Direct GPNext mod manager, Tools, Settings and Performance shortcuts for the
   bundled game. Folder/ZIP mod installation uses GPNext's existing review flow.
-- Session logs, running-game tracking and Linux GStreamer dependency checks.
+- Session logs with a bounded tail viewer, text search, severity/audio/graphics
+  filters, session selection and copying. Running-game tracking and Linux
+  GStreamer dependency checks remain available.
+- Datapack ZIP/folder import, native drag-and-drop, searchable metadata cards,
+  raster icons and a details dialog. Imports reject unsafe archive paths,
+  symlinks, oversized packs and conflicts without overwriting installed packs.
+  New imports are disabled before discovery in the bundled game's GP-Next.
+- Gardenest at `https://nest.pvzge.com` opens in a separate official-site window
+  for account sign-in, discovering mods, tasks/check-ins and creator publishing.
+  Website downloads offer ZIP import into the selected profile. Credentials are
+  handled by the official website; this is not a native account API integration.
+  Live account and download flows remain unverified while the site is unreachable
+  from the development PC.
 - Linux save editor reads the selected profile's WebKit SQLite database directly.
   Edit the player name and currencies, select among players, import/export JSON,
   or use advanced JSON for other fields. Unknown data is preserved.

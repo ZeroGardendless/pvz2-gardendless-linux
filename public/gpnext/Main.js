@@ -1,134 +1,32 @@
+import { installRendering } from "./runtime/Rendering.js";
 import { connectLauncherOverlay } from "./platform/Launcher.js";
-import "./audio/Bootstrap.js";
-import { renderAudioTuning } from "./audio/AudioTuning.js";
-import { isRecoverySession, renderRecoveryControl } from "./runtime/Recovery.js";
-import { renderPreferenceTransfer } from "./ui/tools/PreferenceTransfer.js";
-import { bindTroubleshooting } from "./ui/tools/Troubleshooting.js";
-import { applyFrameRate } from "./runtime/FrameRate.js";
-import { initWidescreen, renderWidescreenSettings } from "./runtime/Widescreen.js";
-const __vite__mapDeps = (i2, m2 = __vite__mapDeps, d2 = m2.f || (m2.f = ["gpnext/mods/ModConfigurationStorage.js", "gpnext/platform/FileSystem.js", "gpnext/platform/Bridge.js", "gpnext/mods/FreshInstallation.js", "gpnext/mods/PackSnapshot.js", "gpnext/mods/ModConfigurationState.js", "gpnext/mods/ConfigurationModSettings.js", "gpnext/mods/ModOperationPlan.js", "gpnext/core/Logger.js", "gpnext/mods/PackInstallStore.js", "gpnext/mods/ModConfigurationState.js", "gpnext/mods/ConfigurationRecovery.js", "gpnext/mods/PackPreparation.js", "gpnext/mods/FileLoader.js", "gpnext/vendor/ModuleHelpers.js", "gpnext/mods/ModPackPreflight.js", "gpnext/mods/ModVersion.js", "gpnext/core/SettingsStore.js", "gpnext/mods/ModSaveProtection.js", "gpnext/mods/ModSaveProtection.js", "gpnext/core/SettingsStore.js", "gpnext/mods/ModSaveBackupStorage.js", "gpnext/mods/Patcher.js", "gpnext/platform/Dialog.js", "gpnext/data/DataEntityLedger.js", "gpnext/runtime/Engine.js", "gpnext/mods/Isolation.js", "gpnext/runtime/PlantLevelState.js", "gpnext/mods/RestoreUtils.js", "gpnext/ui/Translations.js", "gpnext/ui/Toast.js", "gpnext/runtime/ColdStartHost.js", "gpnext/mods/JsModLoader.js", "gpnext/core/Preload.js", "gpnext/mods/ModApi.js", "gpnext/data/EntityInspector.js", "gpnext/mods/ModControlsRegistry.js", "gpnext/mods/ModSettingsRegistry.js", "gpnext/platform/DeepLink.js", "gpnext/platform/Events.js", "gpnext/ui/tabs/Log.js", "gpnext/ui/Components.js", "gpnext/runtime/Engine.js", "gpnext/runtime/ScrollSensitivity.js", "gpnext/runtime/ScrollSensitivity.js", "gpnext/ui/tabs/Tools.js", "gpnext/ui/tabs/Settings.js", "gpnext/ui/Overlay.js", "gpnext/data/DataDrawer.js", "gpnext/ui/tabs/Pages.js", "gpnext/ui/tabs/Cloud.js", "gpnext/ui/tabs/Cloud.js", "gpnext/ui/tabs/Preferences.js", "gpnext/platform/Opener.js", "gpnext/core/ClientEdition.js", "gpnext/ui/tabs/Experimental.js", "gpnext/ui/tabs/PerformanceSection.js", "gpnext/data/DataStore.js", "gpnext/mods/FileLoader.js", "gpnext/runtime/PlantLevelState.js", "gpnext/mods/JsModEntry.js", "gpnext/runtime/WorldmapJsonPatcher.js", "gpnext/ui/tabs/Patcher.js", "gpnext/ui/tabs/Patcher.js", "gpnext/ui/tabs/Mods.js", "gpnext/ui/tabs/Mods.js", "gpnext/ui/tabs/ModManager.js", "gpnext/ui/tabs/Settings.js", "gpnext/mods/LegacyRuntimeMigration.js", "gpnext/mods/ModPackagePicker.js", "gpnext/ui/tabs/Data.js", "gpnext/platform/DiscordPresence.js", "gpnext/platform/DiscordPresence.js", "gpnext/runtime/CocosStartup.js", "gpnext/runtime/CocosStartup.js"])) => i2.map((i3) => d2[i3]);
+import { initWidescreen } from "./runtime/Widescreen.js";
+const __vite__mapDeps = (i2, m2 = __vite__mapDeps, d2 = m2.f || (m2.f = ["gpnext/platform/DeepLink.js", "gpnext/platform/CloudJson.js", "gpnext/platform/Events.js", "gpnext/ui/tabs/Diagnostics.js", "gpnext/ui/Translations.js", "gpnext/vendor/ModuleHelpers.js", "gpnext/core/SettingsStore.js", "gpnext/platform/CloudPortablePreferences.js", "gpnext/runtime/TrainerShortcuts.js", "gpnext/core/Logger.js", "gpnext/ui/Components.js", "gpnext/ui/tabs/Pages.js", "gpnext/mods/ModTroubleshooting.js", "gpnext/platform/FileSystem.js", "gpnext/platform/Dialog.js", "gpnext/core/ClientEdition.js", "gpnext/mods/GameConfiguration.js", "gpnext/mods/ModDiagnosticReport.js", "gpnext/ui/Toast.js", "gpnext/ui/tabs/Log.js", "gpnext/runtime/ScrollSensitivity.js", "gpnext/ui/tabs/Tools.js", "gpnext/ui/tabs/Settings.js", "gpnext/runtime/HpOverlay.js", "gpnext/data/EntityInspector.js", "gpnext/mods/ModSettingsRegistry.js", "gpnext/ui/Overlay.js", "gpnext/data/DataDrawer.js", "gpnext/mods/FileLoader.js", "gpnext/mods/PackSnapshot.js", "gpnext/ui/tabs/Cheats.js", "gpnext/ui/tabs/Preferences.js", "gpnext/platform/Opener.js", "gpnext/ui/tabs/Experimental.js", "gpnext/runtime/FrameSettings.js", "gpnext/ui/tabs/PerformanceSection.js", "gpnext/mods/Patcher.js", "gpnext/mods/PackPreparation.js", "gpnext/mods/ModOperationPlan.js", "gpnext/mods/ModPackPreflight.js", "gpnext/mods/ModVersion.js", "gpnext/data/DataEntityLedger.js", "gpnext/mods/Isolation.js", "gpnext/runtime/PlantLevelState.js", "gpnext/mods/RestoreUtils.js", "gpnext/data/DataStore.js", "gpnext/mods/JsModLoader.js", "gpnext/GameBootstrap.js", "gpnext/mods/ModApi.js", "gpnext/mods/ModControlsRegistry.js", "gpnext/mods/ModOwnedDataStorage.js", "gpnext/mods/ModOwnedData.js", "gpnext/mods/ModSaveProtection.js", "gpnext/runtime/WorldmapJsonPatcher.js", "gpnext/ui/tabs/Patcher.js", "gpnext/ui/tabs/Mods.js", "gpnext/ui/tabs/ModManager.js", "gpnext/mods/LegacyRuntimeMigration.js", "gpnext/mods/ConfigurationModSettings.js", "gpnext/mods/ModConfigurationState.js", "gpnext/mods/PackInstallStore.js", "gpnext/mods/ModConfigurationStorage.js", "gpnext/mods/ModPackagePicker.js", "gpnext/ui/tabs/Data.js", "gpnext/platform/CloudSaveRequest.js", "gpnext/core/BuildIdentity.js", "gpnext/platform/CloudSelection.js", "gpnext/platform/CloudEnvironment.js", "gpnext/platform/DiscordPresence.js", "gpnext/platform/WindowBridge.js", "gpnext/platform/CloudColdHost.js"])) => i2.map((i3) => d2[i3]);
 import { r as e } from "./vendor/ModuleHelpers.js";
-import { i as t, showStartupFailure } from "./runtime/CocosStartup.js";
-import { t as r } from "./core/Preload.js";
-import { t as i } from "./core/Logger.js";
-import { isJsModdingRuntimeEnabled, setJsModdingRuntimeEnabledFromConsole, d as s, getGpNextFeatureState, isPlantLevelSystemEnabled, getSettings, isWorldMapJsonEnabled } from "./core/SettingsStore.js";
-import { f, u as d } from "./runtime/Engine.js";
-import { a, i as ne, n as p, r as m, t as h } from "./ui/Translations.js";
-import { n as g, t as _ } from "./ui/Toast.js";
-import { r as re } from "./platform/Bridge.js";
-import { n as v } from "./platform/Dialog.js";
-import { u as ie } from "./platform/FileSystem.js";
-import { createOverlay } from "./ui/Overlay.js";
-import { F as y, O as b } from "./mods/FileLoader.js";
-import { t as oe } from "./core/ClientEdition.js";
-import { t as x } from "./mods/Isolation.js";
-import { n as S, t as C } from "./platform/Opener.js";
-import { n as w } from "./mods/ModVersion.js";
-import { i as se } from "./platform/Events.js";
-import "./platform/DiscordPresence.js";
-(function() {
-  let e2 = document.createElement(`link`).relList;
-  if (e2 && e2.supports && e2.supports(`modulepreload`)) return;
-  for (let e3 of document.querySelectorAll(`link[rel="modulepreload"]`)) n2(e3);
-  new MutationObserver((e3) => {
-    for (let t3 of e3) if (t3.type === `childList`) for (let e4 of t3.addedNodes) e4.tagName === `LINK` && e4.rel === `modulepreload` && n2(e4);
-  }).observe(document, { childList: true, subtree: true });
-  function t2(e3) {
-    let t3 = {};
-    return e3.integrity && (t3.integrity = e3.integrity), e3.referrerPolicy && (t3.referrerPolicy = e3.referrerPolicy), e3.crossOrigin === `use-credentials` ? t3.credentials = `include` : e3.crossOrigin === `anonymous` ? t3.credentials = `omit` : t3.credentials = `same-origin`, t3;
-  }
-  function n2(e3) {
-    if (e3.ep) return;
-    e3.ep = true;
-    let n3 = t2(e3);
-    fetch(e3.href, n3);
-  }
-})();
-var T = `.avif`, E = 8, ce = `.webp`;
-function le(e2) {
-  let t2 = e2.macro?.SUPPORT_TEXTURE_FORMATS, n2 = e2.ImageAsset?.extnames;
-  if (!Array.isArray(t2) || !Array.isArray(n2)) throw Error(`Cocos image format tables are unavailable`);
-  if (t2.includes(T) || t2.push(T), n2.includes(T) || n2.push(T), n2.indexOf(T) !== E) throw Error(`Cocos AVIF format index must be ${E}`);
-  let r2 = [[e2.assetManager?.downloader, `_downloaders`], [e2.assetManager?.factory, `_producers`], [e2.assetManager?.parser, `_parsers`]];
-  for (let [e3, t3] of r2) {
-    let n3 = e3?.[t3]?.[ce];
-    if (!e3?.register || typeof n3 != `function`) throw Error(`Cocos AVIF registration source is unavailable: ${t3}`);
-    e3.register(T, n3);
-  }
-}
-var D, O, k, A = false;
-function ue() {
-  return O || null;
-}
-var de = { async beforeEngineImport() {
-  if (isRecoverySession() || !globalThis.window?.__TAURI_INTERNALS__) return;
-  let { createConfigurationStorage: e2 } = await r(async () => {
-    let { createConfigurationStorage: e3 } = await import("./mods/ModConfigurationStorage.js");
-    return { createConfigurationStorage: e3 };
-  }, __vite__mapDeps([0, 1, 2])), t2 = e2(), n2 = await t2.read();
-  if (n2 === null) {
-    let [{ initializeFreshPlatform: e3 }, { createPackInstallStore: i3 }] = await Promise.all([r(() => import("./mods/FreshInstallation.js"), __vite__mapDeps([3, 1, 2, 4, 5, 6, 7, 8])), r(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([9, 1, 2, 4]))]);
-    if (n2 = await e3({ storage: t2, installStore: i3() }), n2 === null) return;
-  }
-  let { createConfigurationState: i2 } = await r(async () => {
-    let { createConfigurationState: e3 } = await import("./mods/ModConfigurationState.js");
-    return { createConfigurationState: e3 };
-  }, __vite__mapDeps([10, 5, 6, 7, 8]));
-  D = i2({ storage: t2 });
-  let a2 = await D.load();
-  if (a2.recovery?.required) {
-    let e3 = Error(`Previous mod startup requires recovery`);
-    throw e3.recoveryAction = async ({ restoreSave: e4 = false } = {}) => {
-      let [{ recoverLastActiveConfiguration: t3 }, { createPackInstallStore: n3 }, { createNativeSaveBoundary: i3 }, { isJsModdingRuntimeEnabled: a3 }, { createNativeSaveBackupStorage: o2 }] = await Promise.all([r(() => import("./mods/ConfigurationRecovery.js"), __vite__mapDeps([11, 12, 13, 14, 1, 2, 4, 8, 7, 15, 16, 17, 18])), r(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([9, 1, 2, 4])), r(() => import("./mods/ModSaveProtection.js"), __vite__mapDeps([19, 18])), r(() => import("./core/SettingsStore.js"), __vite__mapDeps([20, 17])), r(() => import("./mods/ModSaveBackupStorage.js"), __vite__mapDeps([21, 1, 2, 18]))]), s2 = o2();
-      return t3({ configurationState: D, installStore: n3(), saveBoundary: i3({ storage: window.localStorage, backups: s2 }), backups: s2, restoreSave: e4, isFresh: () => !A && !O, assertCandidateAllowed(e5) {
-        if (e5.packs.some((e6) => e6.enabled !== false && e6.meta.js) && !a3()) throw Error(`JavaScript modding is disabled for this session`);
-      } });
-    }, e3.hasSaveBackup = !!a2.recovery.failedTarget.backupId, e3;
-  }
-  A = true;
-}, async afterProject({ cc: e2, signal: t2 }) {
-  if (!D) return;
-  let [{ CorePatcher: n2 }, { createPackInstallStore: i2 }, { createNativeSaveBackupStorage: a2 }, { createNativeSaveBoundary: o2 }, { prepareColdStartHost: s2 }] = await Promise.all([r(() => import("./mods/Patcher.js"), __vite__mapDeps([22, 14, 1, 2, 23, 13, 4, 8, 12, 7, 15, 16, 17, 24, 25, 26, 27, 28, 29, 30])), r(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([9, 1, 2, 4])), r(() => import("./mods/ModSaveBackupStorage.js"), __vite__mapDeps([21, 1, 2, 18])), r(() => import("./mods/ModSaveProtection.js"), __vite__mapDeps([19, 18])), r(() => import("./runtime/ColdStartHost.js"), __vite__mapDeps([31, 14, 4, 13, 1, 2, 8, 12, 7, 15, 16, 17, 6, 24, 25, 32, 33, 34, 35, 36, 18, 37, 30]))]);
-  t2.throwIfAborted();
-  let c2 = a2();
-  O = await s2({ configurationState: D, installStore: i2(), backups: c2, saveBoundary: o2({ storage: window.localStorage, backups: c2 }), patcher: new n2(), cc: e2, signal: t2 });
-}, async beforeRun() {
-  O && await O.publish();
-} };
-async function j(e2) {
-  if (k) return k;
-  if (k = e2, O && O.getPhase() !== `active` && O.getPhase() !== `failed-restart-required`) try {
-    await O.fail(e2);
-  } catch (e3) {
-    k = e3;
-  }
-  let t2 = A ? D?.getState() : null;
-  if (t2?.recovery?.required && (k.recoveryRequiresRestart = true), t2 && !t2.journal && !t2.recovery?.required && !O) {
-    let { revision: e3, ...n2 } = t2.active.configuration, { revision: i2, ...a2 } = t2.desired;
-    JSON.stringify(n2) !== JSON.stringify(a2) && (k.recoveryAction = async () => {
-      let [{ restoreLastActiveSelection: e4 }, { createPackInstallStore: t3 }, { isJsModdingRuntimeEnabled: n3 }] = await Promise.all([r(() => import("./mods/ConfigurationRecovery.js"), __vite__mapDeps([11, 12, 13, 14, 1, 2, 4, 8, 7, 15, 16, 17, 18])), r(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([9, 1, 2, 4])), r(() => import("./core/SettingsStore.js"), __vite__mapDeps([20, 17]))]);
-      return e4({ configurationState: D, installStore: t3(), assertCandidateAllowed(e5) {
-        if (e5.packs.some((e6) => e6.enabled !== false && e6.meta.js) && !n3()) throw Error(`JavaScript modding is disabled for this session`);
-      } });
-    });
-  }
-  return k;
-}
-async function fe() {
-  try {
-    let e2 = document.getElementById(`GameCanvas`);
-    if (!e2?.parentElement) throw Error(`GameCanvas or its parent was not found`);
-    let n2 = e2.parentElement.getBoundingClientRect();
-    e2.width = n2.width, e2.height = n2.height, await t({ phases: de, importEngine: () => window.System.import(`cc`), configureEngine: le, initOptions: (e3) => ({ debugMode: e3.DebugMode.ERROR, settingsPath: `src/settings.json`, overrideSettings: { profiling: { showFPS: false } } }) });
-  } catch (e2) {
-    showStartupFailure(await j(e2));
-  }
-}
-fe();
-var pe = false;
-function me() {
-  if (pe) return;
-  pe = true;
+import { f } from "./platform/CloudJson.js";
+import { l as n, n as r, t as i } from "./GameBootstrap.js";
+import { i as a } from "./platform/Events.js";
+import { u } from "./platform/FileSystem.js";
+import { c as s } from "./mods/GameConfiguration.js";
+import { s as c } from "./runtime/TrainerShortcuts.js";
+import { t as l } from "./core/Logger.js";
+import { isJsModdingRuntimeEnabled, setJsModdingRuntimeEnabledFromConsole, getGpNextFeatureState, isPlantLevelSystemEnabled, getSettings, isWorldMapJsonEnabled } from "./core/SettingsStore.js";
+import { a as ee, g, n as _, o, r as y, t as b, v } from "./ui/Translations.js";
+import { n as S, r as te } from "./ui/Components.js";
+import { n as C, t as w } from "./ui/Toast.js";
+import { n as T } from "./mods/PackSnapshot.js";
+import { h } from "./mods/FileLoader.js";
+import { n as D } from "./ui/Overlay.js";
+import { n as O } from "./mods/ModVersion.js";
+import { n as k } from "./platform/Dialog.js";
+import { t as A } from "./mods/Isolation.js";
+import { t as ne } from "./runtime/FrameSettings.js";
+import { t as re } from "./core/ClientEdition.js";
+import { n as j, t as ie } from "./platform/Opener.js";
+var ae = false;
+function oe() {
+  if (!globalThis.window?.__TAURI_INTERNALS__ || ae) return;
+  ae = true;
   let e2 = HTMLElement.prototype.click;
   HTMLElement.prototype.click = function() {
     if (this instanceof HTMLAnchorElement && this.hasAttribute(`download`) && this.href) {
@@ -136,21 +34,21 @@ function me() {
       if (t2.startsWith(`blob:`)) {
         (async () => {
           try {
-            g(a(`toast.saving`, e3), ``, 4e3);
-            let n2 = await v({ defaultPath: e3, filters: [{ name: `File`, extensions: [e3.includes(`.`) ? e3.split(`.`).pop() : `*`] }] });
-            n2 && (await ie(n2, await (await fetch(t2)).text()), g(a(`toast.saved`, e3), `success`));
+            C(o(`toast.saving`, e3), ``, 4e3);
+            let n2 = new Uint8Array(await (await fetch(t2)).arrayBuffer()), r2 = await k({ defaultPath: e3, filters: [{ name: `File`, extensions: [e3.includes(`.`) ? e3.split(`.`).pop() : `*`] }] });
+            r2 && (await u(r2, n2), C(o(`toast.saved`, e3), `success`));
           } catch (t3) {
-            console.error(`[GP Next] Download intercept failed:`, t3), g(a(`toast.saveFailed`, e3), `error`);
+            console.error(`[GP Next] Download intercept failed:`, t3), C(o(`toast.saveFailed`, e3), `error`);
           }
         })();
         return;
       }
-      g(a(`toast.downloading`, e3), ``);
+      C(o(`toast.downloading`, e3), ``);
     }
     return e2.call(this);
   };
 }
-function he({ patcher: e2, before: t2, after: n2, persist: r2 }) {
+function se({ patcher: e2, before: t2, after: n2, persist: r2 }) {
   let i2 = Promise.resolve();
   return (a2 = `manual-reload`, o2) => {
     let s2 = o2 === void 0 ? void 0 : structuredClone(o2), c2 = i2.then(async () => {
@@ -166,254 +64,447 @@ function he({ patcher: e2, before: t2, after: n2, persist: r2 }) {
     }), c2;
   };
 }
-var ge = e(b(), 1), _e = new i(`daily-level`), ve = new URL(`daily/current.json`, `https://daily-level-api.pvzge.com/api/v1/`).toString(), ye = `https://daily-level-api.pvzge.com`, be = `chunks:///_virtual/KeyListener.ts`, xe = `chunks:///_virtual/levelController.ts`, Se = /* @__PURE__ */ new Set([`preSplashScene`, `splashScene`]), Ce = /* @__PURE__ */ new Set([`inGameScene`, `arcadePlantDecoding`]), we = /* @__PURE__ */ new Set([`mainScene`, `worldMapScene`, `storeScene`, `zenGardenScene`, `almanacScene`]), Te = false, M = false, N = false, P = null, F = { state: `idle`, lastUrl: ``, lastError: ``, pending: false };
-function Ee() {
+var M = e(h(), 1), ce = `chunks:///_virtual/KeyListener.ts`, le = `chunks:///_virtual/levelController.ts`, ue = /* @__PURE__ */ new Set([`preSplashScene`, `splashScene`]), de = /* @__PURE__ */ new Set([`inGameScene`, `arcadePlantDecoding`]), fe = /* @__PURE__ */ new Set([`mainScene`, `worldMapScene`, `storeScene`, `zenGardenScene`, `almanacScene`]), N = false;
+function P() {
+  if (N) return { ok: false, waitable: false, reason: `launch-busy` };
+  let e2 = g();
+  return e2 ? e2 === `inGameScene` ? { ok: false, waitable: false, reason: `in-game` } : de.has(e2) ? { ok: false, waitable: false, reason: `blocked-scene`, sceneName: e2 } : fe.has(e2) ? { ok: true, sceneName: e2 } : ue.has(e2) ? { ok: false, waitable: true, reason: `startup`, sceneName: e2 } : { ok: false, waitable: false, reason: `unsupported-scene`, sceneName: e2 } : { ok: false, waitable: true, reason: `unknown` };
+}
+async function pe(e2 = 15e3) {
+  let t2 = Date.now();
+  for (; Date.now() - t2 < e2; ) {
+    let e3 = P();
+    if (e3.ok || !e3.waitable) return e3;
+    await new Promise((e4) => setTimeout(e4, 250));
+  }
+  return P();
+}
+async function me(e2 = 1e4) {
+  let t2 = Date.now();
+  for (; Date.now() - t2 < e2; ) {
+    let e3 = v(ce, `KeyListener`), t3 = v(le, `LevelPlay`);
+    if (e3?.darken && e3?.GoToGame && t3) return { KeyListener: e3, LevelPlay: t3 };
+    await new Promise((e4) => setTimeout(e4, 200));
+  }
+  throw Error(`Level runtime exports are unavailable`);
+}
+function he(e2, t2) {
+  let n2 = e2?.objects;
+  if (!Array.isArray(n2) || n2.length === 0) throw Error(`Level JSON has no objects array`);
+  if (!n2.some((e3) => e3?.objclass === `LevelDefinition`)) throw Error(`Level JSON has no LevelDefinition`);
+  if (typeof t2?.getLevelDefinition == `function` && !t2.getLevelDefinition(n2)?.objdata) throw Error(`Level definition cannot be resolved`);
+  return n2;
+}
+async function ge(e2, t2) {
+  let n2 = P();
+  if (!n2.ok) throw Error(n2.reason);
+  N = true;
+  try {
+    let { KeyListener: n3, LevelPlay: r2 } = t2;
+    r2.levelData = e2, r2.thisLevelsID = [], r2.nextLevelsID = [], await n3.darken(), r2.thisLevelsID = [], await n3.GoToGame([r2.levelData]);
+  } finally {
+    N = false;
+  }
+}
+var _e = new l(`daily-level`), ve = new URL(`daily/current.json`, `https://daily-level-api.pvzge.com/api/v1/`).toString(), ye = `https://daily-level-api.pvzge.com`, be = false, F = false, I = false, L = null, R = { state: `idle`, lastUrl: ``, lastError: ``, pending: false };
+function xe() {
   return typeof window < `u` && (window.__TAURI_INTERNALS__ || window.__TAURI__);
 }
-function I(e2) {
-  F = { ...F, ...e2, pending: !!P };
+function z(e2) {
+  R = { ...R, ...e2, pending: !!L };
 }
-function De(e2) {
+function Se(e2) {
   return Array.isArray(e2) ? e2.map(String).filter(Boolean) : e2 == null ? [] : [String(e2)].filter(Boolean);
 }
-function Oe(e2) {
+function Ce(e2) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(e2 || ``)) return null;
   let t2 = /* @__PURE__ */ new Date(`${e2}T00:00:00.000Z`);
   return Number.isNaN(t2.getTime()) ? null : t2.toISOString().slice(0, 10) === e2 ? e2 : null;
 }
-function ke(e2) {
+function we(e2) {
   let t2;
   try {
     t2 = new URL(String(e2 || ``));
   } catch {
     return { ok: false, reason: `bad-url` };
   }
-  let n2 = t2.pathname.replace(/\/+$/, ``), r2 = Oe(t2.searchParams.get(`date`) || ``), i2 = Number(t2.searchParams.get(`slot`)), a2 = t2.searchParams.get(`slug`) || ``;
+  let n2 = t2.pathname.replace(/\/+$/, ``), r2 = Ce(t2.searchParams.get(`date`) || ``), i2 = Number(t2.searchParams.get(`slot`)), a2 = t2.searchParams.get(`slug`) || ``;
   return t2.protocol === `pvzge:` ? t2.hostname === `daily-level` ? n2 === `/open` ? r2 ? !Number.isInteger(i2) || i2 < 0 ? { ok: false, reason: `slot` } : /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(a2) ? { ok: true, rawUrl: String(e2), date: r2, slot: i2, slug: a2 } : { ok: false, reason: `slug` } : { ok: false, reason: `date` } : { ok: false, reason: `path` } : { ok: false, reason: `host` } : { ok: false, reason: `scheme` };
 }
-function Ae(e2) {
-  P = e2, I({ state: `queued`, lastUrl: e2.rawUrl, lastError: `` });
+function Te(e2) {
+  L = e2, z({ state: `queued`, lastUrl: e2.rawUrl, lastError: `` });
 }
-function L() {
-  let e2 = d();
-  return e2 ? e2 === `inGameScene` ? { ok: false, waitable: false, reason: `in-game` } : Ce.has(e2) ? { ok: false, waitable: false, reason: `blocked-scene`, sceneName: e2 } : we.has(e2) ? { ok: true, sceneName: e2 } : Se.has(e2) ? { ok: false, waitable: true, reason: `startup`, sceneName: e2 } : { ok: false, waitable: false, reason: `unsupported-scene`, sceneName: e2 } : { ok: false, waitable: true, reason: `unknown` };
-}
-async function je(e2 = 15e3) {
-  let t2 = Date.now();
-  for (; Date.now() - t2 < e2; ) {
-    let e3 = L();
-    if (e3.ok || !e3.waitable) return e3;
-    await new Promise((e4) => setTimeout(e4, 250));
-  }
-  return L();
-}
-async function Me(e2 = 1e4) {
-  let t2 = Date.now();
-  for (; Date.now() - t2 < e2; ) {
-    let e3 = f(be, `KeyListener`), t3 = f(xe, `LevelPlay`);
-    if (e3?.darken && e3?.GoToGame && t3) return { KeyListener: e3, LevelPlay: t3 };
-    await new Promise((e4) => setTimeout(e4, 200));
-  }
-  throw Error(`Daily Level runtime exports are unavailable`);
-}
-async function Ne(e2) {
+async function Ee(e2) {
   let t2 = await fetch(e2, { cache: `no-store` });
   if (!t2.ok) throw Error(`${t2.status} ${t2.statusText}`);
-  return ge.default.parse(await t2.text());
+  return M.default.parse(await t2.text());
 }
-function Pe(e2, t2) {
+function De(e2, t2) {
   let n2 = e2?.daily, r2 = n2?.level;
   return !n2 || !r2 ? false : n2.date === t2.date && Number(n2.slot) === t2.slot && r2.slug === t2.slug;
 }
-function Fe(e2, t2) {
+function Oe(e2, t2) {
   let n2 = new URL(String(e2?.rawUrl || ``), `${ye}/`), r2 = `/levels/${t2}/`;
   if (n2.origin !== ye || !n2.pathname.startsWith(r2)) throw Error(`Daily Level raw URL is outside the API level path`);
   return n2.toString();
 }
-function Ie(e2, t2) {
-  let n2 = e2?.objects;
-  if (!Array.isArray(n2) || n2.length === 0) throw Error(`Daily Level JSON has no objects array`);
-  if (!n2.some((e3) => e3?.objclass === `LevelDefinition`)) throw Error(`Daily Level JSON has no LevelDefinition`);
-  if (typeof t2?.getLevelDefinition == `function` && !t2.getLevelDefinition(n2)?.objdata) throw Error(`Daily Level definition cannot be resolved`);
-  return n2;
-}
-function Le(e2) {
+function ke(e2) {
   if (e2.reason === `in-game`) {
-    g(a(`dailyLevel.exitCurrentLevel`), `warning`);
+    C(o(`dailyLevel.exitCurrentLevel`), `warning`);
     return;
   }
-  g(a(`dailyLevel.sceneUnavailable`), `warning`);
+  C(o(`dailyLevel.sceneUnavailable`), `warning`);
 }
-async function Re(e2, t2) {
-  let { KeyListener: n2, LevelPlay: r2 } = t2;
-  r2.levelData = e2, r2.thisLevelsID = [], r2.nextLevelsID = [], await n2.darken(), r2.thisLevelsID = [], await n2.GoToGame([r2.levelData]);
+async function Ae(e2) {
+  z({ state: `validating`, lastUrl: e2.rawUrl, lastError: `` });
+  let t2 = await pe();
+  if (!t2.ok) return z({ state: `blocked`, lastError: t2.reason }), ke(t2), { ok: false, reason: t2.reason };
+  let n2 = await Ee(ve);
+  if (!De(n2, e2)) return z({ state: `stale`, lastError: `daily-level-refreshed` }), C(o(`dailyLevel.refreshed`), `warning`), { ok: false, reason: `daily-level-refreshed` };
+  let r2 = await me(), i2 = he(await Ee(Oe(n2.daily.level, e2.slug)), r2.LevelPlay), a2 = P();
+  return a2.ok ? (z({ state: `launching`, lastError: `` }), C(o(`dailyLevel.opening`)), await ge(i2, r2), z({ state: `launched`, lastError: `` }), { ok: true }) : (z({ state: `blocked`, lastError: a2.reason }), ke(a2), { ok: false, reason: a2.reason });
 }
-async function ze(e2) {
-  I({ state: `validating`, lastUrl: e2.rawUrl, lastError: `` });
-  let t2 = await je();
-  if (!t2.ok) return I({ state: `blocked`, lastError: t2.reason }), Le(t2), { ok: false, reason: t2.reason };
-  let n2 = await Ne(ve);
-  if (!Pe(n2, e2)) return I({ state: `stale`, lastError: `daily-level-refreshed` }), g(a(`dailyLevel.refreshed`), `warning`), { ok: false, reason: `daily-level-refreshed` };
-  let r2 = await Me(), i2 = Ie(await Ne(Fe(n2.daily.level, e2.slug)), r2.LevelPlay), a2 = L();
-  return a2.ok ? (I({ state: `launching`, lastError: `` }), g(a(`dailyLevel.opening`)), await Re(i2, r2), I({ state: `launched`, lastError: `` }), { ok: true }) : (I({ state: `blocked`, lastError: a2.reason }), Le(a2), { ok: false, reason: a2.reason });
-}
-async function R() {
-  if (N || !M || !P) return;
-  let e2 = P;
-  P = null, N = true;
+async function B() {
+  if (I || !F || !L) return;
+  let e2 = L;
+  L = null, I = true;
   try {
-    await ze(e2);
+    await Ae(e2);
   } catch (e3) {
-    I({ state: `failed`, lastError: e3 instanceof Error ? e3.message : String(e3) }), _e.error(`Daily Level deep link failed: ` + e3), g(a(`dailyLevel.loadFailed`), `error`);
+    z({ state: `failed`, lastError: e3 instanceof Error ? e3.message : String(e3) }), _e.error(`Daily Level deep link failed: ` + e3), C(o(`dailyLevel.loadFailed`), `error`);
   } finally {
-    N = false, P && R();
+    I = false, L && B();
   }
 }
-async function Be() {
-  if (!Te) {
-    if (Te = true, !Ee()) {
-      I({ state: `unavailable`, lastError: `tauri-runtime-unavailable` });
+async function je() {
+  if (!be) {
+    if (be = true, !xe()) {
+      z({ state: `unavailable`, lastError: `tauri-runtime-unavailable` });
       return;
     }
     try {
-      let e2 = await r(() => import("./platform/DeepLink.js"), __vite__mapDeps([38, 2, 39])), t2 = await e2.getCurrent();
-      for (let e3 of De(t2)) await z(e3);
+      let e2 = await n(() => import("./platform/DeepLink.js"), __vite__mapDeps([0, 1, 2])), t2 = await e2.getCurrent();
+      for (let e3 of Se(t2)) await V(e3);
       await e2.onOpenUrl(async (e3) => {
-        for (let t3 of De(e3)) await z(t3);
-      }), I({ state: `listening`, lastError: `` });
+        for (let t3 of Se(e3)) await V(t3);
+      }), z({ state: `listening`, lastError: `` });
     } catch (e2) {
-      I({ state: `failed`, lastError: e2 instanceof Error ? e2.message : String(e2) }), _e.warn(`Daily Level deep-link listener unavailable: ` + e2);
+      z({ state: `failed`, lastError: e2 instanceof Error ? e2.message : String(e2) }), _e.warn(`Daily Level deep-link listener unavailable: ` + e2);
     }
   }
 }
-async function z(e2) {
-  let t2 = ke(e2);
-  return t2.ok ? M ? (Ae(t2), await R(), { ok: true }) : (Ae(t2), { ok: true, queued: true }) : (I({ state: `ignored`, lastUrl: String(e2 || ``), lastError: t2.reason }), { ok: false, reason: t2.reason });
+async function V(e2) {
+  let t2 = we(e2);
+  return t2.ok ? F ? (Te(t2), await B(), { ok: true }) : (Te(t2), { ok: true, queued: true }) : (z({ state: `ignored`, lastUrl: String(e2 || ``), lastError: t2.reason }), { ok: false, reason: t2.reason });
 }
-function Ve() {
-  M = true, R();
+function Me() {
+  F = true, B();
 }
-function He() {
-  return { ...F };
+function Ne() {
+  return { ...R };
 }
-var B = new i(`update-checker`), Ue = `https://pvzge.com/jsons/gp-next-info.json`, We = 8e3, V = [], H = null, Ge = false, U = { status: `idle`, currentVersion: y, latestVersion: ``, checkedAt: 0, error: `` };
-function Ke() {
+var Pe = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+function Fe(e2) {
+  let t2;
+  try {
+    t2 = new URL(e2);
+  } catch {
+    return null;
+  }
+  if (t2.protocol !== `pvzge:` || t2.hostname !== `nest`) return null;
+  if (t2.pathname !== `/import` || t2.username || t2.password || t2.port || t2.hash || [...t2.searchParams.keys()].length !== 1 || !Pe.test(t2.searchParams.get(`version`) || ``)) throw Error(`NEST_INTENT`);
+  return { versionId: t2.searchParams.get(`version`) };
+}
+function Ie(e2, t2) {
+  if (e2?.protocolVersion !== 1 || e2.versionId !== t2 || !Pe.test(e2.projectId?.replace(/^prj_/, ``) || ``) || !e2.projectId.startsWith(`prj_`) || typeof e2.name != `string` || !e2.name || typeof e2.version != `string` || !e2.version || !/^[a-f0-9]{64}$/.test(e2.sha256 || ``) || !Number.isSafeInteger(e2.byteLength) || e2.byteLength <= 0) throw Error(`NEST_DESCRIPTOR`);
+  let n2 = e2.type === `level` && [`json`, `json5`].includes(e2.format), r2 = [`datapack`, `mod`].includes(e2.type) && e2.format === `zip`;
+  if (!n2 && !r2) throw Error(`NEST_UNSUPPORTED_FORMAT`);
+  if (e2.byteLength > (n2 ? 1e7 : 5e7)) throw Error(`NEST_LENGTH`);
+  if (!Number.isFinite(Date.parse(e2.expiresAt))) throw Error(`NEST_DESCRIPTOR`);
+  return e2;
+}
+async function Le(e2, t2) {
+  let n2 = e2 instanceof Uint8Array ? e2 : new Uint8Array(e2);
+  if (n2.length < 4) throw Error(`NEST_DESCRIPTOR`);
+  let r2 = new DataView(n2.buffer, n2.byteOffset, n2.byteLength).getUint32(0, true);
+  if (r2 > 16384 || r2 + 4 > n2.length) throw Error(`NEST_DESCRIPTOR`);
+  let i2 = Ie(JSON.parse(new TextDecoder(`utf-8`, { fatal: true }).decode(n2.subarray(4, 4 + r2))), t2), a2 = n2.slice(4 + r2);
+  if (a2.length !== i2.byteLength) throw Error(`NEST_LENGTH`);
+  let o2 = new Uint8Array(await crypto.subtle.digest(`SHA-256`, a2));
+  if (Array.from(o2, (e3) => e3.toString(16).padStart(2, `0`)).join(``) !== i2.sha256) throw Error(`NEST_HASH`);
+  return { descriptor: i2, bytes: a2 };
+}
+function Re(e2, t2) {
+  if (e2.length > 1e7) throw Error(`NEST_LENGTH`);
+  let n2 = new TextDecoder(`utf-8`, { fatal: true }).decode(e2), r2 = 0, i2 = ``, a2 = false, o2 = false;
+  for (let e3 = 0; e3 < n2.length; e3++) {
+    let t3 = n2[e3], s3 = n2[e3 + 1];
+    if (a2) {
+      /[\n\r\u2028\u2029]/.test(t3) && (a2 = false);
+      continue;
+    }
+    if (o2) {
+      t3 === `*` && s3 === `/` && (o2 = false, e3++);
+      continue;
+    }
+    if (i2) {
+      t3 === `\\` ? e3++ : t3 === i2 && (i2 = ``);
+      continue;
+    }
+    if (t3 === `/` && s3 === `/`) {
+      a2 = true, e3++;
+      continue;
+    }
+    if (t3 === `/` && s3 === `*`) {
+      o2 = true, e3++;
+      continue;
+    }
+    if (t3 === `"` || t3 === `'`) {
+      i2 = t3;
+      continue;
+    }
+    if ((t3 === `{` || t3 === `[`) && ++r2 > 64) throw Error(`NEST_LEVEL_DEPTH`);
+    (t3 === `}` || t3 === `]`) && r2--;
+  }
+  let s2 = t2 === `json` ? JSON.parse(n2) : M.default.parse(n2), c2 = [s2];
+  for (let e3 = 0; e3 < c2.length; e3++) {
+    let t3 = c2[e3];
+    if (typeof t3 == `number` && !Number.isFinite(t3)) throw Error(`NEST_LEVEL_NUMBER`);
+    if (t3 && typeof t3 == `object`) for (let e4 of Object.values(t3)) {
+      if (c2.length >= 2e5) throw Error(`NEST_LEVEL_NODES`);
+      c2.push(e4);
+    }
+  }
+  return s2;
+}
+function ze({ download: e2, snapshot: t2, prepareInstall: n2, reviewInstall: r2, waitScene: i2, getScene: a2, runtime: o2, validateLevel: s2, launchLevel: c2, notify: l2 }) {
+  let u2 = false, d2 = null, f2 = null, p2 = /* @__PURE__ */ new Set(), m2 = { state: `idle`, versionId: null, error: `` }, h2 = (e3, t3 = ``) => {
+    m2 = { state: e3, versionId: d2?.versionId || m2.versionId, error: t3 }, l2?.({ ...m2 });
+  };
+  async function ee2() {
+    if (!u2 || !d2 || f2) return;
+    let l3 = d2;
+    f2 = (async () => {
+      try {
+        h2(`downloading`);
+        let { descriptor: u3, bytes: d3 } = await e2(l3.versionId);
+        if (Ie(u3, l3.versionId), u3.type === `level`) {
+          let e3 = await i2();
+          if (!e3.ok) throw Error(e3.reason);
+          let t3 = await o2(), n3 = s2(Re(d3, u3.format), t3.LevelPlay), r3 = a2();
+          if (!r3.ok) throw Error(r3.reason);
+          h2(`launching`), await c2(n3, t3), h2(`launched`);
+        } else {
+          let e3 = await n2(await t2(d3), { forceDisabled: true });
+          if (h2(`reviewing`), !await r2(e3)) {
+            h2(`cancelled`);
+            return;
+          }
+          h2(`installed`);
+        }
+        p2.add(l3.versionId), p2.size > 32 && p2.delete(p2.values().next().value);
+      } catch (e3) {
+        h2(`failed`, e3.message || String(e3));
+      } finally {
+        d2 = null, f2 = null;
+      }
+    })(), await f2;
+  }
+  return { async handle(e3) {
+    let t3;
+    try {
+      t3 = Fe(e3);
+    } catch (e4) {
+      return h2(`failed`, e4.message), { ok: false, reason: e4.message };
+    }
+    return t3 ? p2.has(t3.versionId) || d2?.versionId === t3.versionId ? { ok: true, duplicate: true } : d2 || f2 ? { ok: false, reason: `NEST_BUSY` } : (d2 = t3, m2.versionId = t3.versionId, h2(`queued`), u2 && await ee2(), { ok: m2.state !== `failed`, queued: !u2 }) : { ok: false, ignored: true };
+  }, async setReady() {
+    u2 = true, await ee2();
+  }, status: () => ({ ...m2 }) };
+}
+async function Be(e2) {
+  return T(await new Promise((t2, n2) => {
+    let r2 = new Worker(new URL(`/gpnext/core/NestPackWorker.js`, `` + import.meta.url), { type: `module` }), i2 = (e3, i3) => {
+      clearTimeout(a2), r2.terminate(), e3 ? n2(e3) : t2(i3);
+    }, a2 = setTimeout(() => i2(Error(`NEST_ZIP_TIMEOUT`)), 3e4);
+    r2.onerror = () => i2(Error(`NEST_ZIP_WORKER`)), r2.onmessage = ({ data: e3 }) => e3.error ? i2(Error(e3.error)) : i2(null, e3.entries);
+    let o2 = e2.slice();
+    r2.postMessage(o2, [o2.buffer]);
+  }));
+}
+function Ve(e2) {
+  return new Promise((t2) => {
+    let n2 = document.createElement(`dialog`);
+    n2.className = `gp-nest-review`;
+    let r2 = document.createElement(`style`);
+    r2.textContent = `.gp-nest-review { color:var(--gp-text-primary,#f1f5f9); background:var(--gp-panel,#1c1c1e); border:1px solid var(--gp-border,#48484a); border-radius:12px; padding:24px; max-width:min(520px,90vw); font:14px/1.6 var(--gp-font-ui); color-scheme:var(--gp-color-scheme,dark); overflow-wrap:anywhere; } .gp-nest-review::backdrop { background:#0008; } .gp-nest-review .gp-btn { padding:8px 14px; border:1px solid var(--gp-border,#636366); border-radius:7px; color:inherit; background:var(--gp-surface,#343438); cursor:pointer; } .gp-nest-review .gp-btn:disabled { opacity:.5; } .gp-nest-review .gp-btn-row { display:flex; gap:10px; flex-wrap:wrap; } .gp-nest-review h2 { font-size:18px; margin:0 0 14px; }`;
+    let i2 = (e3, t3 = `p`) => {
+      let r3 = document.createElement(t3);
+      return r3.textContent = e3, n2.append(r3), r3;
+    }, a2 = e2.preview;
+    i2(o(`nestImport.review`), `h2`), i2(a2.name + ` \xB7 ` + a2.version), a2.update && i2(o(`installation.previous`, a2.previousVersion)), i2(o(`nestImport.disabled`)), a2.containsScripts && i2(o(a2.requiresTrust ? `installation.trustUpdate` : `installation.trusted`));
+    for (let e3 of a2.requirements || []) e3.status !== `ready` && i2(`${e3.name || e3.id}: ${o(`requirements.` + e3.status)}`);
+    for (let e3 of a2.warnings || []) i2(e3);
+    let o2 = false, s2 = (e3) => {
+      n2.close(), n2.remove(), r2.remove(), t2(e3);
+    }, c2 = S(o(`migration.cancel`), () => s2(false)), l2 = S(o(a2.requiresTrust ? `installation.trustAndUpdate` : a2.update ? `installation.update` : `installation.install`), async () => {
+      if (!o2) {
+        o2 = true, l2.disabled = c2.disabled = true;
+        try {
+          await e2.commit({ trustedContentDigest: a2.contentDigest }), s2(true);
+        } catch (e3) {
+          i2(e3.message || String(e3)), l2.remove(), o2 = false, c2.disabled = false;
+        }
+      }
+    });
+    n2.append(te(l2, c2)), n2.addEventListener(`cancel`, (e3) => {
+      e3.preventDefault(), o2 || s2(false);
+    }), document.head.append(r2), document.body.append(n2), n2.showModal(), l2.focus();
+  });
+}
+var He = null, Ue = false, We = new l(`nest-import`), Ge = ze({ download: async (e2) => Le(await f(`download_nest_import`, { versionId: e2 }), e2), snapshot: Be, prepareInstall: (e2, t2) => {
+  if (!He) throw Error(`NEST_PLATFORM_UNAVAILABLE`);
+  return He.prepareInstall(e2, t2);
+}, reviewInstall: Ve, waitScene: pe, getScene: P, runtime: me, validateLevel: he, launchLevel: ge, notify: (e2) => {
+  e2.state === `downloading` && C(o(`nestImport.downloading`)), e2.state === `installed` && C(o(`nestImport.installed`)), e2.state === `launched` && C(o(`nestImport.launched`)), e2.state === `failed` && (We.warn(`Import failed: ` + e2.error), C([`in-game`, `blocked-scene`, `unsupported-scene`, `launch-busy`].includes(e2.error) ? o(`nestImport.exitLevel`) : o(`nestImport.failed`, e2.error), `error`));
+} });
+async function Ke(e2) {
+  let t2 = await Ge.handle(e2);
+  return t2.reason === `NEST_BUSY` && C(o(`nestImport.busy`), `warning`), t2;
+}
+var qe = Ge.status;
+function Je(e2) {
+  return He = e2, Ge.setReady();
+}
+async function Ye() {
+  if (Ue || !window.__TAURI_INTERNALS__) return;
+  Ue = true;
+  let e2 = await n(() => import("./platform/DeepLink.js"), __vite__mapDeps([0, 1, 2]));
+  await e2.onOpenUrl(async (e3) => {
+    for (let t2 of e3) await Ke(t2);
+  });
+  for (let t2 of await e2.getCurrent() || []) await Ke(t2);
+}
+var H = new l(`update-checker`), Xe = `https://pvzge.com/jsons/gp-next-info.json`, Ze = 8e3, U = [], W = null, Qe = false, $e = { status: `idle`, currentVersion: s, latestVersion: ``, checkedAt: 0, error: `` };
+function et() {
   let e2 = G();
-  for (let t2 of V.slice()) try {
+  for (let t2 of U.slice()) try {
     t2(e2);
   } catch {
   }
 }
-function W(e2) {
-  U = { ...U, ...e2 }, Ke();
+function tt(e2) {
+  $e = { ...$e, ...e2 }, et();
 }
 function G() {
-  return { ...U };
+  return { ...$e };
 }
-function qe(e2) {
-  return typeof e2 == `function` ? (V.push(e2), e2(G()), () => {
-    let t2 = V.indexOf(e2);
-    t2 !== -1 && V.splice(t2, 1);
+function nt(e2) {
+  return typeof e2 == `function` ? (U.push(e2), e2(G()), () => {
+    let t2 = U.indexOf(e2);
+    t2 !== -1 && U.splice(t2, 1);
   }) : () => {
   };
 }
-function Je(e2 = h()) {
-  return p(`download`, e2);
+function rt(e2 = b()) {
+  return _(`download`, e2);
 }
-async function Ye() {
-  let e2 = Je();
+async function it() {
+  let e2 = rt();
   try {
-    return await S(e2), true;
+    return await j(e2), true;
   } catch (t2) {
-    B.warn(`Failed to open external browser via Tauri opener: ${t2}`);
+    H.warn(`Failed to open external browser via Tauri opener: ${t2}`);
     try {
       if (window.electron?.shell?.openExternal) return await window.electron.shell.openExternal(e2), true;
     } catch (e3) {
-      B.warn(`Fallback opener failed: ${e3}`);
+      H.warn(`Fallback opener failed: ${e3}`);
     }
     return window.open(e2, `_blank`, `noopener,noreferrer`), true;
   }
 }
-async function Xe(e2 = {}) {
+async function at(e2 = {}) {
   let t2 = e2.manual === true;
-  if (H) return H;
-  W({ status: `checking`, error: `` });
+  if (W) return W;
+  tt({ status: `checking`, error: `` });
   let n2 = (async () => {
-    let e3 = new AbortController(), n3 = setTimeout(() => e3.abort(), We);
+    let e3 = new AbortController(), n3 = setTimeout(() => e3.abort(), Ze);
     try {
-      let n4 = await fetch(`${Ue}?t=${Date.now()}`, { cache: `no-store`, signal: e3.signal });
+      let n4 = await fetch(`${Xe}?t=${Date.now()}`, { cache: `no-store`, signal: e3.signal });
       if (!n4.ok) throw Error(`HTTP ${n4.status}`);
       let r2 = await n4.json(), i2 = String(r2?.version || ``).trim();
       if (!i2) throw Error(`Missing version field`);
-      let a2 = w(i2, y) > 0;
-      return W({ status: a2 ? `update-available` : `up-to-date`, latestVersion: i2, checkedAt: Date.now(), error: `` }), a2 ? (!Ge || t2) && (g(a(`toast.updateAvailable`, i2), ``, 5e3), Ge = true) : t2 && g(a(`toast.updateUpToDate`, y), `success`), B.info(`Update check complete: local=${y}, latest=${i2}, newer=${a2}`), G();
+      let a2 = O(i2, s) > 0;
+      return tt({ status: a2 ? `update-available` : `up-to-date`, latestVersion: i2, checkedAt: Date.now(), error: `` }), a2 ? (!Qe || t2) && (C(o(`toast.updateAvailable`, i2), ``, 5e3), Qe = true) : t2 && C(o(`toast.updateUpToDate`, s), `success`), H.info(`Update check complete: local=${s}, latest=${i2}, newer=${a2}`), G();
     } catch (e4) {
       let n4 = e4?.name === `AbortError` ? `timeout` : String(e4?.message || e4);
-      return W({ status: `error`, checkedAt: Date.now(), error: n4 }), B.warn(`Update check failed: ${n4}`), t2 && g(a(`toast.updateCheckFailed`), `error`), G();
+      return tt({ status: `error`, checkedAt: Date.now(), error: n4 }), H.warn(`Update check failed: ${n4}`), t2 && C(o(`toast.updateCheckFailed`), `error`), G();
     } finally {
-      clearTimeout(n3), H = null;
+      clearTimeout(n3), W = null;
     }
   })();
-  return H = n2, n2;
+  return W = n2, n2;
 }
-var K = new i(`main`), Ze = () => s(getSettings().overlayHotkey), Qe = `gp-next://menu-action`, $e = `JS modding is currently in limited rollout testing. All functionality may be removed or changed in the future. Loading custom JS scripts may affect game runtime logic and save data, and may create security risks. Only obtain JS mod packages from trusted sources, and inspect script contents before enabling them.`, q = { toggleOverlay: `gpn-menu-toggle-overlay`, reloadPatches: `gpn-menu-reload-patches`, openPatchFolder: `gpn-menu-open-patch-folder`, reloadGame: `gpn-menu-reload-game`, checkUpdates: `gpn-menu-check-updates`, openGpNextGuide: `gpn-menu-open-gp-next-guide`, openDownload: `gpn-menu-open-download`, openWebsite: `gpn-menu-open-website`, openDiscord: `gpn-menu-open-discord` }, et = ``;
+var K = new l(`main`), ot = () => c(getSettings().overlayHotkey), st = `gp-next://menu-action`, ct = `JS modding executes third-party code without a security sandbox. Loading custom JS scripts may affect game runtime logic and save data, and may create security risks. Only obtain JS mod packages from trusted sources, and inspect script contents before enabling them.`, q = { toggleOverlay: `gpn-menu-toggle-overlay`, reloadPatches: `gpn-menu-reload-patches`, openPatchFolder: `gpn-menu-open-patch-folder`, reloadGame: `gpn-menu-reload-game`, checkUpdates: `gpn-menu-check-updates`, openGpNextGuide: `gpn-menu-open-gp-next-guide`, openDownload: `gpn-menu-open-download`, openWebsite: `gpn-menu-open-website`, openDiscord: `gpn-menu-open-discord` }, lt = ``;
 K.info(`GP-Next loading...`);
-var J = getSettings();
-_(), Be().catch((e2) => K.debug(`Daily Level deep-link listener skipped: ` + e2)), me();
-var Y = createOverlay();
-Y.setVersion(y), Y.setHotkey(J.overlayHotkey), Y.bindUpdateActions({ onCheck: () => Xe({ manual: true }), onOpen: () => Ye() }), qe((e2) => Y.setUpdateState(e2)), Y.updateStatus(a(`header.status.waiting`)), Xe().catch((e2) => K.debug(`Startup update check skipped: ` + e2));
-function X(e2) {
-  e2 && (e2.editsCount > 0 ? Y.updateStatusKey(`header.status.compactWithEdits`, e2.packs.length, e2.loaded.length, e2.editsCount) : Y.updateStatusKey(`header.status.compact`, e2.packs.length, e2.loaded.length));
+var ut = getSettings();
+w(), je().catch((e2) => K.debug(`Daily Level deep-link listener skipped: ` + e2)), Ye().catch(() => K.warn(`Nest deep-link listener unavailable`)), oe();
+var J = D();
+connectLauncherOverlay(J);
+initWidescreen();
+J.setVersion(s), J.setHotkey(ut.overlayHotkey), J.bindUpdateActions({ onCheck: () => at({ manual: true }), onOpen: () => it() }), nt((e2) => J.setUpdateState(e2)), J.updateStatus(o(`header.status.waiting`)), at().catch((e2) => K.debug(`Startup update check skipped: ` + e2));
+function Y(e2) {
+  e2 && (e2.editsCount > 0 ? J.updateStatusKey(`header.status.compactWithEdits`, e2.packs.length, e2.loaded.length, e2.editsCount) : J.updateStatusKey(`header.status.compact`, e2.packs.length, e2.loaded.length));
 }
-function tt() {
+function dt() {
   return typeof window < `u` && (window.__TAURI_INTERNALS__ || window.__TAURI__);
 }
-function nt() {
-  return p();
+function ft() {
+  return _();
 }
-function rt() {
-  return p(`guide/mod`);
+function pt() {
+  return _(`guide/mod`);
 }
-function it() {
-  let e2 = String(et || ``).replace(/[\\/]+$/, ``);
+function mt() {
+  let e2 = String(lt || ``).replace(/[\\/]+$/, ``);
   return e2 ? `${e2}/gp-next` : ``;
 }
-function at() {
-  return { app: a(`menu.app`), about: a(`menu.about`), services: a(`menu.services`), hide: a(`menu.hide`), hideOthers: a(`menu.hideOthers`), showAll: a(`menu.showAll`), quit: a(`menu.quit`), file: a(`menu.file`), closeWindow: a(`menu.closeWindow`), edit: a(`menu.edit`), undo: a(`menu.undo`), redo: a(`menu.redo`), cut: a(`menu.cut`), copy: a(`menu.copy`), paste: a(`menu.paste`), selectAll: a(`menu.selectAll`), gpNext: a(`menu.gpNext`), toggleOverlay: a(`menu.toggleOverlay`), reloadPatches: a(`menu.reloadPatches`), openPatchFolder: a(`menu.openPatchFolder`), reloadGame: a(`menu.reloadGame`), checkUpdates: a(`menu.checkUpdates`), openGpNextGuide: a(`menu.openGpNextGuide`), window: a(`menu.window`), minimize: a(`menu.minimize`), zoom: a(`menu.zoom`), bringAllToFront: a(`menu.bringAllToFront`), help: a(`menu.help`), website: a(`menu.website`), downloadPage: a(`menu.downloadPage`), discord: a(`menu.discord`) };
+function ht() {
+  return { app: o(`menu.app`), about: o(`menu.about`), services: o(`menu.services`), hide: o(`menu.hide`), hideOthers: o(`menu.hideOthers`), showAll: o(`menu.showAll`), quit: o(`menu.quit`), file: o(`menu.file`), closeWindow: o(`menu.closeWindow`), edit: o(`menu.edit`), undo: o(`menu.undo`), redo: o(`menu.redo`), cut: o(`menu.cut`), copy: o(`menu.copy`), paste: o(`menu.paste`), selectAll: o(`menu.selectAll`), gpNext: o(`menu.gpNext`), toggleOverlay: o(`menu.toggleOverlay`), reloadPatches: o(`menu.reloadPatches`), openPatchFolder: o(`menu.openPatchFolder`), reloadGame: o(`menu.reloadGame`), checkUpdates: o(`menu.checkUpdates`), openGpNextGuide: o(`menu.openGpNextGuide`), window: o(`menu.window`), minimize: o(`menu.minimize`), zoom: o(`menu.zoom`), bringAllToFront: o(`menu.bringAllToFront`), help: o(`menu.help`), website: o(`menu.website`), downloadPage: o(`menu.downloadPage`), discord: o(`menu.discord`) };
 }
-async function ot() {
-  if (tt()) try {
-    await re(`update_macos_menu`, { labels: at() });
+async function X() {
+  if (dt() && /Mac/.test(navigator.platform || "")) try {
+    await f(`update_macos_menu`, { labels: ht() });
   } catch (e2) {
     K.debug(`macOS menu update skipped: ` + e2);
   }
 }
-async function st(e2) {
+async function gt(e2) {
   switch (e2) {
     case q.toggleOverlay:
-      Y.toggle();
+      J.toggle();
       break;
     case q.reloadPatches:
       if (typeof window.gpNext?.reload != `function`) {
-        g(a(`common.loading`));
+        C(o(`common.loading`));
         return;
       }
       try {
-        X(await window.gpNext.reload()), g(a(`toast.patchReloaded`));
+        Y(await window.gpNext.reload()), C(o(`toast.patchReloaded`));
       } catch (e3) {
-        K.error(`Menu reload failed: ` + e3), g(a(`common.failed`));
+        K.error(`Menu reload failed: ` + e3), C(o(`common.failed`));
       }
       break;
     case q.openPatchFolder: {
-      let e3 = it();
+      let e3 = mt();
       if (!e3) {
-        g(a(`common.loading`));
+        C(o(`common.loading`));
         return;
       }
       try {
-        await C(e3);
+        await ie(e3);
       } catch (e4) {
-        g(`${a(`common.failed`)}: ${String(e4)}`, `error`);
+        C(`${o(`common.failed`)}: ${String(e4)}`, `error`);
       }
       break;
     }
@@ -421,339 +512,273 @@ async function st(e2) {
       window.location.reload();
       break;
     case q.checkUpdates:
-      await Xe({ manual: true });
+      await at({ manual: true });
       break;
     case q.openGpNextGuide:
-      await S(rt());
+      await j(pt());
       break;
     case q.openDownload:
-      await Ye();
+      await it();
       break;
     case q.openWebsite:
-      await S(nt());
+      await j(ft());
       break;
     case q.openDiscord:
-      await S(`https://discord.gg/ZEfb2tBQFW`);
+      await j(`https://discord.gg/ZEfb2tBQFW`);
       break;
   }
 }
-function ct() {
-  tt() && (ot(), m(() => {
-    ot();
-  }), se(Qe, (e2) => {
-    st(e2.payload).catch((e3) => {
+function _t() {
+  dt() && (X(), y(() => {
+    X();
+  }), a(st, (e2) => {
+    gt(e2.payload).catch((e3) => {
       K.debug(`macOS menu action failed: ` + e3);
     });
   }).catch((e2) => {
     K.debug(`macOS menu listener skipped: ` + e2);
   }));
 }
-var Z = [{ id: `patcher`, labelKey: `tab.mods`, searchKeys: [`patcher.packs`, `patcher.disabledPacks`, `patcher.singleFile`, `patcher.openDir`, `migration.prepare`, `settings.modSettings`, `sections.modRuntime`, `installation.folder`, `installation.zip`] }, { id: `data`, labelKey: `tab.data`, searchKeys: [`data.title`, `data.searchPlaceholder`, `data.entries`, `data.exportCurrent`, `data.drawer.comparison`, `data.drawer.edit`, `data.drawer.restoreAll`] }, { id: `cheats`, labelKey: `sections.tools`, searchKeys: [`cheats.title`, `cheats.sun`, `cheats.gameSpeed`, `cheats.freePlant`, `cheats.invincible`, `cheats.instantWin`, `cloud.title`, `dailyLevel.opening`, `guide.uuidSectionTitle`, `guide.docs`, `tools.troubleshooting`] }, { id: `settings`, labelKey: `tab.settings`, searchKeys: [`settings.widescreen`, `settings.widescreenFog`, `settings.widescreenBushes`, `settings.general`, `settings.language`, `settings.overlayHotkey`, `settings.scrollSensitivity`, `settings.frameRate`, `settings.debugMode`, `settings.runtimeExtensions`, `settings.dynamicPlantRegistry`, `settings.shopExtensions`, `settings.hpOverlay`, `settings.appearance`, `settings.blurBackground`, `settings.accentColor`, `settings.accentTint`, `settings.panelOpacity`, `settings.cornerRadius`, `settings.compactLayout`, `settings.reduceMotion`, `experimental.title`, `experimental.jsModding`, `experimental.worldMapJson`, `experimental.plantLevelSystem`, `settings.transfer`] }, { id: `performance`, labelKey: `tab.performance`, searchKeys: [`performance.avgFps`, `performance.frameP95`, `performance.frameP99Value`, `performance.webgl`, `performance.nativeMetrics`, `performance.assetCount`, `performance.runtimeTargetFps`] }, { id: `log`, labelKey: `tab.log`, searchKeys: [`log.search`, `log.filterAll`, `log.exportDiagnostics`, `log.copyAll`] }, { id: `about`, labelKey: `tab.about`, searchKeys: [`about.patcherVersion`, `about.clientEdition`, `about.features`, `guide.docs`] }];
-for (let e2 of Z) Y.registerTab({ id: e2.id, labelKey: e2.labelKey, searchKeys: e2.searchKeys, render(e3) {
+var Z = [{ id: `patcher`, labelKey: `tab.mods` }, { id: `about`, labelKey: `tab.about` }, { id: `log`, labelKey: `tab.log` }, { id: `tools`, labelKey: `sections.tools` }, { id: `cheats`, labelKey: `tab.cheats` }, { id: `data`, labelKey: `tab.data` }, { id: `performance`, labelKey: `tab.performance` }, { id: `diagnostics`, labelKey: `tab.diagnostics` }, { id: `settings`, labelKey: `tab.settings` }, { id: `experimental`, labelKey: `tab.experimental` }];
+const tabSearch = {
+  patcher: ["mods datapacks install update dependencies load order permissions"],
+  tools: ["guide.uuidSectionTitle", "settings.hpOverlay", "settings.transfer", "tools.troubleshooting"],
+  cheats: ["trainer sun coins gems tickets world keys fusion plants zombies"],
+  data: ["plant zombie projectile features properties JSON edit"],
+  settings: ["settings.appearance", "settings.frameRate", "settings.widescreen", "settings.scrollSensitivity", "settings.overlayHotkey", "settings.trainerHotkeys", "render resolution graphics audio volume theme accent opacity blur radius"],
+  experimental: ["Worldmap Modding Plant Level System JS Modding scripts scheduler"],
+  diagnostics: ["logs errors report privacy troubleshooting recovery"]
+};
+for (const tab of Z) tab.searchKeys = tabSearch[tab.id] || [];
+for (let e2 of Z) J.registerTab({ id: e2.id, labelKey: e2.labelKey, searchKeys: e2.searchKeys, render(e3) {
   let t2 = document.createElement(`div`);
-  t2.className = `gp-text-muted`, t2.textContent = a(`common.loading`), e3.appendChild(t2);
+  t2.className = `gp-text-muted`, t2.textContent = o(`common.loading`), e3.appendChild(t2);
 } });
-var lt = /* @__PURE__ */ new Set();
-function ut(e2, t2) {
+var vt = /* @__PURE__ */ new Set();
+function yt(e2, t2) {
   let n2 = document.createElement(`div`);
-  n2.className = `gp-text-muted`, n2.textContent = `${a(`common.failed`)}: ${String(t2?.message || t2)}`, e2.appendChild(n2);
+  n2.className = `gp-text-muted`, n2.textContent = `${o(`common.failed`)}: ${String(t2?.message || t2)}`, e2.appendChild(n2);
 }
 async function Q(e2, t2) {
-  let n2 = await x(`Tab '${e2.id}' initialization`, t2, { logger: K });
-  return n2.ok ? Y.registerTab({ id: e2.id, labelKey: e2.labelKey, searchKeys: e2.searchKeys, ...n2.value }) : Y.registerTab({ id: e2.id, labelKey: e2.labelKey, searchKeys: e2.searchKeys, render: (e3) => ut(e3, n2.error) }), lt.add(e2.id), n2;
+  let n2 = await A(`Tab '${e2.id}' initialization`, t2, { logger: K });
+  return n2.ok ? J.registerTab({ id: e2.id, labelKey: e2.labelKey, searchKeys: e2.searchKeys, ...n2.value }) : J.registerTab({ id: e2.id, labelKey: e2.labelKey, render: (e3) => yt(e3, n2.error) }), vt.add(e2.id), n2;
 }
-function dt(e2) {
-  for (let t2 of Z) lt.has(t2.id) || (Y.registerTab({ id: t2.id, labelKey: t2.labelKey, searchKeys: t2.searchKeys, render: (t3) => ut(t3, e2) }), lt.add(t2.id));
+function bt(e2) {
+  for (let t2 of Z) vt.has(t2.id) || (J.registerTab({ id: t2.id, labelKey: t2.labelKey, render: (t3) => yt(t3, e2) }), vt.add(t2.id));
 }
-var ft = Q(Z.find((e2) => e2.id === `about`), async () => ({ render: (await import("./ui/tabs/About.js")).render }));
-Q(Z.find((e2) => e2.id === `log`), async () => {
-  let e2 = await r(() => import("./ui/tabs/Log.js"), __vite__mapDeps([40, 1, 2, 23, 41, 29, 25, 14, 8, 17, 30]));
-  return { render: e2.render, onActivate: e2.onActivate, onDeactivate: e2.onDeactivate };
-});
-window.gpNext = { version: y, clientEdition: oe, debug: J.debug === true, toggle: Y.toggle, show: Y.show, hide: Y.hide, dailyLevel: { openFromUrl: z, status: He } }, ct(), K.info(`Phase 1 complete \u2014 overlay mounted. Press ${Ze()} to toggle.`);
-connectLauncherOverlay(Y);
-initWidescreen();
+Q(Z.find((tab) => tab.id === "about"), async () => ({ render: (await import("./ui/tabs/About.js")).render }));
+Q(Z.find((tab) => tab.id === "log"), async () => await import("./ui/tabs/Log.js"));
+var xt = Q(Z.find((e2) => e2.id === `diagnostics`), async () => (await n(() => import("./ui/tabs/Diagnostics.js"), __vite__mapDeps([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 14, 15, 16, 17, 18, 19]))).createDiagnosticsTab());
+window.gpNext = { version: s, clientEdition: re, debug: ut.debug === true, toggle: J.toggle, show: J.show, hide: J.hide, nestImport: { openFromUrl: Ke, status: qe }, dailyLevel: { openFromUrl: V, status: Ne } }, _t(), K.info(`Phase 1 complete \u2014 overlay mounted. Press ${ot()} to toggle.`);
 var $ = `phase-2:engine-import`;
 (async () => {
-  let { waitForEngine: e2 } = await r(async () => {
-    let { waitForEngine: e3 } = await import("./runtime/Engine.js");
+  let { waitForEngine: e2 } = await n(async () => {
+    let { waitForEngine: e3 } = await import("./ui/Translations.js").then((e4) => e4.c);
     return { waitForEngine: e3 };
-  }, __vite__mapDeps([42, 25, 14, 8])), t2;
+  }, __vite__mapDeps([4, 5, 6, 7, 8, 9])), t2;
   $ = `phase-2:engine-wait`;
   try {
     t2 = await e2(3e4, { continueAfterTimeout: true });
   } catch (e3) {
-    Y.updateStatus(a(`header.status.timeout`)), K.error(`Engine wait failed \u2014 patcher features unavailable: ` + e3), dt(e3);
+    J.updateStatus(o(`header.status.timeout`)), K.error(`Engine wait failed \u2014 patcher features unavailable: ` + e3), bt(e3);
     return;
   }
-  $ = `phase-2:runtime-setup`, Y.updateStatus(a(`header.status.engineReady`)), ne(), ot(), Ve();
-  applyFrameRate(t2.game, J.frameRate);
-  await x(`Scroll sensitivity initialization`, async () => (await r(() => import("./runtime/ScrollSensitivity.js"), __vite__mapDeps([43, 44, 25, 14, 8, 17]))).install(), { logger: K });
-  let i2 = null;
-  $ = `phase-2:independent-tabs`, await ft, await Promise.all([Q(Z.find((e3) => e3.id === `cheats`), async () => {
-    let [e3, t3] = await Promise.all([r(() => import("./ui/tabs/Tools.js"), __vite__mapDeps([45, 25, 14, 8, 46, 35, 37, 1, 2, 13, 4, 44, 17, 41, 47, 48, 29, 30, 49, 50])), r(() => import("./ui/tabs/Cloud.js"), __vite__mapDeps([51, 50, 41, 29, 25, 14, 8, 17, 30]))]);
-    return i2 = t3.bindCloudSaver, e3.createToolsTab();
-  }), Q(Z.find((e3) => e3.id === `settings`), async () => {
-    const exp = await r(() => import("./ui/tabs/Experimental.js"), __vite__mapDeps([55, 17, 41, 29, 25, 14, 8]));
-    const settingsUi = await import("./ui/tabs/Settings.js");
-    return { render(e3) {
-      const mk = (title) => {
-        const section = document.createElement(`div`);
-        section.className = `gp-section`;
-        const button = document.createElement(`button`);
-        button.type = `button`, button.className = `gp-section-title`, button.setAttribute(`aria-expanded`, `true`);
-        const arrow = document.createElement(`span`);
-        arrow.className = `gp-section-arrow`, arrow.textContent = `\u25BC`;
-        const label = document.createElement(`span`);
-        label.textContent = title, button.append(arrow, label);
-        button.addEventListener(`click`, () => {
-          section.classList.toggle(`gp-collapsed`), button.setAttribute(`aria-expanded`, String(!section.classList.contains(`gp-collapsed`)));
-        });
-        const body = document.createElement(`div`);
-        body.className = `gp-section-body`, section.append(button, body), e3.appendChild(section);
-        return body;
-      };
-      const appearance = mk(a(`settings.appearance`));
-      appearance.innerHTML = `<div class="gp-appearance-controls"><label class="gp-appearance-toggle"><input type="checkbox" id="gpnBlur"><span><strong>${a(`settings.blurBackground`)}</strong><small>${a(`settings.blurBackgroundDesc`)}</small></span></label><label class="gp-appearance-toggle"><input type="checkbox" id="gpnCompact"><span><strong>${a(`settings.compactLayout`)}</strong><small>${a(`settings.compactLayoutDesc`)}</small></span></label><label class="gp-appearance-toggle"><input type="checkbox" id="gpnReduceMotion"><span><strong>${a(`settings.reduceMotion`)}</strong><small>${a(`settings.reduceMotionDesc`)}</small></span></label><label class="gp-appearance-color-row" for="gpnAccent"><span class="gp-appearance-color-copy"><strong>${a(`settings.accentColor`)}</strong><small>${a(`settings.accentColorDesc`)}</small><code id="gpnAccentValue"></code></span><input type="color" id="gpnAccent" value="#4a9eff" aria-label="${a(`settings.accentColor`)}"></label><div id="gpnAppearanceRanges"></div></div>`;
-      const storageKey = `gpnext-ui`;
-      const ui = { blur: true, accent: [74, 158, 255], tint: 24, opacity: 92, radius: 11, compact: false, reduceMotion: false };
-      try {
-        const saved = JSON.parse(localStorage.getItem(storageKey) || `{}`);
-        if (saved && typeof saved === `object`) {
-          for (const key of [`blur`, `compact`, `reduceMotion`]) if (key in saved) ui[key] = saved[key] === true;
-          if (Array.isArray(saved.accent) && saved.accent.length === 3 && saved.accent.every((value) => Number.isFinite(Number(value)))) ui.accent = saved.accent.map((value) => Math.max(0, Math.min(255, Number(value))));
-          if (Number.isFinite(Number(saved.tint))) ui.tint = Math.max(0, Math.min(45, Number(saved.tint)));
-          if (Number.isFinite(Number(saved.opacity))) ui.opacity = Math.max(70, Math.min(100, Number(saved.opacity)));
-          if (Number.isFinite(Number(saved.radius))) ui.radius = Math.max(6, Math.min(18, Number(saved.radius)));
-        }
-      } catch {
-      }
-      const apply = () => {
-        let style = document.getElementById(`gpnext-ui-overrides`);
-        if (!style) {
-          style = document.createElement(`style`), style.id = `gpnext-ui-overrides`, document.head.appendChild(style);
-        }
-        const blend = (base) => base.map((channel, index) => Math.round(channel * (1 - ui.tint / 100) + ui.accent[index] * (ui.tint / 100))).join(`,`);
-        const [red, green, blue] = ui.accent;
-        style.textContent = `:root{--gp-accent-rgb:${red},${green},${blue};--gp-panel-rgb:${blend([5, 9, 21])};--gp-surface-rgb:${blend([13, 20, 36])};--gp-raised-rgb:${blend([21, 30, 48])};--gp-control-rgb:${blend([4, 8, 19])}}#gp-overlay{--gp-accent-rgb:${red},${green},${blue};--gp-panel-rgb:${blend([5, 9, 21])};--gp-surface-rgb:${blend([13, 20, 36])};--gp-raised-rgb:${blend([21, 30, 48])};--gp-control-rgb:${blend([4, 8, 19])};--gp-overlay-opacity:${ui.opacity / 100};--gp-surface-opacity:${(ui.opacity / 100 * 0.82).toFixed(2)};--gp-raised-opacity:${(ui.opacity / 100 * 0.92).toFixed(2)};--gp-card-opacity:${(ui.opacity / 100 * 0.44).toFixed(2)};--gp-ui-radius:${ui.radius}px;background:linear-gradient(135deg,rgba(${red},${green},${blue},.16),transparent 72%),rgba(var(--gp-panel-rgb),var(--gp-overlay-opacity))}` + (ui.blur ? `` : `#gp-overlay{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}`) + (ui.compact ? `#gp-overlay.gp-compact-ui .gp-content{padding:10px}#gp-overlay.gp-compact-ui .gp-section{padding:9px}#gp-overlay.gp-compact-ui .gp-section-body{gap:5px}#gp-overlay.gp-compact-ui .gp-list-item{padding:8px}#gp-overlay.gp-compact-ui .gp-appearance-toggle,#gp-overlay.gp-compact-ui .gp-appearance-color-row{padding:9px}` : ``) + (ui.reduceMotion ? `#gp-overlay.gp-reduce-motion *,#gp-overlay.gp-reduce-motion *::before,#gp-overlay.gp-reduce-motion *::after{scroll-behavior:auto !important;animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}` : ``);
-        document.getElementById(`gp-overlay`)?.classList.toggle(`gp-compact-ui`, ui.compact);
-        document.getElementById(`gp-overlay`)?.classList.toggle(`gp-reduce-motion`, ui.reduceMotion);
-        document.body.classList.toggle(`gpn-noblur`, !ui.blur);
-        try {
-          localStorage.setItem(storageKey, JSON.stringify(ui));
-        } catch {
-        }
-      };
-      const blurToggle = appearance.querySelector(`#gpnBlur`);
-      const compactToggle = appearance.querySelector(`#gpnCompact`);
-      const motionToggle = appearance.querySelector(`#gpnReduceMotion`);
-      const colorPicker = appearance.querySelector(`#gpnAccent`);
-      const colorValue = appearance.querySelector(`#gpnAccentValue`);
-      blurToggle.checked = ui.blur, compactToggle.checked = ui.compact, motionToggle.checked = ui.reduceMotion;
-      const updateColor = () => {
-        const hex = colorPicker.value;
-        ui.accent = [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
-        colorValue.textContent = hex.toUpperCase(), apply();
-      };
-      colorPicker.value = `#${ui.accent.map((channel) => channel.toString(16).padStart(2, `0`)).join(``)}`, colorValue.textContent = colorPicker.value.toUpperCase();
-      blurToggle.addEventListener(`change`, () => {
-        ui.blur = blurToggle.checked, apply();
-      });
-      compactToggle.addEventListener(`change`, () => {
-        ui.compact = compactToggle.checked, apply();
-      });
-      motionToggle.addEventListener(`change`, () => {
-        ui.reduceMotion = motionToggle.checked, apply();
-      });
-      colorPicker.addEventListener(`input`, updateColor);
-      const ranges = appearance.querySelector(`#gpnAppearanceRanges`);
-      const addRange = (key, titleKey, descriptionKey, min, max, suffix) => {
-        const row = document.createElement(`label`), copy = document.createElement(`span`), title = document.createElement(`strong`), description = document.createElement(`small`), value = document.createElement(`output`), input = document.createElement(`input`);
-        row.className = `gp-appearance-range`, copy.className = `gp-appearance-color-copy`, title.textContent = a(titleKey), description.textContent = a(descriptionKey), value.textContent = `${ui[key]}${suffix}`;
-        input.type = `range`, input.min = String(min), input.max = String(max), input.step = `1`, input.value = String(ui[key]), input.setAttribute(`aria-label`, a(titleKey));
-        input.addEventListener(`input`, () => {
-          ui[key] = Number(input.value), value.textContent = `${ui[key]}${suffix}`, apply();
-        });
-        copy.append(title, description, value), row.append(copy, input), ranges.appendChild(row);
-      };
-      addRange(`tint`, `settings.accentTint`, `settings.accentTintDesc`, 0, 45, `%`);
-      addRange(`opacity`, `settings.panelOpacity`, `settings.panelOpacityDesc`, 70, 100, `%`);
-      addRange(`radius`, `settings.cornerRadius`, `settings.cornerRadiusDesc`, 6, 18, `px`);
-      apply();
-      renderPreferenceTransfer(mk("Import / export preferences"));
-      settingsUi.renderGeneralSettings(mk(a(`settings.general`)));
-      const gameplay = mk(a(`settings.gameplay`));
-      settingsUi.renderFrameRate(gameplay);
-      if (window.__gdAudio) renderAudioTuning(mk('Audio'));
-      renderWidescreenSettings(mk(a(`settings.widescreen`)));
-      settingsUi.renderHealthOverlay(mk(a(`settings.hpOverlay`)));
-      exp.render(mk(a(`experimental.title`)));
-    } };
-  }), Q(Z.find((e3) => e3.id === `performance`), async () => (await r(() => import("./ui/tabs/PerformanceSection.js"), __vite__mapDeps([56, 2, 1, 23, 13, 14, 4, 8, 25, 46, 35, 37, 44, 17, 41, 47, 48, 29, 30]))).createPerformanceTab())]), $ = `phase-3:core-imports`;
-  if (isRecoverySession()) {
-    Y.updateStatus("Recovery mode \xB7 temporary saves");
-    for (const id of ["patcher", "data"]) await Q(Z.find((tab) => tab.id === id), async () => ({ render: renderRecoveryControl }));
-    renderRecoveryControl(document.body, { floating: true });
-    return;
-  }
-  let { CorePatcher: s2 } = await r(async () => {
+  installRendering(t2);
+  $ = `phase-2:runtime-setup`, J.updateStatus(o(`header.status.engineReady`)), ee(), X(), Me(), await A(`Frame scheduler initialization`, () => ne(t2.game, ut), { logger: K }), await A(`Scroll sensitivity initialization`, async () => (await n(() => import("./runtime/ScrollSensitivity.js").then((e3) => e3.n), __vite__mapDeps([20, 5, 4, 6, 7, 8, 9]))).install(), { logger: K }), $ = `phase-2:independent-tabs`, await xt, await Promise.all([Q(Z.find((e3) => e3.id === `tools`), async () => (await n(() => import("./ui/tabs/Tools.js"), __vite__mapDeps([21, 4, 5, 6, 7, 8, 9, 22, 1, 13, 14, 23, 24, 25, 16, 20, 10, 26, 27, 28, 29, 18]))).createToolsTab()), Q(Z.find((e3) => e3.id === `cheats`), async () => (await n(() => import("./ui/tabs/Cheats.js"), __vite__mapDeps([30, 4, 5, 6, 7, 8, 9, 10, 18]))).createCheatsTab()), Q(Z.find((e3) => e3.id === `settings`), async () => (await n(() => import("./ui/tabs/Preferences.js"), __vite__mapDeps([31, 32, 1, 15, 16, 13, 4, 5, 6, 7, 8, 9, 22, 14, 23, 24, 25, 20, 10, 26, 27, 28, 29, 18, 11]))).createPreferencesTab()), Q(Z.find((e3) => e3.id === `experimental`), async () => {
+    let e3 = await n(() => import("./ui/tabs/Experimental.js"), __vite__mapDeps([33, 4, 5, 6, 7, 8, 9, 34, 10, 18]));
+    return { render: e3.render, onDeactivate: e3.onDeactivate };
+  }), Q(Z.find((e3) => e3.id === `performance`), async () => (await n(() => import("./ui/tabs/PerformanceSection.js"), __vite__mapDeps([35, 1, 13, 14, 16, 4, 5, 6, 7, 8, 9, 23, 24, 10, 26, 27, 28, 29, 18]))).createPerformanceTab())]), $ = `phase-3:core-imports`;
+  let { CorePatcher: i2 } = await n(async () => {
     let { CorePatcher: e3 } = await import("./mods/Patcher.js");
     return { CorePatcher: e3 };
-  }, __vite__mapDeps([22, 14, 1, 2, 23, 13, 4, 8, 12, 7, 15, 16, 17, 24, 25, 26, 27, 28, 29, 30])), { DataStore: l2 } = await r(async () => {
+  }, __vite__mapDeps([36, 5, 13, 1, 14, 28, 29, 16, 9, 37, 38, 39, 40, 4, 6, 7, 8, 41, 42, 43, 44, 18])), { DataStore: a2 } = await n(async () => {
     let { DataStore: e3 } = await import("./data/DataStore.js");
     return { DataStore: e3 };
-  }, __vite__mapDeps([57, 1, 2, 23, 25, 14, 8, 28, 29, 17, 30])), { getBasePath: u2 } = await r(async () => {
-    let { getBasePath: e3 } = await import("./mods/FileLoader.js");
+  }, __vite__mapDeps([45, 13, 1, 14, 4, 5, 6, 7, 8, 9, 44, 18])), { getBasePath: o2 } = await n(async () => {
+    let { getBasePath: e3 } = await import("./mods/FileLoader.js").then((e4) => e4.o);
     return { getBasePath: e3 };
-  }, __vite__mapDeps([58, 13, 14, 1, 2, 4, 8])), d2 = await r(() => import("./runtime/PlantLevelState.js"), __vite__mapDeps([59, 27, 14, 25, 8])), p2 = ue(), m2 = p2?.patcher || new s2();
-  p2 || m2.initCacheScan(), p2 || (m2.installSceneHook(), m2.installLoadHook()), $ = `phase-3:patch-load`;
-  let h2 = p2 ? p2.result : await m2.loadAllPatches(), _2 = new l2(m2.getOriginalData()), re2 = await x(`GP-Next base path resolution`, () => u2(), { logger: K }), v2 = re2.ok ? re2.value : ``;
-  et = v2;
-  let ie2 = () => isJsModdingRuntimeEnabled(), ae2 = () => isWorldMapJsonEnabled(), b2 = { getOriginalData: (e3) => {
-    let t3 = m2.getOriginalData();
+  }, __vite__mapDeps([28, 5, 13, 1, 29, 16, 9])), c2 = await n(() => import("./runtime/PlantLevelState.js"), __vite__mapDeps([43, 5, 4, 6, 7, 8, 9])), l2 = r(), g2 = l2?.patcher || new i2();
+  l2 || g2.initCacheScan(), l2 || (g2.installSceneHook(), g2.installLoadHook()), $ = `phase-3:patch-load`;
+  let _2 = l2 ? l2.result : await g2.loadAllPatches(), y2 = new a2(g2.getOriginalData()), b2 = await A(`GP-Next base path resolution`, () => o2(), { logger: K }), x2 = b2.ok ? b2.value : ``;
+  lt = x2;
+  let S2 = () => isJsModdingRuntimeEnabled(), te2 = () => isWorldMapJsonEnabled(), w2 = { getOriginalData: (e3) => {
+    let t3 = g2.getOriginalData();
     return e3 ? t3?.[e3] ?? null : t3;
-  }, getCurrentData: (e3) => e3 ? _2.getCurrent(e3) ?? null : null, restoreData: (e3) => _2.restore(e3), restoreAllData: () => _2.restoreAll(), listBackups: () => _2.listBackups(), hasBackup: (e3) => _2.hasBackup(e3), exportJson: (...e3) => _2.exportJson(...e3), exportLang: (...e3) => m2.exportLang(...e3), setObjectsData: (...e3) => m2.setObjectsData(...e3) }, S2 = null, C2 = null, w2 = await x(`JS Mod loader initialization`, async () => {
-    let { createJsModLoader: e3 } = await r(async () => {
-      let { createJsModLoader: e4 } = await import("./mods/JsModEntry.js");
+  }, getCurrentData: (e3) => e3 ? y2.getCurrent(e3) ?? null : null, restoreData: (e3) => y2.restore(e3), restoreAllData: () => y2.restoreAll(), listBackups: () => y2.listBackups(), hasBackup: (e3) => y2.hasBackup(e3), exportJson: (...e3) => y2.exportJson(...e3), exportLang: (...e3) => g2.exportLang(...e3), setObjectsData: (...e3) => g2.setObjectsData(...e3) }, T2 = null, E2 = null, D2 = await A(`JS Mod loader initialization`, async () => {
+    let { createJsModLoader: e3 } = await n(async () => {
+      let { createJsModLoader: e4 } = await import("./mods/JsModLoader.js");
       return { createJsModLoader: e4 };
-    }, __vite__mapDeps([60, 4, 32, 33, 1, 2, 13, 14, 8, 34, 25, 35, 36, 7, 15, 16, 18, 37, 30])), n3 = p2?.loader || e3();
-    return n3.notifyEngineReady({ cc: t2 }), n3;
+    }, __vite__mapDeps([46, 47, 5, 1, 29, 28, 13, 16, 9, 40, 48, 4, 6, 7, 8, 24, 49, 38, 50, 51, 39, 52, 25, 18])), r2 = l2?.loader || e3();
+    return r2.notifyEngineReady({ cc: t2 }), r2;
   }, { logger: K });
-  if (w2.ok) S2 = w2.value;
-  else if (p2) throw w2.error;
-  let se2 = await x(`Worldmap JSON module initialization`, async () => {
-    let { createWorldMapJsonPatcher: e3 } = await r(async () => {
+  if (D2.ok) T2 = D2.value;
+  else if (l2) throw D2.error;
+  let O2 = await A(`Worldmap JSON module initialization`, async () => {
+    let { createWorldMapJsonPatcher: e3 } = await n(async () => {
       let { createWorldMapJsonPatcher: e4 } = await import("./runtime/WorldmapJsonPatcher.js");
       return { createWorldMapJsonPatcher: e4 };
-    }, __vite__mapDeps([61, 14, 13, 1, 2, 4, 8, 34, 25, 35])), t3 = e3();
-    return t3.bindServices(b2), t3;
+    }, __vite__mapDeps([53, 5, 28, 13, 1, 29, 16, 9, 48, 4, 6, 7, 8, 24])), t3 = e3();
+    return t3.bindServices(w2), t3;
   }, { logger: K });
-  se2.ok && (C2 = se2.value);
-  let T2 = async (e3, t3) => {
-    if (!C2) return [];
-    if (!ae2()) return await x(`Worldmap JSON clear (${t3})`, () => C2.clear(), { logger: K }), [];
-    let n3 = await x(`Worldmap JSON load (${t3})`, () => C2.reloadFromPacks(e3.filter((e4) => !e4.preflightErrors?.length)), { cleanup: () => C2.clear(), logger: K });
-    if (p2 && !n3.ok) throw n3.error;
-    return n3.ok ? n3.value : [];
-  }, E2 = async (e3, t3) => {
-    if (!S2) return [];
-    let n3 = await x(`JS Mod runtime load (${t3})`, () => ie2() ? S2.reloadFromPacks(e3, { reason: t3, emitReloadEvents: false }) : S2.disposeAll(t3), { cleanup: () => S2.disposeAll(`${t3}-failure-cleanup`), logger: K });
-    return n3.ok ? n3.value : [];
-  }, ce2 = async (e3) => {
-    let t3 = [], n3 = (e4) => {
+  O2.ok && (E2 = O2.value);
+  let k2 = async (e3, t3) => {
+    if (!E2) return [];
+    if (!te2()) return await A(`Worldmap JSON clear (${t3})`, () => E2.clear(), { logger: K }), [];
+    let n2 = await A(`Worldmap JSON load (${t3})`, () => E2.reloadFromPacks(e3.filter((e4) => !e4.preflightErrors?.length)), { cleanup: () => E2.clear(), logger: K });
+    if (l2 && !n2.ok) throw n2.error;
+    return n2.ok ? n2.value : [];
+  }, j2 = async (e3, t3) => {
+    if (!T2) return [];
+    let n2 = await A(`JS Mod runtime load (${t3})`, () => S2() ? T2.reloadFromPacks(e3, { reason: t3, emitReloadEvents: false }) : T2.disposeAll(t3), { cleanup: () => T2.disposeAll(`${t3}-failure-cleanup`), logger: K });
+    return n2.ok ? n2.value : [];
+  }, ie2 = async (e3) => {
+    let t3 = [], n2 = (e4) => {
       if (e4.ok || t3.push(e4.error), e4.cleanupError && t3.push(e4.cleanupError), e4.value?.ok === false) t3.push(Object.assign(Error(`Mod cleanup requires a restart`), { report: e4.value }));
       else {
-        for (let n4 of e4.value?.errors || []) t3.push(n4);
+        for (let n3 of e4.value?.errors || []) t3.push(n3);
         e4.value?.timedOut && !e4.value?.errors?.length && t3.push(Error(`Mod reload notification timed out`));
       }
     };
-    if (S2 && (n3(await x(`JS Mod pre-reload event (${e3})`, () => S2.emitAsync(`mods:reload-before`, { reason: e3 }), { logger: K })), n3(await x(`JS Mod disposal (${e3})`, () => S2.disposeAll(e3), { logger: K }))), C2 && n3(await x(`Worldmap JSON disposal (${e3})`, () => C2.clear(), { logger: K })), t3.length) throw Object.assign(AggregateError(t3, `Runtime cleanup failed; restart required`), { code: `RUNTIME_CLEANUP_FAILED` });
-  }, le2 = async (e3, t3) => {
-    await T2(e3.packs, t3), await E2(e3.packs, t3), S2 && (await x(`JS Mod patch notification (${t3})`, () => S2.notifyPatchesLoaded({ result: e3 }), { logger: K }), await x(`JS Mod post-reload event (${t3})`, () => S2.emitAsync(`mods:reload-after`, { reason: t3, status: S2.getStatus() }), { logger: K }));
-  }, D2 = he({ patcher: m2, before: ce2, after: async (e3, t3) => {
-    await le2(e3, t3), X(e3);
-  }, persist: async (e3) => (await r(async () => {
-    let { saveSettings: e4 } = await import("./mods/FileLoader.js");
+    if (T2 && (n2(await A(`JS Mod pre-reload event (${e3})`, () => T2.emitAsync(`mods:reload-before`, { reason: e3 }), { logger: K })), n2(await A(`JS Mod disposal (${e3})`, () => T2.disposeAll(e3), { logger: K }))), E2 && n2(await A(`Worldmap JSON disposal (${e3})`, () => E2.clear(), { logger: K })), t3.length) throw Object.assign(AggregateError(t3, `Runtime cleanup failed; restart required`), { code: `RUNTIME_CLEANUP_FAILED` });
+  }, ae2 = async (e3, t3) => {
+    await k2(e3.packs, t3), await j2(e3.packs, t3), T2 && (await A(`JS Mod patch notification (${t3})`, () => T2.notifyPatchesLoaded({ result: e3 }), { logger: K }), await A(`JS Mod post-reload event (${t3})`, () => T2.emitAsync(`mods:reload-after`, { reason: t3, status: T2.getStatus() }), { logger: K }));
+  }, oe2 = se({ patcher: g2, before: ie2, after: async (e3, t3) => {
+    await ae2(e3, t3), Y(e3);
+  }, persist: async (e3) => (await n(async () => {
+    let { saveSettings: e4 } = await import("./mods/FileLoader.js").then((e5) => e5.o);
     return { saveSettings: e4 };
-  }, __vite__mapDeps([58, 13, 14, 1, 2, 4, 8]))).saveSettings(e3) }), O2 = (...e3) => {
-    if (p2) throw Object.assign(Error(`This mod configuration requires a restart to apply changes`), { code: `MOD_RESTART_REQUIRED` });
-    return D2(...e3);
-  }, k2 = async () => p2 ? (K.warn($e), setJsModdingRuntimeEnabledFromConsole(true), { restartRequired: true }) : S2 ? (K.warn($e), setJsModdingRuntimeEnabledFromConsole(true), await O2(`console-enable-js-modding`), S2.getStatus()) : (K.error(`JS Mod loader is unavailable`), []), A2 = async (e3 = `disable-js-modding`) => {
-    if (p2) throw Object.assign(Error(`Restart is required to change this mod configuration`), { code: `MOD_RESTART_REQUIRED` });
-    return setJsModdingRuntimeEnabledFromConsole(false), S2 ? (await x(`JS Mod pre-disable event (${e3})`, () => S2.emitAsync(`mods:reload-before`, { reason: e3 }), { logger: K }), await x(`JS Mod disable (${e3})`, () => S2.disposeAll(e3), { logger: K }), await x(`JS Mod post-disable event (${e3})`, () => S2.emitAsync(`mods:reload-after`, { reason: e3, status: S2.getStatus() }), { logger: K }), S2.getStatus()) : [];
-  };
-  if (S2) {
-    let e3 = await x(`JS Mod service binding`, () => S2.bindServices({ ...b2, reloadAll: O2, getPatcherStatus: () => m2.getStatus(), hasFeature: (e4) => getGpNextFeatureState(e4) }), { cleanup: () => S2.disposeAll(`service-binding-failure`), logger: K });
+  }, __vite__mapDeps([28, 5, 13, 1, 29, 16, 9]))).saveSettings(e3) }), M2 = (...e3) => {
+    if (l2) throw Object.assign(Error(`This mod configuration requires a restart to apply changes`), { code: `MOD_RESTART_REQUIRED` });
+    return oe2(...e3);
+  }, ce2 = async () => {
+    if (l2) return K.warn(ct), setJsModdingRuntimeEnabledFromConsole(true), { restartRequired: true };
+    if (!T2) return K.error(`JS Mod loader is unavailable`), [];
+    K.warn(ct);
+    let e3 = isJsModdingRuntimeEnabled();
+    setJsModdingRuntimeEnabledFromConsole(true);
+    try {
+      await M2(`console-enable-js-modding`);
+    } catch (t3) {
+      throw setJsModdingRuntimeEnabledFromConsole(e3), e3 || await T2.disposeAll(`enable-js-modding-failed`).catch((e4) => K.error(e4)), t3;
+    }
+    return T2.getStatus();
+  }, le2 = async (e3 = `disable-js-modding`) => l2 ? (setJsModdingRuntimeEnabledFromConsole(false), { restartRequired: true }) : (setJsModdingRuntimeEnabledFromConsole(false), T2 ? (await A(`JS Mod pre-disable event (${e3})`, () => T2.emitAsync(`mods:reload-before`, { reason: e3 }), { logger: K }), await A(`JS Mod disable (${e3})`, () => T2.disposeAll(e3), { logger: K }), await A(`JS Mod post-disable event (${e3})`, () => T2.emitAsync(`mods:reload-after`, { reason: e3, status: T2.getStatus() }), { logger: K }), T2.getStatus()) : []);
+  if (T2) {
+    let e3 = await A(`JS Mod service binding`, () => T2.bindServices({ ...w2, reloadAll: M2, getPatcherStatus: () => g2.getStatus(), hasFeature: (e4) => getGpNextFeatureState(e4) }), { cleanup: () => T2.disposeAll(`service-binding-failure`), logger: K });
     if (!e3.ok) {
-      if (p2) throw e3.error;
-      S2 = null;
+      if (l2) throw e3.error;
+      T2 = null;
     }
   }
-  $ = `phase-3:optional-runtimes`, await T2(h2.packs, `initial-load`), p2 ? await p2.activate() : await E2(h2.packs, `initial-load`), S2 && await x(`JS Mod initial patch notification`, () => S2.notifyPatchesLoaded({ result: h2 }), { logger: K });
-  let [{ bindDiagnostics: de2 }, { createModDiagnosticReport: j2 }] = await Promise.all([r(() => import("./ui/tabs/Log.js"), __vite__mapDeps([40, 1, 2, 23, 41, 29, 25, 14, 8, 17, 30])), r(() => import("./mods/ModDiagnosticReport.js"), [])]);
-  bindTroubleshooting(() => ({ status: m2.getStatus(), diagnostics: S2?.getDiagnostics() || {} }));
-  de2(() => {
+  $ = `phase-3:optional-runtimes`, await k2(_2.packs, `initial-load`), l2 ? await l2.activate() : await j2(_2.packs, `initial-load`), T2 && await A(`JS Mod initial patch notification`, () => T2.notifyPatchesLoaded({ result: _2 }), { logger: K });
+  let [{ bindDiagnostics: ue2 }, { createModDiagnosticReport: de2 }] = await Promise.all([n(() => import("./ui/tabs/Log.js"), __vite__mapDeps([19, 13, 1, 14, 4, 5, 6, 7, 8, 9, 10, 18])), n(() => import("./mods/ModDiagnosticReport.js").then((e3) => e3.n), __vite__mapDeps([17, 5]))]), fe2 = () => {
     let e3 = null;
     try {
-      e3 = m2.getAppliedSourceSnapshot().sources;
+      e3 = g2.getAppliedSourceSnapshot().sources;
     } catch {
     }
-    return j2({ version: y, clientEdition: oe, state: p2?.modSelection.getState(), diagnostics: S2?.getDiagnostics(), sources: e3 });
-  }), $ = `phase-3:tab-registration`, await Promise.all([Q(Z.find((e3) => e3.id === `patcher`), async () => {
-    (await r(() => import("./ui/tabs/Patcher.js"), __vite__mapDeps([62, 63, 53, 2, 13, 14, 1, 4, 8, 17, 41, 29, 25, 30]))).bindPatcher(m2, _2, v2, { reload: O2 });
-    let [e3, t3] = await Promise.all([r(() => import("./ui/tabs/Mods.js"), __vite__mapDeps([64, 65, 36, 14, 17, 41, 29, 25, 8])), r(() => import("./ui/tabs/ModManager.js"), __vite__mapDeps([66, 46, 25, 14, 8, 35, 37, 1, 2, 13, 4, 44, 17, 41, 47, 48, 29, 30, 49, 65, 36, 63, 53]))]);
-    if (e3.bindMods(S2), p2) {
-      let { bindModSettingsRegistry: e4 } = await r(async () => {
+    return de2({ version: s, clientEdition: re, state: l2?.modSelection.getState(), diagnostics: T2?.getDiagnostics(), sources: e3, patchStatus: g2.getStatus(), redact: getSettings().redactDiagnostics });
+  };
+  ue2(fe2);
+  let { bindTroubleshooting: N2 } = await n(async () => {
+    let { bindTroubleshooting: e3 } = await import("./mods/ModTroubleshooting.js");
+    return { bindTroubleshooting: e3 };
+  }, __vite__mapDeps([12, 13, 1, 14, 15, 16, 4, 5, 6, 7, 8, 9, 17, 10, 18]));
+  N2(() => ({ status: g2.getStatus(), diagnostics: T2?.getDiagnostics() || {} }), fe2), $ = `phase-3:tab-registration`, await Promise.all([Q(Z.find((e3) => e3.id === `patcher`), async () => {
+    (await n(() => import("./ui/tabs/Patcher.js"), __vite__mapDeps([54, 32, 1, 28, 5, 13, 29, 16, 9, 40, 4, 6, 7, 8, 39, 10, 18]))).bindPatcher(g2, y2, x2, { reload: M2 });
+    let [e3, t3] = await Promise.all([n(() => import("./ui/tabs/Mods.js"), __vite__mapDeps([55, 4, 5, 6, 7, 8, 9, 49, 10])), n(() => import("./ui/tabs/ModManager.js"), __vite__mapDeps([56, 32, 1, 4, 5, 6, 7, 8, 9, 25, 13, 16, 22, 14, 23, 24, 20, 10, 26, 27, 28, 29, 18, 11, 55, 49, 54, 40, 39]))]);
+    if (e3.bindMods(T2), l2) {
+      let { bindModSettingsRegistry: e4 } = await n(async () => {
         let { bindModSettingsRegistry: e5 } = await import("./ui/tabs/Settings.js");
         return { bindModSettingsRegistry: e5 };
-      }, __vite__mapDeps([67, 46, 25, 14, 8, 35, 37, 1, 2, 13, 4, 44, 17, 41, 47, 48, 29, 30]));
-      e4(p2.desiredSettings);
+      }, __vite__mapDeps([22, 1, 13, 14, 7, 4, 5, 6, 8, 9, 23, 24, 25, 16, 20, 10, 26, 27, 28, 29, 18]));
+      e4(l2.desiredSettings);
     }
-    let n3 = null;
-    if (!p2 && window.__TAURI_INTERNALS__) {
-      let [{ prepareLegacyRuntimeMigration: e4 }, { createPackInstallStore: t4 }, { createConfigurationStorage: i4 }] = await Promise.all([r(() => import("./mods/LegacyRuntimeMigration.js"), __vite__mapDeps([68, 14, 4, 13, 1, 2, 8, 12, 7, 15, 16, 17, 6, 5, 37])), r(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([9, 1, 2, 4])), r(() => import("./mods/ModConfigurationStorage.js"), __vite__mapDeps([0, 1, 2]))]), a3 = t4();
-      n3 = { storage: i4(), prepare: () => e4({ patcher: m2, installStore: a3 }) };
+    let r2 = null;
+    if (!l2 && window.__TAURI_INTERNALS__) {
+      let [{ prepareLegacyRuntimeMigration: e4 }, { createPackInstallStore: t4 }, { createConfigurationStorage: i4 }] = await Promise.all([n(() => import("./mods/LegacyRuntimeMigration.js"), __vite__mapDeps([57, 5, 29, 28, 13, 1, 16, 9, 37, 38, 39, 40, 4, 6, 7, 8, 58, 59, 25])), n(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([60, 13, 1, 29])), n(() => import("./mods/ModConfigurationStorage.js"), __vite__mapDeps([61, 13, 1]))]), a4 = t4();
+      r2 = { storage: i4(), prepare: () => e4({ patcher: g2, installStore: a4 }) };
     }
-    let i3 = p2 ? { pick: async (e4) => (await r(async () => {
+    let i3 = l2 ? { pick: async (e4) => (await n(async () => {
       let { pickModPackage: e5 } = await import("./mods/ModPackagePicker.js");
       return { pickModPackage: e5 };
-    }, __vite__mapDeps([69, 1, 2, 23, 4]))).pickModPackage(e4), prepare: p2.prepareInstall } : null, a2 = p2 && { ...p2.modSelection, async prepareApplication() {
-      let e4 = await p2.modSelection.prepareApplication();
+    }, __vite__mapDeps([62, 13, 1, 14, 29]))).pickModPackage(e4), prepare: l2.prepareInstall } : null, a3 = l2 && { ...l2.modSelection, async openRequirementSettings(e4) {
+      J.switchTab(e4), e4 === `settings` && (await n(async () => {
+        let { openPreferencesRoot: e5 } = await import("./ui/tabs/Preferences.js");
+        return { openPreferencesRoot: e5 };
+      }, __vite__mapDeps([31, 32, 1, 15, 16, 13, 4, 5, 6, 7, 8, 9, 22, 14, 23, 24, 25, 20, 10, 26, 27, 28, 29, 18, 11]))).openPreferencesRoot();
+    }, async prepareApplication() {
+      let e4 = await l2.modSelection.prepareApplication();
       return e4.mode === `immediate` ? { ...e4, async apply() {
-        await e4.apply(), X(m2.getStatus());
+        await e4.apply(), Y(g2.getStatus());
       } } : e4;
     } };
-    return t3.createModManager(p2?.desiredSettings, n3, a2, i3);
+    return t3.createModManager(l2?.desiredSettings, r2, a3, i3);
   }), Q(Z.find((e3) => e3.id === `data`), async () => {
-    const { bindData, render } = await import("./ui/tabs/Data.js");
-    bindData(m2, _2);
-    return { render };
-  })]), X(h2), K.info(`Phase 3 complete \u2014 ${h2.packs.length} pack(s), ${h2.loaded.length} type(s) applied`), $ = `phase-4:post-init`, await x(`Cloud save module initialization`, async () => {
-    let e3 = (await r(async () => {
-      let { default: e4 } = await import("./platform/CloudSaveClient.js");
-      return { default: e4 };
-    }, [])).default;
-    await e3.init(), window.cloudSaver = e3, i2?.(e3), K.info(`Cloud save module ready`);
-  }, { logger: { error: (e3) => K.warn(e3) } }), await x(`Discord RPC initialization`, async () => {
-    let { updateActivity: e3 } = await r(async () => {
+    let e3 = await n(() => import("./ui/tabs/Data.js"), __vite__mapDeps([63, 28, 5, 13, 1, 29, 16, 9, 4, 6, 7, 8, 10, 27, 18]));
+    e3.bindData(g2, y2);
+    let { bindGpnEditsEditor: t3 } = await n(async () => {
+      let { bindGpnEditsEditor: e4 } = await import("./mods/FileLoader.js").then((e5) => e5.o);
+      return { bindGpnEditsEditor: e4 };
+    }, __vite__mapDeps([28, 5, 13, 1, 29, 16, 9]));
+    return t3(l2 ? l2.edits || { save() {
+      throw Error(`Restart normally before editing data`);
+    }, remove() {
+      throw Error(`Restart normally before editing data`);
+    }, clear() {
+      throw Error(`Restart normally before editing data`);
+    }, async readJson() {
+      return null;
+    } } : null), { render: e3.render };
+  })]), Je(l2).catch((e3) => K.warn(`Nest import readiness failed: ` + e3)), Y(_2), K.info(`Phase 3 complete \u2014 ${_2.packs.length} pack(s), ${_2.loaded.length} type(s) applied`), await A(`Cloud background operations`, async () => {
+    if (!globalThis.window?.__TAURI_INTERNALS__) return;
+    await (await n(async () => {
+      let { installCloudSaveRequests: e3 } = await import("./platform/CloudSaveRequest.js");
+      return { installCloudSaveRequests: e3 };
+    }, __vite__mapDeps([64, 1, 47, 5, 2, 65, 66, 7, 51, 67, 59, 58, 38, 9, 8, 16, 13, 4, 6, 23, 24, 61, 50, 20, 10, 26, 27, 28, 29, 18]))).installCloudSaveRequests();
+  }, { logger: K }), $ = `phase-4:post-init`, await A(`Discord RPC initialization`, async () => {
+    let { updateActivity: e3 } = await n(async () => {
       let { updateActivity: e4 } = await import("./platform/DiscordPresence.js");
       return { updateActivity: e4 };
-    }, __vite__mapDeps([71, 72, 2, 39, 53]));
-    await e3(`Using GP-Next ` + y, `Playing version 0.14.0`), K.info(`Discord RPC updated`);
-  }, { logger: { error: (e3) => K.debug(e3) } }), Object.assign(window.gpNext, { init: () => O2(`manual-init`), reload: () => O2(), status: () => m2.getStatus(), setObjectsData: (...e3) => m2.setObjectsData(...e3), mods: { status: () => S2?.getStatus() || [], enableJsModding: () => k2(), disableJsModding: () => A2(`console-disable-js-modding`), reload: async () => !S2 || !ie2() ? [] : (await O2(`mods-reload`), S2.getStatus()), disposeAll: () => S2?.disposeAll() || [] }, worldMapJson: { status: () => C2?.getStatus() || { specs: [] }, reload: () => C2 ? T2(m2.getStatus().packs, `worldmap-only-reload`) : [] }, plantLevels: { isEnabled: () => isPlantLevelSystemEnabled(), status: () => m2.getPlantLevelSystemDebug(), get: (e3) => {
-    let t3 = m2.getPlantLevelConfig(e3);
-    return t3 ? d2.getPlantLevelState(e3, t3) : null;
+    }, __vite__mapDeps([68, 69, 1, 2, 13, 32]));
+    await e3(`Using GP-Next 1.5.5`, `Playing version 0.16.1`) && K.info(`Discord RPC activity queued`);
+  }, { logger: { error: (e3) => K.debug(e3) } }), Object.assign(window.gpNext, { init: () => M2(`manual-init`), reload: () => M2(), status: () => g2.getStatus(), setObjectsData: (...e3) => g2.setObjectsData(...e3), mods: { status: () => T2?.getStatus() || [], enableJsModding: () => ce2(), disableJsModding: () => le2(`console-disable-js-modding`), reload: async () => !T2 || !S2() ? [] : (await M2(`mods-reload`), T2.getStatus()), disposeAll: () => T2?.disposeAll() || [] }, worldMapJson: { status: () => E2?.getStatus() || { specs: [] }, reload: () => E2 ? k2(g2.getStatus().packs, `worldmap-only-reload`) : [] }, plantLevels: { isEnabled: () => isPlantLevelSystemEnabled(), status: () => g2.getPlantLevelSystemDebug(), get: (e3) => {
+    let t3 = g2.getPlantLevelConfig(e3);
+    return t3 ? c2.getPlantLevelState(e3, t3) : null;
   }, ensure: (e3) => {
-    let t3 = m2.getPlantLevelConfig(e3);
-    return t3 ? d2.ensurePlantLevelState(e3, t3) : null;
-  }, setUnlocked: (e3, t3, n3) => {
-    let r2 = m2.getPlantLevelConfig(e3);
-    return r2 ? d2.setUnlockedLevel(e3, t3, r2, n3) : null;
-  }, setSelected: (e3, t3, n3) => {
-    let r2 = m2.getPlantLevelConfig(e3);
-    return r2 ? d2.setSelectedLevel(e3, t3, r2, n3) : null;
-  }, getBaseCodename: (e3) => m2.getPlantLevelBaseCodename(e3), getCloneCodename: (e3, t3) => m2.getPlantLevelCloneCodename(e3, t3) }, exportJson: (...e3) => _2.exportJson(...e3), exportLevel: (...e3) => _2.exportLevel(...e3), exportLang: (...e3) => m2.exportLang(...e3), restoreOriginal: (e3) => _2.restore(e3), restoreAll: () => _2.restoreAll(), listOrigins: () => _2.listBackups(), hasOrigin: (e3) => _2.hasBackup(e3), setFrameRate: (e3) => t2.game.setFrameRate(e3), cheats: { setSun: (e3) => {
-    let n3 = t2.js.getClassByName(`SunCount`)?.component;
-    n3 && n3.setSunCount(e3);
+    let t3 = g2.getPlantLevelConfig(e3);
+    return t3 ? c2.ensurePlantLevelState(e3, t3) : null;
+  }, setUnlocked: (e3, t3, n2) => {
+    let r2 = g2.getPlantLevelConfig(e3);
+    return r2 ? c2.setUnlockedLevel(e3, t3, r2, n2) : null;
+  }, setSelected: (e3, t3, n2) => {
+    let r2 = g2.getPlantLevelConfig(e3);
+    return r2 ? c2.setSelectedLevel(e3, t3, r2, n2) : null;
+  }, getBaseCodename: (e3) => g2.getPlantLevelBaseCodename(e3), getCloneCodename: (e3, t3) => g2.getPlantLevelCloneCodename(e3, t3) }, exportJson: (...e3) => y2.exportJson(...e3), exportLevel: (...e3) => y2.exportLevel(...e3), exportLang: (...e3) => g2.exportLang(...e3), restoreOriginal: (e3) => y2.restore(e3), restoreAll: () => y2.restoreAll(), listOrigins: () => y2.listBackups(), hasOrigin: (e3) => y2.hasBackup(e3), setFrameRate: (e3) => t2.game.setFrameRate(e3), cheats: { setSun: (e3) => {
+    let n2 = t2.js.getClassByName(`SunCount`)?.component;
+    n2 && n2.setSunCount(e3);
   }, addSun: (e3) => {
-    let n3 = t2.js.getClassByName(`SunCount`)?.component;
-    n3 && n3.SunAdd(e3 || 1e3);
+    let n2 = t2.js.getClassByName(`SunCount`)?.component;
+    n2 && n2.SunAdd(e3 || 1e3);
   }, winLevel: () => {
-    let e3 = t2.js.getClassByName(`levelController`), n3 = e3 ? t2.director.getScene()?.getComponentInChildren(e3) : null;
-    n3 && n3.victory();
-  } }, _toast: g, debug: { getPlantRegistry: () => m2.getPlantRegistryDebug(), getPlantLevels: () => m2.getPlantLevelSystemDebug(), getPlantLevelBadges: () => m2.getPlantLevelBadgeDebug() }, help: () => {
-    console.log(`[GP Next] ========================================`), console.log(`[GP Next] GP-Next (Gardendless Patcher Next) v` + y), console.log(`[GP Next] Game Version: 0.14.0`), console.log(`[GP Next] Client Edition: ` + oe), console.log(`[GP Next] ========================================`), console.log(``), console.log(`[GP Next] UI:`), console.log(`[GP Next]   .toggle()                   - Toggle overlay panel (${Ze()})`), console.log(``), console.log(`[GP Next] PATCHER:`), console.log(`[GP Next]   .init()                     - Load all patches`), console.log(`[GP Next]   .reload()                   - Reload all patches from disk`), console.log(`[GP Next]   .status()                   - Show patcher status`), console.log(`[GP Next]   .setObjectsData(Type, alias, key, val)`), console.log(`[GP Next]   .setObjectsData(Type, alias, {key: val})`), console.log(`[GP Next]   .debug.getPlantRegistry()   - Inspect dynamic plant registry`), console.log(`[GP Next]   .debug.getPlantLevels()     - Inspect plant level registry`), console.log(`[GP Next]   .debug.getPlantLevelBadges()- Inspect level badge patch status`), console.log(`[GP Next]   .mods.status()              - Show JS mod runtime status`), console.log(`[GP Next]   .mods.reload()              - Reload JS mods from current pack set`), console.log(`[GP Next]   .plantLevels.status()       - Show plant level registry status`), console.log(`[GP Next]   .plantLevels.get(base)      - Read one plant level save entry`), console.log(`[GP Next]   .plantLevels.setUnlocked(base, level)`), console.log(`[GP Next]   .plantLevels.setSelected(base, level)`), console.log(``), console.log(`[GP Next] DATA:`), console.log(`[GP Next]   .exportJson(Type, useOriginal?, autoDownload?)`), console.log(`[GP Next]   .exportLevel(levelId, autoDownload?)`), console.log(`[GP Next]   .exportLang(useOriginal?, autoDownload?)`), console.log(`[GP Next]   .restoreOriginal(Type)      - Restore one type`), console.log(`[GP Next]   .restoreAll()               - Restore all types`), console.log(`[GP Next]   .listOrigins()              - List backed up types`), console.log(`[GP Next]   .hasOrigin(Type)            - Check if backup exists`), console.log(``), console.log(`[GP Next] GAME:`), console.log(`[GP Next]   .setFrameRate(fps)          - Change frame rate`), console.log(``), console.log(`[GP Next] CHEATS:`), console.log(`[GP Next]   .cheats.setSun(value)       - Set sun count`), console.log(`[GP Next]   .cheats.addSun(value)       - Add sun (default 1000)`), console.log(`[GP Next]   .cheats.winLevel()          - Win current level`), console.log(``);
-    let e3 = String(v2 || ``).replace(/[\\/]+$/, ``);
-    console.log(`[GP Next] Patch files: ` + e3 + `/patches`), console.log(`[GP Next] Docs: ` + rt());
-  } }), $ = `ready`, K.info(`Phase 4 complete \u2014 GP-Next fully initialized. Run gpNext.help() for commands.`);
+    let e3 = t2.js.getClassByName(`levelController`), n2 = e3 ? t2.director.getScene()?.getComponentInChildren(e3) : null;
+    n2 && n2.victory();
+  } }, _toast: C, debug: { getPlantRegistry: () => g2.getPlantRegistryDebug(), getPlantLevels: () => g2.getPlantLevelSystemDebug(), getPlantLevelBadges: () => g2.getPlantLevelBadgeDebug() }, help: () => {
+    console.log(`[GP Next] ========================================`), console.log(`[GP Next] GP-Next (Gardendless Patcher Next) v` + s), console.log(`[GP Next] Game Version: 0.16.1`), console.log(`[GP Next] Client Edition: ` + re), console.log(`[GP Next] ========================================`), console.log(``), console.log(`[GP Next] UI:`), console.log(`[GP Next]   .toggle()                   - Toggle overlay panel (${ot()})`), console.log(``), console.log(`[GP Next] PATCHER:`), console.log(`[GP Next]   .init()                     - Load all patches`), console.log(`[GP Next]   .reload()                   - Reload all patches from disk`), console.log(`[GP Next]   .status()                   - Show patcher status`), console.log(`[GP Next]   .setObjectsData(Type, alias, key, val)`), console.log(`[GP Next]   .setObjectsData(Type, alias, {key: val})`), console.log(`[GP Next]   .debug.getPlantRegistry()   - Inspect dynamic plant registry`), console.log(`[GP Next]   .debug.getPlantLevels()     - Inspect plant level registry`), console.log(`[GP Next]   .debug.getPlantLevelBadges()- Inspect level badge patch status`), console.log(`[GP Next]   .mods.status()              - Show JS mod runtime status`), console.log(`[GP Next]   .mods.reload()              - Reload JS mods from current pack set`), console.log(`[GP Next]   .plantLevels.status()       - Show plant level registry status`), console.log(`[GP Next]   .plantLevels.get(base)      - Read one plant level save entry`), console.log(`[GP Next]   .plantLevels.setUnlocked(base, level)`), console.log(`[GP Next]   .plantLevels.setSelected(base, level)`), console.log(``), console.log(`[GP Next] DATA:`), console.log(`[GP Next]   .exportJson(Type, useOriginal?, autoDownload?)`), console.log(`[GP Next]   .exportLevel(levelId, autoDownload?)`), console.log(`[GP Next]   .exportLang(useOriginal?, autoDownload?)`), console.log(`[GP Next]   .restoreOriginal(Type)      - Restore one type`), console.log(`[GP Next]   .restoreAll()               - Restore all types`), console.log(`[GP Next]   .listOrigins()              - List backed up types`), console.log(`[GP Next]   .hasOrigin(Type)            - Check if backup exists`), console.log(``), console.log(`[GP Next] GAME:`), console.log(`[GP Next]   .setFrameRate(fps)          - Change frame rate`), console.log(``), console.log(`[GP Next] CHEATS:`), console.log(`[GP Next]   .cheats.setSun(value)       - Set sun count`), console.log(`[GP Next]   .cheats.addSun(value)       - Add sun (default 1000)`), console.log(`[GP Next]   .cheats.winLevel()          - Win current level`), console.log(``);
+    let e3 = String(x2 || ``).replace(/[\\/]+$/, ``);
+    console.log(`[GP Next] Patch files: ` + e3 + `/patches`), console.log(`[GP Next] Docs: ` + pt());
+  } }), window.__TAURI_INTERNALS__ && await (await n(async () => {
+    let { reportCloudStartup: e3 } = await import("./platform/CloudColdHost.js");
+    return { reportCloudStartup: e3 };
+  }, __vite__mapDeps([70, 1, 47, 5, 66, 7, 51, 67, 59, 58, 38, 9, 8, 16, 13]))).reportCloudStartup(true), $ = `ready`, K.info(`Phase 4 complete \u2014 GP-Next fully initialized. Run gpNext.help() for commands.`);
 })().catch(async (e2) => {
-  if (ue()) {
-    let t3 = await j(e2), { showStartupFailure: n2 } = await r(async () => {
-      let { showStartupFailure: e3 } = await import("./runtime/CocosStartup.js");
+  if (r()) {
+    let t3 = await i(e2), { showStartupFailure: r2 } = await n(async () => {
+      let { showStartupFailure: e3 } = await import("./GameBootstrap.js").then((e4) => e4.r);
       return { showStartupFailure: e3 };
-    }, __vite__mapDeps([73, 74]));
-    window.cc?.game?.pause(), n2(t3);
+    }, __vite__mapDeps([47, 5, 1]));
+    window.cc?.game?.pause(), r2(t3);
   }
   let t2 = e2?.stack || e2;
-  K.error(`Initialization failed at ${$}: ${t2}`), dt(e2);
+  K.error(`Initialization failed at ${$}: ${t2}`), bt(e2);
 });

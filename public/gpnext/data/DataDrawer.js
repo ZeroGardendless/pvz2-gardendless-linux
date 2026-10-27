@@ -1,7 +1,8 @@
-import { a as e } from "../ui/Translations.js";
-import { n as t } from "../ui/Toast.js";
-import { n, r } from "../ui/Components.js";
-import { A as i, C as a, E as o, I as s, T as c, j as l } from "../mods/FileLoader.js";
+import { n as e, r as t, u as n } from "../mods/GameConfiguration.js";
+import { o as r } from "../ui/Translations.js";
+import { n as i, r as a } from "../ui/Components.js";
+import { n as o } from "../ui/Toast.js";
+import { d as s, f as c, l } from "../mods/FileLoader.js";
 function u(e2) {
   let t2 = JSON.stringify(e2, null, 2);
   return { draft: t2, savedDraft: t2, saved: null, savedLoaded: false, tab: `tree`, expanded: false, leftSource: `original`, rightSource: `current`, onlyChanged: false, syncScroll: true, scroll: {}, treeCollapsed: /* @__PURE__ */ new Set(), selectionStart: 0, selectionEnd: 0, selectionDirection: `none`, editorScrollTop: 0, editorScrollLeft: 0, error: ``, saving: false };
@@ -25,10 +26,10 @@ function h(e2, t2) {
   return r2(e2 === void 0 ? d : e2, t2 === void 0 ? d : t2, ``), n2;
 }
 var g = /* @__PURE__ */ new Map(), _, v, y, b, x, S, C, w, T, E, D, O = false;
-function k(e2, t2, n2) {
-  if (!e2) return null;
-  let r2 = i.find((e3) => e3.type === t2);
-  return r2 ? s(r2, e2, n2)?.entry ?? null : e2.objects ? e2.objects.find((e3) => e3.aliases?.[0] === n2) ?? null : e2[n2] ?? null;
+function k(t2, r2, i2) {
+  if (!t2) return null;
+  let a2 = e.find((e2) => e2.type === r2);
+  return a2 ? n(a2, t2, i2)?.entry ?? null : t2.objects ? t2.objects.find((e2) => e2.aliases?.[0] === i2) ?? null : t2[i2] ?? null;
 }
 function A() {
   return k(v?.getCurrent(y), y, b.id);
@@ -48,36 +49,36 @@ function P(e2, t2, n2) {
   let r2 = document.createElement(`button`);
   return r2.type = `button`, r2.className = `gp-data-icon`, r2.setAttribute(`aria-label`, e2), r2.title = e2, r2.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="${t2}"/></svg>`, r2.addEventListener(`click`, n2), r2;
 }
-function F(t2, r2, i2, a2, o2, s2) {
-  j(), v = r2, y = i2, b = a2, x = s2;
-  let c2 = JSON.stringify([i2, a2.id]);
+function F(e2, t2, n2, a2, o2, s2) {
+  j(), v = t2, y = n2, b = a2, x = s2;
+  let c2 = JSON.stringify([n2, a2.id]);
   g.has(c2) || g.set(c2, u(A())), _ = g.get(c2), O = true, o2.innerHTML = ``, o2.classList.add(`gp-data-content`), S = document.createElement(`section`), S.className = `gp-data-detail`;
   let l2 = document.createElement(`div`);
   l2.className = `gp-data-detail-header`;
-  let d2 = P(e(`data.detail.back`), `m14 6-6 6 6 6`, N), f2 = document.createElement(`strong`);
-  f2.textContent = a2.id;
-  let p2 = P(e(_.expanded ? `data.detail.narrow` : `data.detail.expand`), `M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5`, () => {
-    j(), _.expanded = !_.expanded, document.getElementById(`gp-overlay`).classList.toggle(`gp-data-expanded`, _.expanded), p2.setAttribute(`aria-label`, e(_.expanded ? `data.detail.narrow` : `data.detail.expand`)), p2.title = e(_.expanded ? `data.detail.narrow` : `data.detail.expand`);
+  let d2 = P(r(`data.detail.back`), `m14 6-6 6 6 6`, N), f2 = document.createElement(`strong`);
+  f2.textContent = a2.label || a2.id;
+  let p2 = P(r(_.expanded ? `data.detail.narrow` : `data.detail.expand`), `M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5`, () => {
+    j(), _.expanded = !_.expanded, document.getElementById(`gp-overlay`).classList.toggle(`gp-data-expanded`, _.expanded), p2.setAttribute(`aria-label`, r(_.expanded ? `data.detail.narrow` : `data.detail.expand`)), p2.title = r(_.expanded ? `data.detail.narrow` : `data.detail.expand`);
   });
   l2.append(d2, f2, p2);
   let m2 = document.createElement(`div`);
   m2.className = `gp-drawer-tabs`;
-  for (let [t3, r3] of [[`tree`, `treeView`], [`json`, `rawJson`], [`diff`, `comparison`], [`edit`, `edit`]]) {
-    let i3 = n(e(`data.drawer.${r3}`), () => {
-      j(), _.tab = t3;
-      for (let e2 of m2.children) e2.classList.toggle(`gp-active`, e2.dataset.detailTab === t3);
+  for (let [e3, t3] of [[`tree`, `treeView`], [`json`, `rawJson`], [`diff`, `comparison`], [`edit`, `edit`]]) {
+    let n3 = i(r(`data.drawer.${t3}`), () => {
+      j(), _.tab = e3;
+      for (let t4 of m2.children) t4.classList.toggle(`gp-active`, t4.dataset.detailTab === e3);
       R();
     });
-    i3.className = `gp-drawer-tab` + (_.tab === t3 ? ` gp-active` : ``), i3.dataset.detailTab = t3, m2.appendChild(i3);
+    n3.className = `gp-drawer-tab` + (_.tab === e3 ? ` gp-active` : ``), n3.dataset.detailTab = e3, m2.appendChild(n3);
   }
-  C = document.createElement(`div`), C.className = `gp-data-detail-body`, S.append(l2, m2, C), o2.appendChild(S), document.getElementById(`gp-overlay`).classList.toggle(`gp-data-expanded`, _.expanded), R(), I(_, i2, a2.id);
+  C = document.createElement(`div`), C.className = `gp-data-detail-body`, S.append(l2, m2, C), o2.appendChild(S), document.getElementById(`gp-overlay`).classList.toggle(`gp-data-expanded`, _.expanded), R(), I(_, n2, a2.id);
 }
-async function I(e2, t2, n2) {
-  if (e2.saving) return;
-  let r2 = e2.readVersion = (e2.readVersion || 0) + 1;
-  e2.savedLoaded = false, L(e2);
-  let o2 = i.some((e3) => e3.type === t2) ? `features` : `objects`, s2 = await a(l.GPN_EDITS, `jsons/${o2}/${t2}.json`);
-  e2.readVersion === r2 && (e2.saved = k(s2, t2, n2), e2.savedLoaded = true, L(e2));
+async function I(n2, r2, i2) {
+  if (n2.saving) return;
+  let a2 = n2.readVersion = (n2.readVersion || 0) + 1;
+  n2.savedLoaded = false, L(n2);
+  let o2 = e.some((e2) => e2.type === r2) ? `features` : `objects`, s2 = await l(t.GPN_EDITS, `jsons/${o2}/${r2}.json`);
+  n2.readVersion === a2 && (n2.saved = k(s2, r2, i2), n2.savedLoaded = true, L(n2));
 }
 function L(e2) {
   if (e2 !== _ || !O || e2.tab !== `diff`) return;
@@ -95,106 +96,106 @@ function R() {
   let t2 = _.scroll[_.tab];
   C.scrollTop = t2?.top || 0, C.scrollLeft = t2?.left || 0;
 }
-function z(t2) {
-  t2 !== _ || !O || (T.textContent = t2.error, E && (E.textContent = t2.draft === t2.savedDraft ? `` : e(`data.detail.unsaved`)), D && (D.disabled = t2.saving));
+function z(e2) {
+  e2 !== _ || !O || (T.textContent = e2.error, E && (E.textContent = e2.draft === e2.savedDraft ? `` : r(`data.detail.unsaved`)), D && (D.disabled = e2.saving));
 }
 function B() {
-  let i2 = _, a2 = y, s2 = b.id;
-  E = document.createElement(`span`), E.className = `gp-data-dirty`, w = document.createElement(`textarea`), w.className = `gp-textarea-edit`, w.value = i2.draft, w.spellcheck = false, w.setAttribute(`aria-label`, e(`data.detail.sourceDraft`));
-  let c2 = w;
+  let e2 = _, t2 = y, n2 = b.id;
+  E = document.createElement(`span`), E.className = `gp-data-dirty`, w = document.createElement(`textarea`), w.className = `gp-textarea-edit`, w.value = e2.draft, w.spellcheck = false, w.setAttribute(`aria-label`, r(`data.detail.sourceDraft`));
+  let s2 = w;
   w.addEventListener(`input`, () => {
-    i2.draft = c2.value, z(i2);
-  }), D = n(e(`data.drawer.save`), async () => {
-    if (i2.saving) return;
-    let n2 = i2.draft, r2;
+    e2.draft = s2.value, z(e2);
+  }), D = i(r(`data.drawer.save`), async () => {
+    if (e2.saving) return;
+    let i2 = e2.draft, a2;
     try {
-      if (r2 = JSON.parse(n2), !r2 || typeof r2 != `object` || Array.isArray(r2)) throw Error(e(`data.detail.objectRequired`));
-    } catch (t2) {
-      i2.error = `${e(`data.detail.invalidJson`)}: ${t2.message}`, z(i2);
+      if (a2 = JSON.parse(i2), !a2 || typeof a2 != `object` || Array.isArray(a2)) throw Error(r(`data.detail.objectRequired`));
+    } catch (t3) {
+      e2.error = `${r(`data.detail.invalidJson`)}: ${t3.message}`, z(e2);
       return;
     }
-    i2.error = ``, i2.saving = true, i2.readVersion = (i2.readVersion || 0) + 1, z(i2);
-    let c3 = await o(a2, s2, r2);
-    i2.saving = false, c3 ? (i2.saved = r2, i2.savedLoaded = true, i2.savedDraft = n2) : i2.error = e(`data.drawer.saveFail`), z(i2), L(i2), c3 && t(e(`data.drawer.saveSuccess`), `success`);
+    e2.error = ``, e2.saving = true, e2.readVersion = (e2.readVersion || 0) + 1, z(e2);
+    let s3 = await c(t2, n2, a2);
+    e2.saving = false, s3 ? (e2.saved = a2, e2.savedLoaded = true, e2.savedDraft = i2) : e2.error = r(`data.drawer.saveFail`), z(e2), L(e2), s3 && o(r(`data.drawer.saveSuccess`), `success`);
   }, { variant: `success` });
   let l2 = document.createElement(`div`);
-  l2.className = `gp-text-muted`, l2.textContent = e(`data.drawer.editHint`), C.append(l2, E, w, r(D)), w.setSelectionRange(i2.selectionStart, i2.selectionEnd, i2.selectionDirection), w.scrollTop = i2.editorScrollTop, w.scrollLeft = i2.editorScrollLeft, z(i2);
+  l2.className = `gp-text-muted`, l2.textContent = r(`data.drawer.editHint`), C.append(l2, E, w, a(D)), w.setSelectionRange(e2.selectionStart, e2.selectionEnd, e2.selectionDirection), w.scrollTop = e2.editorScrollTop, w.scrollLeft = e2.editorScrollLeft, z(e2);
 }
 function V() {
-  let r2 = _, i2 = y, a2 = b.id, o2 = document.createElement(`div`);
-  o2.className = `gp-data-detail-footer`;
-  let s2 = () => {
-    o2.innerHTML = ``, o2.appendChild(n(e(`data.drawer.restoreItem`), () => {
-      o2.innerHTML = ``;
+  let e2 = _, t2 = y, n2 = b.id, a2 = document.createElement(`div`);
+  a2.className = `gp-data-detail-footer`;
+  let c2 = () => {
+    a2.innerHTML = ``, a2.appendChild(i(r(`data.drawer.restoreItem`), () => {
+      a2.innerHTML = ``;
       let l2 = document.createElement(`span`);
-      l2.textContent = e(`data.drawer.restoreConfirm`), o2.append(l2, n(e(`common.cancel`), s2), n(e(`common.confirm`), async () => {
-        if (r2.saving) return;
-        r2.saving = true, r2.readVersion = (r2.readVersion || 0) + 1, z(r2);
-        let n2 = await c(i2, a2);
-        r2.saving = false, n2 ? (r2.saved = null, r2.savedDraft = ``, r2.error = ``) : r2.error = e(`data.drawer.saveFail`), z(r2), s2(), L(r2), n2 && t(e(`data.drawer.saveSuccess`), `success`);
+      l2.textContent = r(`data.drawer.restoreConfirm`), a2.append(l2, i(r(`common.cancel`), c2), i(r(`common.confirm`), async () => {
+        if (e2.saving) return;
+        e2.saving = true, e2.readVersion = (e2.readVersion || 0) + 1, z(e2);
+        let i2 = await s(t2, n2);
+        e2.saving = false, i2 ? (e2.saved = null, e2.savedDraft = ``, e2.error = ``) : e2.error = r(`data.drawer.saveFail`), z(e2), c2(), L(e2), i2 && o(r(`data.drawer.saveSuccess`), `success`);
       }, { variant: `danger` }));
     }, { variant: `danger` }));
   };
-  s2(), C.appendChild(o2);
+  c2(), C.appendChild(a2);
 }
 function H() {
-  let t2 = { original: k(v?.getOriginal(y), y, b.id), current: A(), saved: _.savedLoaded ? _.saved : null };
+  let e2 = { original: k(v?.getOriginal(y), y, b.id), current: A(), saved: _.savedLoaded ? _.saved : null };
   try {
-    t2.draft = JSON.parse(_.draft);
+    e2.draft = JSON.parse(_.draft);
   } catch {
   }
-  let n2 = Object.keys(t2).filter((e2) => t2[e2] !== null && t2[e2] !== void 0);
-  if (!n2.length) {
-    T.textContent = e(`data.noData`);
+  let t2 = Object.keys(e2).filter((t3) => e2[t3] !== null && e2[t3] !== void 0);
+  if (!t2.length) {
+    T.textContent = r(`data.noData`);
     return;
   }
-  let r2 = document.createElement(`div`);
-  r2.className = `gp-data-compare-controls`;
-  for (let [t3, i3] of [[`left`, `leftSource`], [`right`, `rightSource`]]) {
-    let a3 = n2.includes(_[i3]) ? n2 : [...n2, _[i3]], o3 = document.createElement(`select`);
-    o3.className = `gp-select`, o3.dataset.detailControl = t3, o3.setAttribute(`aria-label`, e(`data.detail.${t3}Source`));
-    for (let t4 of a3) {
-      let r3 = document.createElement(`option`);
-      r3.disabled = !n2.includes(t4), r3.value = t4, r3.textContent = e(`data.detail.source${t4[0].toUpperCase()}${t4.slice(1)}`), o3.appendChild(r3);
+  let n2 = document.createElement(`div`);
+  n2.className = `gp-data-compare-controls`;
+  for (let [e3, i3] of [[`left`, `leftSource`], [`right`, `rightSource`]]) {
+    let a3 = t2.includes(_[i3]) ? t2 : [...t2, _[i3]], o3 = document.createElement(`select`);
+    o3.className = `gp-select`, o3.dataset.detailControl = e3, o3.setAttribute(`aria-label`, r(`data.detail.${e3}Source`));
+    for (let e4 of a3) {
+      let n3 = document.createElement(`option`);
+      n3.disabled = !t2.includes(e4), n3.value = e4, n3.textContent = r(`data.detail.source${e4[0].toUpperCase()}${e4.slice(1)}`), o3.appendChild(n3);
     }
     o3.value = _[i3], o3.addEventListener(`change`, () => {
-      j(), _[i3] = o3.value, R(), C.querySelector(`[data-detail-control="${t3}"]`)?.focus({ preventScroll: true });
-    }), r2.appendChild(o3);
+      j(), _[i3] = o3.value, R(), C.querySelector(`[data-detail-control="${e3}"]`)?.focus({ preventScroll: true });
+    }), n2.appendChild(o3);
   }
-  for (let t3 of [`onlyChanged`, `syncScroll`]) {
-    let n3 = document.createElement(`label`), i3 = document.createElement(`input`);
-    i3.type = `checkbox`, i3.checked = _[t3], i3.dataset.detailControl = t3, i3.addEventListener(`change`, () => {
-      j(), _[t3] = i3.checked, R(), C.querySelector(`[data-detail-control="${t3}"]`)?.focus({ preventScroll: true });
-    }), n3.append(i3, document.createTextNode(e(`data.detail.${t3}`))), r2.appendChild(n3);
+  for (let e3 of [`onlyChanged`, `syncScroll`]) {
+    let t3 = document.createElement(`label`), i3 = document.createElement(`input`);
+    i3.type = `checkbox`, i3.className = `gp-checkbox`, i3.checked = _[e3], i3.dataset.detailControl = e3, i3.addEventListener(`change`, () => {
+      j(), _[e3] = i3.checked, R(), C.querySelector(`[data-detail-control="${e3}"]`)?.focus({ preventScroll: true });
+    }), t3.append(i3, document.createTextNode(r(`data.detail.${e3}`))), n2.appendChild(t3);
   }
-  C.appendChild(r2);
-  let i2 = [_.leftSource, _.rightSource].filter((e2) => !n2.includes(e2));
+  C.appendChild(n2);
+  let i2 = [_.leftSource, _.rightSource].filter((e3) => !t2.includes(e3));
   if (i2.length) {
-    T.textContent = e(i2.includes(`draft`) ? `data.detail.invalidDraft` : `data.detail.sourceUnavailable`);
+    T.textContent = r(i2.includes(`draft`) ? `data.detail.invalidDraft` : `data.detail.sourceUnavailable`);
     return;
   }
-  let a2 = h(t2[_.leftSource], t2[_.rightSource]).filter((e2) => !_.onlyChanged || e2.changed), o2 = document.createElement(`div`);
+  let a2 = h(e2[_.leftSource], e2[_.rightSource]).filter((e3) => !_.onlyChanged || e3.changed), o2 = document.createElement(`div`);
   o2.className = `gp-data-compare`;
-  let s2 = _, c2 = [`left`, `right`].map((t3) => {
-    let n3 = document.createElement(`div`);
-    n3.className = `gp-data-compare-pane`, n3.tabIndex = 0, n3.setAttribute(`aria-label`, e(`data.detail.${t3}Source`));
-    for (let e2 of a2) {
-      let r3 = document.createElement(`div`);
-      r3.className = `gp-data-compare-row` + (e2.changed ? ` gp-data-compare-changed` : ``);
+  let s2 = _, c2 = [`left`, `right`].map((e3) => {
+    let t3 = document.createElement(`div`);
+    t3.className = `gp-data-compare-pane`, t3.tabIndex = 0, t3.setAttribute(`aria-label`, r(`data.detail.${e3}Source`));
+    for (let n3 of a2) {
+      let r2 = document.createElement(`div`);
+      r2.className = `gp-data-compare-row` + (n3.changed ? ` gp-data-compare-changed` : ``);
       let i3 = document.createElement(`div`);
-      i3.className = `gp-data-compare-path`, i3.textContent = e2.path;
+      i3.className = `gp-data-compare-path`, i3.textContent = n3.path;
       let a3 = document.createElement(`pre`);
-      a3.textContent = e2[`${t3}Missing`] ? `\u2014` : e2[t3], a3.style.minHeight = `${e2.lines * 1.5}em`, r3.append(i3, a3), n3.appendChild(r3);
+      a3.textContent = n3[`${e3}Missing`] ? `\u2014` : n3[e3], a3.style.minHeight = `${n3.lines * 1.5}em`, r2.append(i3, a3), t3.appendChild(r2);
     }
-    return n3.addEventListener(`scroll`, () => {
-      if (!O || s2 !== _ || !C.contains(n3) || (s2.scroll[`diff-${t3}`] = { top: n3.scrollTop, left: n3.scrollLeft }, !s2.syncScroll)) return;
-      let e2 = c2[+(t3 === `left`)];
-      e2.scrollTop !== n3.scrollTop && (e2.scrollTop = n3.scrollTop), e2.scrollLeft !== n3.scrollLeft && (e2.scrollLeft = n3.scrollLeft);
-    }), o2.appendChild(n3), n3;
+    return t3.addEventListener(`scroll`, () => {
+      if (!O || s2 !== _ || !C.contains(t3) || (s2.scroll[`diff-${e3}`] = { top: t3.scrollTop, left: t3.scrollLeft }, !s2.syncScroll)) return;
+      let n3 = c2[+(e3 === `left`)];
+      n3.scrollTop !== t3.scrollTop && (n3.scrollTop = t3.scrollTop), n3.scrollLeft !== t3.scrollLeft && (n3.scrollLeft = t3.scrollLeft);
+    }), o2.appendChild(t3), t3;
   });
-  C.appendChild(o2), c2.forEach((e2, t3) => {
+  C.appendChild(o2), c2.forEach((e3, t3) => {
     let n3 = s2.scroll[`diff-${t3 === 0 ? `left` : `right`}`];
-    e2.scrollTop = n3?.top || 0, e2.scrollLeft = n3?.left || 0;
+    e3.scrollTop = n3?.top || 0, e3.scrollLeft = n3?.left || 0;
   });
 }
 function U(e2, t2) {

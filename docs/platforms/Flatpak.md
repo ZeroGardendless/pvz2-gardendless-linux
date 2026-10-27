@@ -29,7 +29,7 @@ flatpak run com.zero.gardendless
 flatpak run com.zero.gardendless --safe-graphics
 ```
 
-This is a local test package, not a Flathub submission or automatic update feed.
+This is a GitHub bundle package, not a Flathub submission or a signed remote update feed.
 Its metadata intentionally does not claim an open-source license for bundled
 game assets. Distribution/license review is still needed before a store submission.
 
@@ -44,7 +44,7 @@ The sandbox has graphics, audio and network access. It has no blanket home
 directory access; file import/export uses file dialogs. GP-Next and profile
 editors work with storage inside the sandbox. Standalone version import/download
 is disabled in Flatpak because those executables may require host libraries;
-release notes remain available. Install a new Flatpak to update the bundled game.
+the Releases page downloads the matching Flatpak bundle from GitHub, verifies its size and SHA-256, and installs it for the current user. Restart the launcher afterward. Native binaries remain unavailable in the sandbox.
 
 References: [Flatpak build documentation](https://docs.flatpak.org/en/latest/first-build.html),
 [Tauri Flatpak guide](https://v2.tauri.app/distribute/flatpak/).
@@ -81,3 +81,29 @@ submission/review process, rather than an upload destination for this bundle.
 References: [GitHub release attachments](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository),
 [Flatpak single-file bundles](https://docs.flatpak.org/en/latest/single-file-bundles.html),
 [hosting an update repository](https://docs.flatpak.org/en/latest/hosting-a-repository.html).
+
+## Launcher-managed GitHub updates
+
+The Releases page only offers `gardendless-linux-x64.flatpak` assets with a
+published GitHub SHA-256 digest. Downloads are staged, cancellable, and verified
+before installation. Installation uses `flatpak-spawn --host flatpak install
+--user --noninteractive --reinstall --bundle` with the verified local path;
+no shell or caller-supplied command is used. Saves are retained. Close the game
+before updating, then restart the launcher. System installations are shadowed
+by the updated user installation.
+
+This requires `--talk-name=org.freedesktop.Flatpak`. That permission permits host
+process execution, so it broadens the sandbox's trust boundary. The launcher
+exposes only its fixed bundle-install operation; it does not expose a generic
+host-command API. The first update from an older package must be installed
+manually, because the old manifest lacks this permission.
+
+Both X11 and Wayland sockets are available. On NVIDIA with DMA-BUF fallback,
+Automatic uses X11/XWayland when available and keeps WebGL acceleration enabled.
+A profile can explicitly choose Wayland or X11. This is a compatibility policy,
+not a guarantee about every NVIDIA driver/compositor combination.
+
+Linux audio uses one native PulseAudio/PipeWire stream, decoded off the UI
+thread. The media backend is retained as a fallback for unsupported clips or
+unavailable native output. Native playback needs the runtime's libpulse-simple
+and libpulse libraries, already included in the GNOME runtime.

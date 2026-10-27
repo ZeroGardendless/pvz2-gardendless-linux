@@ -1,4 +1,6 @@
 const paths = {
+    search: '<circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/>',
+    copy: '<rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V3H3v13h5"/>',
     menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
     leaf: '<path d="M20 4C10 2 3 6 4 13c1 6 8 7 12 3 3-3 4-8 4-12Z"/><path d="m4 21 11-11"/>',
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
@@ -23,7 +25,9 @@ const paths = {
     tool: '<path d="M14 3a6 6 0 0 0-7 8L3 17a3 3 0 0 0 4 4l6-6a6 6 0 0 0 8-7l-4 4-5-5Z"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-11v1"/>',
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>',
-    refresh: '<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/>',
+    refresh: '<path d="M20 7v5h-5M20 12a8 8 0 1 1-2.34-5.66"/>',
+    releases: '<path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M3 8h18M9 12h6m-6 4h4"/>',
+    logs: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 13h8m-8 4h5"/>',
 };
 export function icon(name, className = "") {
     return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.leaf}</svg>`;

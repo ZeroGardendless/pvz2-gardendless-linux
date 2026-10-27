@@ -1,6 +1,6 @@
 import { createUuid } from "../../core/Uuid.js";
 import { l, n as button, i } from "../Components.js";
-import { a, n as documentationUrl } from "../Translations.js";
+import { o, n as documentationUrl } from "../Translations.js";
 import { n as openUrl } from "../../platform/Opener.js";
 const history = [];
 function renderUuidGenerator(container) {
@@ -34,7 +34,7 @@ function renderUuidGenerator(container) {
   };
   const actions = document.createElement("div");
   actions.className = "gp-inline-actions";
-  actions.append(button(a("guide.uuidGenerate"), generate), button("Copy UUID", async () => {
+  actions.append(button(o("guide.uuidGenerate"), generate), button("Copy UUID", async () => {
     try {
       await navigator.clipboard.writeText(value.value);
       status.textContent = "UUID copied.";
@@ -43,7 +43,7 @@ function renderUuidGenerator(container) {
       value.select();
       status.textContent = "Copy was unavailable. The UUID is selected for manual copying.";
     }
-  }), button(a("guide.docs"), async () => {
+  }), button(o("guide.docs"), async () => {
     try {
       await openUrl(documentationUrl("guide/mod"));
     } catch (error) {
@@ -55,7 +55,7 @@ function renderUuidGenerator(container) {
   });
   if (!history.length) generate();
   else showHistory();
-  container.append(l(a("guide.uuidSectionTitle"), [value, actions, list, status]));
+  container.append(l(o("guide.uuidSectionTitle"), [value, actions, list, status]));
 }
 export {
   renderUuidGenerator

@@ -2,31 +2,38 @@ var e = (e2) => [...new TextEncoder().encode(e2)].map((e3) => e3.toString(16).pa
 function n(e2) {
   let t2 = {};
   for (let [n2, r2] of [[`plant`, `PLANTS`], [`zombie`, `ZOMBIES`]]) {
-    let i = e2[`${n2}Features`]?.[r2];
-    if (!Array.isArray(i)) throw Error(`Native identity baseline is missing`);
-    let a = i.map((e3) => e3?.CODENAME);
+    let i2 = e2[`${n2}Features`]?.[r2];
+    if (!Array.isArray(i2)) throw Error(`Native identity baseline is missing`);
+    let a = i2.map((e3) => e3?.CODENAME);
     if (a.some((e3) => typeof e3 != `string` || !e3) || new Set(a).size !== a.length) throw Error(`Native identity baseline is ambiguous`);
     t2[n2] = Object.freeze(a);
   }
   return Object.freeze(t2);
 }
-function r({ original: e2, patched: r2, previousLedger: i = [] }) {
+function r({ original: e2, patched: r2, previousLedger: i2 = [] }) {
   let a = n(r2), o = /* @__PURE__ */ new Set();
-  for (let e3 of i.filter((e4) => e4.origin === `data`)) {
+  for (let e3 of i2.filter((e4) => e4.origin === `data`)) {
     if (![`plant`, `zombie`].includes(e3.kind) || e3.id !== t(e3.kind, e3.codename)) throw Error(`Invalid previous data entity identity`);
     o.add(e3.id);
   }
   let s = [];
   for (let n2 of [`plant`, `zombie`]) {
     let r3 = new Map(e2[n2].map((e3, t2) => [e3, t2]));
-    for (let [e3, i2] of a[n2].entries()) {
-      let a2 = t(n2, i2);
-      (r3.get(i2) !== e3 || o.has(a2)) && s.push(Object.freeze({ id: a2, kind: n2, engineId: e3, codename: i2, origin: `data` }));
+    for (let [e3, i3] of a[n2].entries()) {
+      let a2 = t(n2, i3);
+      (r3.get(i3) !== e3 || o.has(a2)) && s.push(Object.freeze({ id: a2, kind: n2, engineId: e3, codename: i3, origin: `data` }));
     }
   }
   return Object.freeze(s);
 }
+function i(e2, t2) {
+  for (let n2 of e2) {
+    let e3 = t2[n2.kind];
+    if (e3?.[n2.codename] !== n2.engineId || e3?.[n2.engineId] !== n2.codename) throw Error(`Data entity is not registered at its saved numeric slot: ${n2.codename}`);
+  }
+}
 export {
   r as n,
+  i as r,
   n as t
 };

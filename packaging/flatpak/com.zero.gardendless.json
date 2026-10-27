@@ -3,16 +3,19 @@
   "runtime": "org.gnome.Platform",
   "runtime-version": "50",
   "sdk": "org.gnome.Sdk",
-  "sdk-extensions": ["org.freedesktop.Sdk.Extension.rust-stable"],
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable"
+  ],
   "command": "gardendless",
   "finish-args": [
     "--filesystem=~/.local/state/caelestia:ro",
     "--socket=wayland",
-    "--socket=fallback-x11",
+    "--socket=x11",
     "--socket=pulseaudio",
     "--share=ipc",
     "--share=network",
-    "--device=dri"
+    "--device=dri",
+    "--talk-name=org.freedesktop.Flatpak"
   ],
   "build-options": {
     "append-path": "/usr/lib/sdk/rust-stable/bin",
@@ -25,8 +28,15 @@
     {
       "name": "gardendless",
       "buildsystem": "simple",
-      "build-commands": ["sh packaging/flatpak/Build.sh"],
-      "sources": [{"type": "dir", "path": "source"}]
+      "build-commands": [
+        "sh packaging/flatpak/Build.sh"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "source"
+        }
+      ]
     }
   ]
 }

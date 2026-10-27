@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import ts from "typescript";
+import { transform } from "esbuild";
 
 const assetDirectory = moduleDirectory;
 const fileNames = (await listModules())
@@ -45,6 +46,8 @@ function resolveLocalModule(specifier, importingFile) {
 for (const fileName of fileNames) {
   const sourceFile = program.getSourceFile(fileName);
   if (!sourceFile) continue;
+  try { await transform(sourceFile.text, {loader: "js", format: "esm", target: "esnext"}); }
+  catch(error) { console.error(`${fileName}: ${error.message}`); process.exitCode = 1; }
 
   function visit(node) {
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {

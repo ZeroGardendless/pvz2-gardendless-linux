@@ -1,49 +1,63 @@
-import { a as e, n as t } from "../Translations.js";
-import { n } from "../Toast.js";
-import { a as r, l as i, n as a, o, t as s } from "../Components.js";
-import { F } from "../../mods/FileLoader.js";
-import { t as l } from "../../core/ClientEdition.js";
-import { n as u } from "../../platform/Opener.js";
-import { t as d } from "./Pages.js";
-import { renderGeneralSettings } from "./Settings.js";
-function p() {
-  let i2 = a(e(`guide.docs`), async () => {
-    try {
-      await u(t(`guide/mod`));
-    } catch (e2) {
-      n(String(e2), `error`);
-    }
-  }, { className: `gp-navigation-row` });
-  return i2.appendChild(r(`M14 4h6v6M20 4 10 14M10 4H4v16h16v-6`)), i2;
-}
-var m = `0.14.0`;
-function h(t2) {
-  let n2 = [], r2 = document.createElement(`div`);
-  r2.className = `gp-list-item`;
-  let a2 = document.createElement(`span`);
-  a2.textContent = e(`about.patcherVersion`), r2.appendChild(a2), r2.appendChild(s(`v` + F, `info`)), n2.push(r2);
-  let o2 = document.createElement(`div`);
-  o2.className = `gp-list-item`;
-  let u2 = document.createElement(`span`);
-  u2.textContent = e(`about.gameVersion`), o2.appendChild(u2), o2.appendChild(s(m, `info`)), n2.push(o2);
-  let d2 = document.createElement(`div`);
-  d2.className = `gp-list-item`;
-  let f2 = document.createElement(`span`);
-  f2.textContent = e(`about.clientEdition`), d2.appendChild(f2), d2.appendChild(s(e(`about.clientEdition.${l}`), `info`)), n2.push(d2);
-  let p2 = document.createElement(`div`);
-  p2.className = `gp-list-item`;
-  let h2 = document.createElement(`span`);
-  h2.textContent = e(`about.createdBy`), p2.appendChild(h2);
-  let g2 = document.createElement(`span`);
-  g2.textContent = `LingMo`, g2.style.cssText = `color:inherit;`, p2.appendChild(g2), n2.push(p2);
-  let _ = i(e(`about.title`), n2);
-  t2.appendChild(_);
+import { o as translate, n as docsUrl } from "../Translations.js";
+import { a, o as navButton, i } from "../Components.js";
+import { n as openUrl } from "../../platform/Opener.js";
+import { t } from "./Pages.js";
+import { renderSettingsGroup, renderFrameRate } from "./Settings.js";
+import { renderAppearance } from "../Appearance.js";
+import { renderAudioTuning } from "../../audio/AudioTuning.js";
+import { renderWidescreenSettings } from "../../runtime/Widescreen.js";
+import { renderRenderingSettings } from "../../runtime/Rendering.js";
+import { renderPreferenceTransfer } from "../tools/PreferenceTransfer.js";
+import { render } from "./About.js";
+const sections = [
+  ["appearance", "settings.appearance", "Accent, transparency, spacing and motion", "M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h2a6 6 0 0 0-3-10Z"],
+  ["graphics", "settings.gameplay", "Frame rate, render resolution and widescreen", "M3 4h18v13H3ZM8 21h8m-4-4v4"],
+  ["controls", "settings.overlayHotkey", "Overlay, trainer shortcuts and scrolling", "M3 6h18v12H3Zm4 4h1m3 0h1m3 0h1M7 14h10"],
+  ["audio", "settings.audio", "Audio engine and fallback preferences", "M4 9h4l5-4v14l-5-4H4Zm12-1a6 6 0 0 1 0 8"],
+  ["game", "settings.general", "Translations and runtime extensions", "M4 5h16v14H4Zm4 4h8m-8 4h5"],
+  ["backup", "preferences.title", "Import, export and diagnostic preferences", "M4 16v4h16v-4M12 3v12m-4-4 4 4 4-4"]
+];
+let pages;
+function openPreferencesRoot() {
+  pages?.onBack();
 }
 function createPreferencesTab() {
-  return d({ root: { render(t2, n2) {
-    renderGeneralSettings(t2), t2.appendChild(p()), t2.appendChild(o(e(`tab.about`), () => n2(`about`)));
-  } }, about: { labelKey: `tab.about`, render: h } });
+  pages = t({
+    root: { render(container, navigate) {
+      container.classList.add("gp-preferences-index");
+      for (const [id, key, description, path] of sections) {
+        const button = navButton(translate(key), () => navigate(id));
+        button.classList.add("gp-preference-link");
+        const copy = document.createElement("span"), title = document.createElement("strong"), detail = document.createElement("small");
+        title.textContent = translate(key);
+        detail.textContent = description;
+        copy.append(title, detail);
+        button.replaceChildren(a(path), copy, a("m9 6 6 6-6 6"));
+        container.append(button);
+      }
+      container.append(navButton(translate("guide.docs"), () => openUrl(docsUrl("guide/mod"))), navButton(translate("tab.about"), () => navigate("about")));
+    } },
+    appearance: { labelKey: "settings.appearance", render(container) {
+      renderSettingsGroup(container, "appearance");
+      renderAppearance(container);
+    } },
+    graphics: { labelKey: "settings.gameplay", render(container) {
+      renderRenderingSettings(container);
+      renderFrameRate(container);
+      renderWidescreenSettings(container);
+    } },
+    controls: { labelKey: "settings.overlayHotkey", render: (container) => renderSettingsGroup(container, "controls") },
+    audio: { labelKey: "settings.audio", render: renderAudioTuning },
+    game: { labelKey: "settings.general", render: (container) => renderSettingsGroup(container, "game") },
+    backup: { labelKey: "preferences.title", render(container) {
+      renderSettingsGroup(container, "backup");
+      renderPreferenceTransfer(container);
+    } },
+    about: { labelKey: "tab.about", render }
+  });
+  return pages;
 }
 export {
-  createPreferencesTab
+  createPreferencesTab,
+  openPreferencesRoot
 };

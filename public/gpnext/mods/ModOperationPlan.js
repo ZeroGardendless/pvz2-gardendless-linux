@@ -4,84 +4,84 @@ function e(e2) {
 function t(e2) {
   return Array.isArray(e2) ? [...new Set(e2.map((e3) => String(e3 || ``).trim()).filter(Boolean))] : [];
 }
-function n(n2 = []) {
-  let r2 = Array.isArray(n2) ? n2.filter((e2) => e2 && e2.enabled !== false) : [], i2 = new Set(r2.map(e).filter(Boolean)), a2 = /* @__PURE__ */ new Map(), o2 = /* @__PURE__ */ new Map();
-  for (let t2 of r2) {
+function n(n2 = [], { attempt: r2 = false } = {}) {
+  let i2 = Array.isArray(n2) ? n2.filter((e2) => e2 && e2.enabled !== false) : [], a2 = new Set(i2.map(e).filter(Boolean)), o2 = /* @__PURE__ */ new Map(), s2 = /* @__PURE__ */ new Map();
+  for (let t2 of i2) {
     let n3 = e(t2);
     if (n3) {
-      if (a2.has(n3)) {
-        o2.set(n3, { pack: t2, errors: [`Duplicate mod namespace: ${n3}`], warnings: [] });
+      if (o2.has(n3)) {
+        s2.set(n3, { pack: t2, errors: [`Duplicate mod namespace: ${n3}`], warnings: [] });
         continue;
       }
-      a2.set(n3, t2), t2.preflightErrors?.length && o2.set(n3, { pack: t2, errors: [...t2.preflightErrors], warnings: [] });
+      o2.set(n3, t2), t2.preflightErrors?.length && s2.set(n3, { pack: t2, errors: [...t2.preflightErrors], warnings: [] });
     }
   }
-  let s2 = /* @__PURE__ */ new Map();
-  for (let [e2, n3] of a2) {
-    if (o2.has(e2)) continue;
-    let r3 = t(n3?.meta?.depends), c3 = t(n3?.meta?.optionalDepends), l3 = r3.filter((e3) => !i2.has(e3));
-    if (l3.length > 0) {
-      o2.set(e2, { pack: n3, errors: [`Missing required dependencies: ${l3.join(`, `)}`], warnings: [] });
+  let c2 = /* @__PURE__ */ new Map();
+  for (let [e2, n3] of o2) {
+    if (s2.has(e2)) continue;
+    let i3 = t(n3?.meta?.depends), l3 = t(n3?.meta?.optionalDepends), u3 = i3.filter((e3) => !a2.has(e3));
+    if (!r2 && u3.length > 0) {
+      s2.set(e2, { pack: n3, errors: [`Missing required dependencies: ${u3.join(`, `)}`], warnings: [] });
       continue;
     }
-    s2.set(e2, { required: r3.filter((e3) => a2.has(e3)), optional: c3.filter((e3) => a2.has(e3)) });
+    c2.set(e2, { required: i3.filter((e3) => o2.has(e3)), optional: l3.filter((e3) => o2.has(e3)) });
   }
-  let c2 = () => {
+  let l2 = () => {
     let e2 = true;
     for (; e2; ) {
       e2 = false;
-      for (let [t2, n3] of s2) {
-        if (o2.has(t2)) continue;
-        let r3 = n3.required.filter((e3) => o2.has(e3));
-        r3.length !== 0 && (o2.set(t2, { pack: a2.get(t2), errors: [`Dependencies failed to load: ${r3.join(`, `)}`], warnings: [] }), e2 = true);
+      for (let [t2, n3] of c2) {
+        if (s2.has(t2)) continue;
+        let r3 = n3.required.filter((e3) => s2.has(e3));
+        r3.length !== 0 && (s2.set(t2, { pack: o2.get(t2), errors: [`Dependencies failed to load: ${r3.join(`, `)}`], warnings: [] }), e2 = true);
       }
     }
   };
-  c2();
-  let l2 = /* @__PURE__ */ new Set(), u2 = /* @__PURE__ */ new Set(), d2 = /* @__PURE__ */ new Set(), f2 = (e2, t2 = []) => {
-    if (o2.has(e2) || u2.has(e2)) return;
-    if (l2.has(e2)) {
+  r2 || l2();
+  let u2 = /* @__PURE__ */ new Set(), d2 = /* @__PURE__ */ new Set(), f2 = /* @__PURE__ */ new Set(), p = (e2, t2 = []) => {
+    if (s2.has(e2) || d2.has(e2)) return;
+    if (u2.has(e2)) {
       let n4 = t2.indexOf(e2);
-      for (let e3 of t2.slice(Math.max(0, n4))) d2.add(e3);
-      d2.add(e2);
+      for (let e3 of t2.slice(Math.max(0, n4))) f2.add(e3);
+      f2.add(e2);
       return;
     }
-    l2.add(e2);
-    let n3 = [...t2, e2], r3 = s2.get(e2) || { required: [], optional: [] };
-    for (let e3 of r3.required) f2(e3, n3);
-    l2.delete(e2), u2.add(e2);
+    u2.add(e2);
+    let n3 = [...t2, e2], r3 = c2.get(e2) || { required: [], optional: [] };
+    for (let e3 of r3.required) p(e3, n3);
+    u2.delete(e2), d2.add(e2);
   };
-  for (let e2 of a2.keys()) f2(e2);
-  for (let e2 of d2) o2.set(e2, { pack: a2.get(e2), errors: [`Circular mod dependency involving: ${[...d2].join(`, `)}`], warnings: [] });
-  c2();
-  let p = /* @__PURE__ */ new Map();
-  for (let [e2, t2] of s2) p.set(e2, [...t2.required]);
-  let m = (e2, t2, n3 = /* @__PURE__ */ new Set()) => e2 === t2 ? true : n3.has(e2) ? false : (n3.add(e2), (p.get(e2) || []).some((e3) => m(e3, t2, n3)));
-  for (let [e2, t2] of s2) {
-    if (o2.has(e2)) continue;
-    let n3 = p.get(e2);
-    for (let r3 of t2.optional) o2.has(r3) || n3.includes(r3) || m(r3, e2) || n3.push(r3);
+  for (let e2 of o2.keys()) p(e2);
+  for (let e2 of r2 ? [] : f2) s2.set(e2, { pack: o2.get(e2), errors: [`Circular mod dependency involving: ${[...f2].join(`, `)}`], warnings: [] });
+  r2 || l2();
+  let m = /* @__PURE__ */ new Map();
+  for (let [e2, t2] of c2) m.set(e2, [...t2.required]);
+  let h = (e2, t2, n3 = /* @__PURE__ */ new Set()) => e2 === t2 ? true : n3.has(e2) ? false : (n3.add(e2), (m.get(e2) || []).some((e3) => h(e3, t2, n3)));
+  for (let [e2, t2] of c2) {
+    if (s2.has(e2)) continue;
+    let n3 = m.get(e2);
+    for (let r3 of t2.optional) s2.has(r3) || n3.includes(r3) || h(r3, e2) || n3.push(r3);
   }
-  let h = [], g = /* @__PURE__ */ new Set(), _ = /* @__PURE__ */ new Set(), v = (e2) => {
-    if (!(o2.has(e2) || _.has(e2) || g.has(e2))) {
-      g.add(e2);
-      for (let t2 of p.get(e2) || []) v(t2);
-      g.delete(e2), _.add(e2), h.push(a2.get(e2));
+  let g = [], _ = /* @__PURE__ */ new Set(), v = /* @__PURE__ */ new Set(), y = (e2) => {
+    if (!(s2.has(e2) || v.has(e2) || _.has(e2))) {
+      _.add(e2);
+      for (let t2 of m.get(e2) || []) y(t2);
+      _.delete(e2), v.add(e2), g.push(o2.get(e2));
     }
   };
-  for (let e2 of a2.keys()) v(e2);
-  let y = /* @__PURE__ */ new Map();
-  for (let e2 of a2.keys()) {
+  for (let e2 of o2.keys()) y(e2);
+  let b = /* @__PURE__ */ new Map();
+  for (let e2 of o2.keys()) {
     let t2 = /* @__PURE__ */ new Set(), n3 = (e3) => {
-      for (let r3 of s2.get(e3)?.required || []) t2.has(r3) || (t2.add(r3), n3(r3));
+      for (let r3 of c2.get(e3)?.required || []) t2.has(r3) || (t2.add(r3), n3(r3));
     };
-    n3(e2), y.set(e2, [...t2]);
+    n3(e2), b.set(e2, [...t2]);
   }
-  return { ordered: h, blocked: o2, required: y };
+  return { ordered: g, blocked: s2, required: b };
 }
-function r(e2 = []) {
-  let t2 = n(e2);
-  return { required: t2.required, ordered: t2.ordered.filter((e3) => e3?.meta?.js?.entry), blocked: new Map([...t2.blocked].filter(([, e3]) => e3.pack?.meta?.js?.entry)) };
+function r(e2 = [], t2 = {}) {
+  let r2 = n(e2, t2);
+  return { required: r2.required, ordered: r2.ordered.filter((e3) => e3?.meta?.js?.entry), blocked: new Map([...r2.blocked].filter(([, e3]) => e3.pack?.meta?.js?.entry)) };
 }
 function i(e2) {
   let t2 = structuredClone(e2), n2 = (e3) => !e3 || typeof e3 != `object` || Object.isFrozen(e3) ? e3 : (Object.values(e3).forEach(n2), Object.freeze(e3));
@@ -97,6 +97,7 @@ function o(e2) {
     if (typeof n2.id != `string` || !n2.id.trim() || t2.has(n2.id)) throw Error(`Configuration requires unique stable mod identities`);
     if (typeof n2.version != `string` || !/^[a-f0-9]{64}$/i.test(n2.contentDigest)) throw Error(`Missing captured content identity: ${n2.id}`);
     if (typeof n2.enabled != `boolean`) throw Error(`Missing enabled state: ${n2.id}`);
+    if (n2.suspendedByJsModding !== void 0 && (n2.suspendedByJsModding !== true || n2.enabled)) throw Error(`Invalid suspended JS selection: ${n2.id}`);
     t2.add(n2.id);
   }
   return e2;

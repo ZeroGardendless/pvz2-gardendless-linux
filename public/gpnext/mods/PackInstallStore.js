@@ -1,6 +1,6 @@
-import { a as e, c as t, d as n, i as r, l as i, n as a, r as o, s, t as c } from "../platform/FileSystem.js";
+import { a as e, c as t, f as n, i as r, n as i, r as a, s as o, t as s, u as c } from "../platform/FileSystem.js";
 import { n as l, t as u } from "./PackSnapshot.js";
-var d = `gp-next/installed`, f = { baseDir: n.AppData }, p = { exists: (e2) => c(e2, f), mkdir: (e2) => o(e2, { ...f, recursive: true }), readDir: (e2) => r(e2, f), readFile: (t2) => e(t2, f), writeFile: (e2, t2) => i(e2, t2, f), lstat: (e2) => a(e2, f), rename: (e2, r2) => t(e2, r2, { oldPathBaseDir: n.AppData, newPathBaseDir: n.AppData }), remove: (e2) => s(e2, { ...f, recursive: true }) }, m = (e2, t2, n2) => Object.assign(Error(t2), { code: e2, path: n2 });
+var d = `gp-next/installed`, f = { baseDir: n.AppData }, p = { exists: (e2) => s(e2, f), mkdir: (e2) => a(e2, { ...f, recursive: true }), readDir: (e2) => r(e2, f), readFile: (t2) => e(t2, f), writeFile: (e2, t2) => c(e2, t2, f), lstat: (e2) => i(e2, f), rename: (e2, r2) => t(e2, r2, { oldPathBaseDir: n.AppData, newPathBaseDir: n.AppData }), remove: (e2) => o(e2, { ...f, recursive: true }) }, m = (e2, t2, n2) => Object.assign(Error(t2), { code: e2, path: n2 });
 function h(e2) {
   if (typeof e2 != `string` || !/^[a-f0-9]{64}$/.test(e2)) throw m(`INSTALL_INVALID_DIGEST`, `Invalid package digest`);
 }
@@ -16,16 +16,16 @@ function createPackInstallStore(e2 = p) {
       if (i2.isSymlink || !i2.isDirectory) throw m(`INSTALL_INVALID_PATH`, `Cache path is not a regular directory`, r3);
     }
   }
-  async function r2(t3) {
+  async function r2(t3, { allowContentMismatch: n3 = false } = {}) {
     h(t3);
-    let n3 = `${d}/${t3}`;
-    if (!await e2.exists(n3) && (!await e2.exists(d) || !(await e2.readDir(d)).some((e3) => e3.name === t3))) return null;
+    let r3 = `${d}/${t3}`;
+    if (!await e2.exists(r3) && (!await e2.exists(d) || !(await e2.readDir(d)).some((e3) => e3.name === t3))) return null;
     try {
-      let r3 = await u(n3, e2);
-      if (r3.digest !== t3) throw Error(`Package digest does not match stored bytes`);
-      return r3;
+      let i2 = await u(r3, e2);
+      if (!n3 && i2.digest !== t3) throw Error(`Package digest does not match stored bytes`);
+      return i2;
     } catch (e3) {
-      throw Object.assign(m(`INSTALL_CORRUPT`, `Installed package is corrupt`, n3), { cause: e3 });
+      throw Object.assign(m(`INSTALL_CORRUPT`, `Installed package is corrupt`, r3), { cause: e3 });
     }
   }
   return Object.freeze({ read: r2, install(i2, { signal: a2 } = {}) {
@@ -76,6 +76,23 @@ function createPackInstallStore(e2 = p) {
     });
     return t2 = c2.catch(() => {
     }), c2;
+  }, collectUnused(r3) {
+    let i2 = /* @__PURE__ */ new Set(), a2 = (e3) => {
+      !e3 || typeof e3 != `object` || (typeof e3.contentDigest == `string` && i2.add(e3.contentDigest), Object.values(e3).forEach(a2));
+    };
+    a2(r3);
+    let o2 = t2.then(async () => {
+      if (await e2.exists(d)) {
+        await n2(d);
+        for (let t3 of await e2.readDir(d)) {
+          if (!/^[a-f0-9]{64}$/.test(t3.name) || i2.has(t3.name)) continue;
+          let r4 = `${d}/${t3.name}`;
+          await n2(r4), await e2.remove(r4);
+        }
+      }
+    });
+    return t2 = o2.catch(() => {
+    }), o2;
   }, async inspect() {
     if (await t2, !await e2.exists(d)) return [];
     await n2(d);

@@ -1,5 +1,5 @@
 import { isJsModdingRuntimeEnabled } from "../../core/SettingsStore.js";
-import { a as t } from "../Translations.js";
+import { o as t } from "../Translations.js";
 import { f as n, i as r, l as i, n as a, s as o, t as s, u as c } from "../Components.js";
 import { t as l } from "../../mods/ModControlsRegistry.js";
 var u = null;
@@ -46,27 +46,24 @@ function p(e2, r2) {
 function m(e2) {
   let n2 = (u?.getStatus() || []).map((e3) => {
     let n3 = document.createElement(`div`);
-    n3.className = `gp-list-item`;
-    let r2 = document.createElement(`div`);
-    r2.style.cssText = `display:flex;flex-direction:column;gap:2px;min-width:0;`;
-    let i2 = document.createElement(`span`);
-    if (i2.className = `gp-text-mono`, i2.textContent = e3.name, r2.appendChild(i2), e3.entry) {
+    n3.className = `gp-mod-runtime-card`;
+    let i2 = document.createElement(`div`);
+    i2.className = `gp-mod-runtime-info`;
+    let a2 = document.createElement(`span`);
+    a2.className = `gp-mod-runtime-name`, a2.textContent = e3.name, i2.appendChild(a2);
+    let o2 = r([e3.entry, `API v${e3.apiVersion || `?`}`].filter(Boolean).join(` \xB7 `));
+    if (o2.classList.add(`gp-mod-runtime-meta`), i2.appendChild(o2), e3.warnings?.length > 0) {
       let t2 = document.createElement(`span`);
-      t2.className = `gp-text-muted`, t2.textContent = e3.entry, r2.appendChild(t2);
-    }
-    if (e3.warnings?.length > 0) {
-      let t2 = document.createElement(`span`);
-      t2.className = `gp-text-muted`, t2.style.color = `#ffb04d`, t2.textContent = e3.warnings[0], r2.appendChild(t2);
+      t2.className = `gp-text-muted gp-mod-runtime-message`, t2.style.color = `var(--gp-warning, #ffb04d)`, t2.textContent = e3.warnings[0], n3.appendChild(t2);
     }
     if (e3.errors?.length > 0) {
       let t2 = document.createElement(`span`);
-      t2.className = `gp-text-muted`, t2.style.color = `#ff7d7d`, t2.textContent = e3.errors[0], r2.appendChild(t2);
+      t2.className = `gp-text-muted gp-mod-runtime-message`, t2.style.color = `var(--gp-error, #ff7d7d)`, t2.textContent = e3.errors[0], n3.appendChild(t2);
     }
-    n3.appendChild(r2);
-    let a2 = document.createElement(`div`);
-    a2.style.cssText = `display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;`;
-    let o2 = e3.state === `active` ? `success` : e3.state === `degraded` ? `warning` : e3.state === `failed` ? `error` : `info`;
-    return a2.appendChild(s(t(`mods.state.${e3.state}`), o2)), a2.appendChild(s(`API v${e3.apiVersion || `?`}`, `info`)), e3.hasSettings && a2.appendChild(s(t(`mods.badge.settings`), `info`)), e3.hasControls && a2.appendChild(s(t(`mods.badge.controls`), `warning`)), e3.conflicts > 0 && a2.appendChild(s(t(`mods.badge.conflicts`, e3.conflicts), `error`)), e3.pendingTasks > 0 && a2.appendChild(s(`\u23F3 ${e3.pendingTasks}`, `warning`)), n3.appendChild(a2), n3;
+    let c2 = document.createElement(`div`);
+    c2.className = `gp-badge-group`;
+    let l2 = e3.state === `active` ? `success` : e3.state === `degraded` ? `warning` : e3.state === `failed` ? `error` : `info`;
+    return c2.appendChild(s(t(`mods.state.${e3.state}`), l2)), e3.conflicts > 0 && c2.appendChild(s(t(`mods.badge.conflicts`, e3.conflicts), `error`)), n3.prepend(i2, c2), n3;
   });
   n2.length === 0 && n2.push(r(t(`mods.empty`))), e2.appendChild(i(t(`mods.status`), n2));
 }
@@ -135,7 +132,7 @@ function renderRuntimeControls(n2, r2 = null, { loader: a2 = u, registry: o2 = l
 }
 function render(n2) {
   if (!isJsModdingRuntimeEnabled()) {
-    n2.appendChild(i(t(`mods.status`), [r(t(`experimental.jsModdingDesc`))]));
+    n2.appendChild(i(t(`mods.status`), [r(t(`mods.disabledIntro`))]));
     return;
   }
   m(n2), renderRuntimeControls(n2);

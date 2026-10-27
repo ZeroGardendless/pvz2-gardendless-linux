@@ -1,5 +1,5 @@
 import { getLauncherContext } from "../../platform/Launcher.js";
-import { a, n as documentationUrl } from "../Translations.js";
+import { o, n as documentationUrl } from "../Translations.js";
 import { n as toast } from "../Toast.js";
 import { F } from "../../mods/FileLoader.js";
 import { t } from "../../core/ClientEdition.js";
@@ -49,43 +49,43 @@ async function render(container) {
   hero.className = "gp-about-hero";
   const logo = document.createElement("img");
   logo.className = "gp-about-logo";
-  logo.src = "/assets/gpnicon.png";
+  logo.src = "/gpnicon.png";
   logo.alt = "";
   const heroCopy = document.createElement("div");
   heroCopy.className = "gp-about-hero-copy";
   const title = document.createElement("h1");
-  title.textContent = a("about.title");
+  title.textContent = o("about.title");
   const intro = document.createElement("p");
-  intro.textContent = a("about.overview");
+  intro.textContent = o("about.overview");
   heroCopy.append(title, intro);
   hero.append(logo, heroCopy);
   page.appendChild(hero);
   const meta = document.createElement("div");
   meta.className = "gp-about-meta";
   meta.append(
-    makeCard("gp-about-meta-card", a("about.patcherVersion"), `v${F}`),
-    makeCard("gp-about-meta-card", a("about.clientEdition"), a(`about.clientEdition.${t}`))
+    makeCard("gp-about-meta-card", o("about.patcherVersion"), `v${F}`),
+    makeCard("gp-about-meta-card", o("about.clientEdition"), o(`about.clientEdition.${t}`))
   );
   page.appendChild(meta);
   const features = document.createElement("div");
   features.className = "gp-about-features";
   features.append(
-    makeCard("gp-about-feature", a("tab.patcher"), a("about.feature.patches")),
-    makeCard("gp-about-feature", a("tab.data"), a("about.feature.data")),
-    makeCard("gp-about-feature", a("sections.tools"), a("about.feature.tools")),
-    makeCard("gp-about-feature", a("tab.performance"), a("about.feature.performance"))
+    makeCard("gp-about-feature", o("tab.patcher"), o("about.feature.patches")),
+    makeCard("gp-about-feature", o("tab.data"), o("about.feature.data")),
+    makeCard("gp-about-feature", o("sections.tools"), o("about.feature.tools")),
+    makeCard("gp-about-feature", o("tab.performance"), o("about.feature.performance"))
   );
   page.appendChild(features);
   const note = document.createElement("p");
   note.className = "gp-about-note";
-  note.textContent = a("about.runtimeNotice");
+  note.textContent = o("about.runtimeNotice");
   page.appendChild(note);
   const actions = document.createElement("div");
   actions.className = "gp-about-actions";
   const guide = document.createElement("button");
   guide.type = "button";
   guide.className = "gp-btn";
-  guide.textContent = a("guide.docs");
+  guide.textContent = o("guide.docs");
   guide.addEventListener("click", async () => {
     try {
       await openUrl(documentationUrl("guide/mod"));

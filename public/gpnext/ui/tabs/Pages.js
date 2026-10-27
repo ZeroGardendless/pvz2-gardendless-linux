@@ -1,4 +1,4 @@
-import { a as e } from "../Translations.js";
+import { o as e } from "../Translations.js";
 import { a as t, n, r } from "../Components.js";
 function i(i2) {
   let a = `root`, o = null, s = false, c = /* @__PURE__ */ new Map(), l = /* @__PURE__ */ new Map();

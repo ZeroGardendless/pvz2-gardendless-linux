@@ -1,5 +1,9 @@
 //! Native launcher state. Game webviews cannot invoke launcher management commands.
+pub mod gardenest;
+pub mod logs;
 mod models;
+pub mod nest;
+pub mod packages;
 pub mod releases;
 pub mod saves;
 pub use models::*;
@@ -82,59 +86,6 @@ pub fn launcher_caelestia_scheme(
     {
         Ok(None)
     }
-}
-#[tauri::command]
-pub fn launcher_gpnext_packages(
-    window: WebviewWindow,
-    app: tauri::AppHandle,
-    profile_id: String,
-) -> Result<Vec<String>, String> {
-    require_launcher(&window)?;
-    if !valid_id(&profile_id) {
-        return Err("Invalid profile".into());
-    }
-    if !app
-        .state::<LauncherStore>()
-        .library
-        .lock()
-        .map_err(|e| e.to_string())?
-        .profiles
-        .iter()
-        .any(|p| p.id == profile_id)
-    {
-        return Err("Unknown profile".into());
-    }
-    let root = app
-        .path()
-        .data_dir()
-        .map_err(|e| e.to_string())?
-        .join(if profile_id == "default" {
-            IDENTIFIER.into()
-        } else {
-            format!("{IDENTIFIER}.profile.{profile_id}")
-        })
-        .join("gp-next/packs");
-    let entries = match fs::read_dir(root) {
-        Ok(entries) => entries,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-        Err(error) => return Err(error.to_string()),
-    };
-    let mut names = Vec::new();
-    for entry in entries.flatten() {
-        let name = entry.file_name().to_string_lossy().into_owned();
-        if name.starts_with('.') || name.len() > 128 {
-            continue;
-        }
-        let Ok(kind) = entry.file_type() else {
-            continue;
-        };
-        if kind.is_dir() || kind.is_file() && name.to_ascii_lowercase().ends_with(".zip") {
-            names.push(name);
-        }
-    }
-    names.sort_unstable_by_key(|name| name.to_ascii_lowercase());
-    names.truncate(300);
-    Ok(names)
 }
 pub fn data_root(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     app.path()
@@ -241,7 +192,9 @@ pub fn validate_profile(profile: &Profile) -> Result<(), String> {
     {
         return Err("Choose a profile name of 1–64 characters.".into());
     }
-    if ![30, 60, 90, 120, 144, 165, 180, 240].contains(&profile.frame_rate)
+    if !["auto", "wayland", "x11"].contains(&profile.window_backend.as_str())
+        || ![30, 60, 90, 120, 144, 165, 180, 240].contains(&profile.frame_rate)
+        || ![100, 85, 75, 50].contains(&profile.render_scale)
         || !["none", "fog", "bushes"].contains(&profile.widescreen.as_str())
         || !["performance", "balanced", "rich"].contains(&profile.audio_profile.as_str())
     {
@@ -378,13 +331,21 @@ pub fn verify_executable(path: &Path) -> Result<(), String> {
     }
     Ok(())
 }
+fn bundled_game_version() -> String {
+    serde_json::from_str::<serde_json::Value>(include_str!(
+        "../../../public/launcher/GameMetadata.json"
+    ))
+    .ok()
+    .and_then(|value| value["version"].as_str().map(str::to_owned))
+    .unwrap_or_else(|| "Unknown game version".into())
+}
 fn snapshot(app: &tauri::AppHandle) -> Result<LauncherState, String> {
     let store = app.state::<LauncherStore>();
     let library = store.library.lock().map_err(|e| e.to_string())?.clone();
     let mut games = vec![GameEntry {
         id: "builtin".into(),
         name: "PvZ2 Gardendless".into(),
-        version: "0.15.0 · launcher edition".into(),
+        version: format!("{} · launcher edition", bundled_game_version()),
         path: std::env::current_exe()
             .map_err(|e| e.to_string())?
             .to_string_lossy()
@@ -405,7 +366,7 @@ fn snapshot(app: &tauri::AppHandle) -> Result<LauncherState, String> {
         data_dir: data_root(app)?.to_string_lossy().into(),
         platform: std::env::consts::OS.into(),
         distribution: if is_flatpak() { "flatpak" } else { "native" }.into(),
-        launcher_version: "0.15.0".into(),
+        launcher_version: env!("CARGO_PKG_VERSION").into(),
     })
 }
 #[tauri::command]
@@ -661,6 +622,13 @@ pub fn launcher_launch(
     command.current_dir(path.parent().ok_or("Missing installation folder")?);
     command.env_remove("GARDENDLESS_LAUNCH_CONTEXT");
     apply_gpu(&mut command, &profile.gpu)?;
+    #[cfg(target_os = "linux")]
+    for (backend, variable) in [("x11", "DISPLAY"), ("wayland", "WAYLAND_DISPLAY")] {
+        if profile.window_backend == backend && std::env::var_os(variable).is_none() {
+            return Err(format!("{backend} is unavailable in this session. Choose Automatic in the profile's Window backend setting."));
+        }
+    }
+    command.env("GARDENDLESS_WINDOW_BACKEND", &profile.window_backend);
     if builtin {
         let open_tab =
             open_tab.filter(|t| ["mods", "tools", "performance", "settings"].contains(&t.as_str()));

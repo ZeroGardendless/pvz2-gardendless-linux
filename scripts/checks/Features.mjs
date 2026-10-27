@@ -55,7 +55,7 @@ console.log('Passed: UUID v4, isolated recovery storage, preferences validation/
 console.log('Data search fixture: 10,000 entries / 20 queries; 100 comparisons instead of 2,000 for the repeated visible rows.');
 
 const loaderModule = await import('../../public/gpnext/mods/JsModLoader.js');
-const Loader = Object.values(loaderModule).find(value => value?.prototype?.getStatus);
+const Loader = loaderModule.createJsModLoader().constructor;
 let hookScans = 0;
 const runtimes = new Map(Array.from({length:50},(_,index)=>[String(index),{namespace:String(index),state:'active',errors:[],warnings:[],unmanagedDomains:[]}]));
 const status = Loader.prototype.getStatus.call({_runtimes:runtimes,_hookManager:{getConflicts(){hookScans++; return [{owners:['0','1']},{owners:['0','2']}];}}});

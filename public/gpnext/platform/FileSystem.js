@@ -1,4 +1,4 @@
-import { r as e, t } from "./Bridge.js";
+import { f as e, u as t } from "./CloudJson.js";
 var n;
 (function(e2) {
   e2[e2.Audio = 1] = `Audio`, e2[e2.Cache = 2] = `Cache`, e2[e2.Config = 3] = `Config`, e2[e2.Data = 4] = `Data`, e2[e2.LocalData = 5] = `LocalData`, e2[e2.Document = 6] = `Document`, e2[e2.Download = 7] = `Download`, e2[e2.Picture = 8] = `Picture`, e2[e2.Public = 9] = `Public`, e2[e2.Video = 10] = `Video`, e2[e2.Resource = 11] = `Resource`, e2[e2.Temp = 12] = `Temp`, e2[e2.AppConfig = 13] = `AppConfig`, e2[e2.AppData = 14] = `AppData`, e2[e2.AppLocalData = 15] = `AppLocalData`, e2[e2.AppCache = 16] = `AppCache`, e2[e2.AppLog = 17] = `AppLog`, e2[e2.Desktop = 18] = `Desktop`, e2[e2.Executable = 19] = `Executable`, e2[e2.Font = 20] = `Font`, e2[e2.Home = 21] = `Home`, e2[e2.Runtime = 22] = `Runtime`, e2[e2.Template = 23] = `Template`;
@@ -71,9 +71,12 @@ async function m(t2, n2, r2) {
   await e(`plugin:fs|rename`, { oldPath: t2 instanceof URL ? t2.toString() : t2, newPath: n2 instanceof URL ? n2.toString() : n2, options: r2 });
 }
 async function h(t2, n2) {
+  return a(await e(`plugin:fs|stat`, { path: t2 instanceof URL ? t2.toString() : t2, options: n2 }));
+}
+async function g(t2, n2) {
   return a(await e(`plugin:fs|lstat`, { path: t2 instanceof URL ? t2.toString() : t2, options: n2 }));
 }
-async function g(t2, n2, r2) {
+async function _(t2, n2, r2) {
   if (t2 instanceof URL && t2.protocol !== `file:`) throw TypeError(`Must be a file URL.`);
   if (n2 instanceof ReadableStream) {
     let e2 = await c(t2, { read: false, create: true, write: true, ...r2 }), i2 = n2.getReader();
@@ -88,25 +91,26 @@ async function g(t2, n2, r2) {
     }
   } else await e(`plugin:fs|write_file`, n2, { headers: { path: encodeURIComponent(t2 instanceof URL ? t2.toString() : t2), options: JSON.stringify(r2) } });
 }
-async function _(t2, n2, r2) {
+async function v(t2, n2, r2) {
   if (t2 instanceof URL && t2.protocol !== `file:`) throw TypeError(`Must be a file URL.`);
   await e(`plugin:fs|write_text_file`, new TextEncoder().encode(n2), { headers: { path: encodeURIComponent(t2 instanceof URL ? t2.toString() : t2), options: JSON.stringify(r2) } });
 }
-async function v(t2, n2) {
+async function y(t2, n2) {
   if (t2 instanceof URL && t2.protocol !== `file:`) throw TypeError(`Must be a file URL.`);
   return await e(`plugin:fs|exists`, { path: t2 instanceof URL ? t2.toString() : t2, options: n2 });
 }
 export {
   d as a,
   m as c,
-  n as d,
-  r as f,
+  v as d,
+  n as f,
   u as i,
-  g as l,
-  h as n,
+  h as l,
+  g as n,
   f as o,
+  r as p,
   l as r,
   p as s,
-  v as t,
+  y as t,
   _ as u
 };

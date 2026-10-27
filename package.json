@@ -1,7 +1,7 @@
 {
   "name": "gardendless",
   "private": true,
-  "version": "0.15.0",
+  "version": "0.16.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,12 +10,12 @@
     "gpnext:readable": "node scripts/gpnext/Format.mjs && node scripts/gpnext/NameExports.mjs",
     "gpnext:readable:check": "node scripts/gpnext/Format.mjs --check && node scripts/gpnext/NameExports.mjs --check && node scripts/checks/ModuleGraph.mjs",
     "tauri": "node scripts/assets/PatchCocos.mjs && tauri",
-    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs && npm run check:launcher",
+    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs && node scripts/checks/UpdateIntegration.mjs && node scripts/checks/Gardenest.mjs && npm run check:launcher",
     "assets:optimize": "python scripts/assets/optimize-pngs.py",
     "build:binary": "npm run check && node scripts/native/Build.mjs",
     "assets:bundle": "python scripts/assets/game-bundle.py pack",
     "check:assets": "python scripts/checks/ResourceBundle.py",
-    "check:launcher": "node --experimental-vm-modules scripts/checks/Launcher.mjs && node scripts/checks/Editors.mjs && node scripts/launcher/Themes.mjs --check && node scripts/launcher/SaveCatalog.mjs --check",
+    "check:launcher": "node --experimental-vm-modules scripts/checks/Launcher.mjs && node scripts/checks/Editors.mjs && node scripts/launcher/Themes.mjs --check && node scripts/launcher/SaveCatalog.mjs --check && node scripts/launcher/GameMetadata.mjs --check",
     "build:flatpak": "node scripts/native/Flatpak.mjs",
     "launcher:themes": "node scripts/launcher/Themes.mjs",
     "launcher:catalog": "node scripts/launcher/SaveCatalog.mjs"

@@ -1,17 +1,20 @@
-import { t as e } from "../core/Preload.js";
-import { t } from "../core/Logger.js";
-import { a as n, c as r, f as i, m as a, n as o, p as s, s as c, v as l } from "../runtime/Engine.js";
-import { n as u } from "../ui/Toast.js";
-import { c as d, d as f, o as p, r as m, s as h, t as g, u as _ } from "../platform/FileSystem.js";
-import { F as ee, l as v } from "./FileLoader.js";
-import { n as y } from "./ModVersion.js";
-import { a as b, o as x, r as S } from "./ModOperationPlan.js";
-import { i as C, n as te, r as ne } from "./ModPackPreflight.js";
-import { r as re } from "./ModSettingsRegistry.js";
-import { t as ie } from "./ModControlsRegistry.js";
-import { n as ae, r as w, t as oe } from "./ModApi.js";
-import { NATIVE_PLAYER_SAVE_KEY } from "./ModSaveProtection.js";
-function ce(e2) {
+import { l as e } from "../GameBootstrap.js";
+import { t } from "./ModOwnedData.js";
+import { c as n } from "./GameConfiguration.js";
+import { t as r } from "../core/Logger.js";
+import { a as i, o as a, r as o } from "./ModOperationPlan.js";
+import { C as s, b as c, c as l, d as u, m as d, p as f, v as p, y as m } from "../ui/Translations.js";
+import { t as h } from "./ModOwnedDataStorage.js";
+import { n as g } from "../ui/Toast.js";
+import "./PackSnapshot.js";
+import { o as _ } from "./FileLoader.js";
+import { n as v } from "./ModVersion.js";
+import { a as y, i as b, r as x } from "./ModPackPreflight.js";
+import { r as S } from "./ModSettingsRegistry.js";
+import { t as C } from "./ModControlsRegistry.js";
+import { n as w, r as T, t as ee } from "./ModApi.js";
+import { t as te } from "./ModSaveProtection.js";
+function ne(e2) {
   let t2 = /* @__PURE__ */ new Map(), n2 = [], r2 = `collecting`, i2 = () => {
     if (r2 !== `collecting`) throw Error(`Startup registration is closed`);
   }, a2 = (e3, t3) => {
@@ -71,7 +74,7 @@ function ce(e2) {
     if (t2.clear(), e3.length) throw AggregateError(e3, `Startup registration cleanup failed`);
   } };
 }
-function le() {
+function re() {
   let e2 = /* @__PURE__ */ new WeakMap(), t2 = /* @__PURE__ */ new Map(), n2 = /* @__PURE__ */ new Set(), r2 = 1, i2 = 0, a2 = 0, o2 = (o3, s2, c2, l2 = false) => {
     if (o3.scope.assertActive(`content access`), !c2 || typeof c2 != `object`) return;
     e2.has(c2) || e2.set(c2, r2++);
@@ -106,7 +109,7 @@ function le() {
     };
   } });
 }
-function ue() {
+function ie() {
   let e2 = /* @__PURE__ */ new Map(), t2 = /* @__PURE__ */ new Set(), n2 = 0, r2 = (r3, i2, a2) => {
     if (r3.scope.assertActive(`event access`), t2.has(i2)) throw Error(`Event provider is retiring`);
     e2.has(r3) || (e2.set(r3, { publish: /* @__PURE__ */ new Set(), subscribe: /* @__PURE__ */ new Set() }), r3.scope.signal.addEventListener(`abort`, () => {
@@ -129,7 +132,7 @@ function ue() {
     };
   } });
 }
-function de({ clone: e2, restore: t2 }) {
+function ae({ clone: e2, restore: t2 }) {
   let n2 = /* @__PURE__ */ new WeakMap();
   return Object.freeze({ capture(r2) {
     let i2 = { snapshot: e2(r2), retired: false }, a2 = n2.get(r2) || [];
@@ -144,7 +147,7 @@ function de({ clone: e2, restore: t2 }) {
     };
   } });
 }
-var fe = class {
+var oe = class {
   constructor(e2 = {}) {
     this._listeners = /* @__PURE__ */ new Map(), this._onError = typeof e2.onError == `function` ? e2.onError : null;
   }
@@ -197,7 +200,7 @@ var fe = class {
   clear() {
     this._listeners.clear();
   }
-}, T = new t(`hook-manager`);
+}, se = new r(`hook-manager`);
 function E(e2) {
   return String(e2 || `anonymous-mod`);
 }
@@ -213,7 +216,7 @@ function O(e2, t2) {
   }
   return null;
 }
-var pe = class {
+var ce = class {
   constructor() {
     this._methodRecords = /* @__PURE__ */ new WeakMap(), this._propertyRecords = /* @__PURE__ */ new WeakMap(), this._records = /* @__PURE__ */ new Set(), this._targetIds = /* @__PURE__ */ new WeakMap(), this._nextTargetId = 1, this._nextHookId = 1, this._revision = 0, this._retiringTargets = /* @__PURE__ */ new WeakMap();
   }
@@ -272,54 +275,54 @@ var pe = class {
       }
     };
   }
-  wrapMethod({ owner: e2, className: t2, target: n2, methodName: i2, handler: a2, isStatic: o2 = false, priority: s2 = 0 }) {
-    let c2 = E(e2), l2 = D(i2);
-    if (!l2) throw Error(`wrapMethod() requires methodName`);
-    if (typeof a2 != `function`) throw Error(`wrapMethod() requires handler`);
-    let u2 = n2;
-    if (!u2 && t2) {
-      let e3 = r(t2);
-      u2 = o2 ? e3 : e3?.prototype;
+  wrapMethod({ owner: e2, className: t2, target: n2, methodName: r2, handler: i2, isStatic: a2 = false, priority: o2 = 0 }) {
+    let s2 = E(e2), c2 = D(r2);
+    if (!c2) throw Error(`wrapMethod() requires methodName`);
+    if (typeof i2 != `function`) throw Error(`wrapMethod() requires handler`);
+    let l2 = n2;
+    if (!l2 && t2) {
+      let e3 = d(t2);
+      l2 = a2 ? e3 : e3?.prototype;
     }
-    if (!u2) throw Error(`wrapMethod() target not found for ${t2 || `<custom target>`}.${l2}`);
-    this._assertAdmission(u2, l2);
-    let d2 = this._getTargetRecord(this._methodRecords, u2, l2);
-    if (!d2) {
-      let e3 = O(u2, l2), n3 = u2[l2];
-      if (typeof n3 != `function`) throw Error(`wrapMethod() target ${l2} is not a function`);
-      let r2 = Object.prototype.hasOwnProperty.call(u2, l2), i3 = Object.getOwnPropertyDescriptor(u2, l2);
-      if (i3 && i3.configurable === false && i3.writable === false) throw Error(`wrapMethod() target ${l2} is not writable or configurable`);
-      d2 = { kind: `method`, key: `${t2 || `target#${this._targetId(u2)}`}::${l2}${o2 ? `::static` : ``}`, host: u2, methodName: l2, original: n3, originalOwner: e3?.owner || u2, hadOwn: r2, ownDescriptor: i3, hooks: [], dispatcher: null };
-      let a3 = this;
-      d2.dispatcher = function(...e4) {
-        let t3 = this, n4 = a3._sortedHooks(d2), r3 = (e5, i4) => {
-          if (e5 >= n4.length) return d2.original.apply(t3, i4);
-          let a4 = n4[e5];
-          return a4.handler({ owner: a4.owner, args: i4, thisArg: t3, target: d2.host, original: d2.original, callNext: (...t4) => r3(e5 + 1, t4.length > 0 ? t4 : i4), callBase: (...e6) => d2.original.apply(t3, e6.length > 0 ? e6 : i4) });
+    if (!l2) throw Error(`wrapMethod() target not found for ${t2 || `<custom target>`}.${c2}`);
+    this._assertAdmission(l2, c2);
+    let u2 = this._getTargetRecord(this._methodRecords, l2, c2);
+    if (!u2) {
+      let e3 = O(l2, c2), n3 = l2[c2];
+      if (typeof n3 != `function`) throw Error(`wrapMethod() target ${c2} is not a function`);
+      let r3 = Object.prototype.hasOwnProperty.call(l2, c2), i3 = Object.getOwnPropertyDescriptor(l2, c2);
+      if (i3 && i3.configurable === false && i3.writable === false) throw Error(`wrapMethod() target ${c2} is not writable or configurable`);
+      u2 = { kind: `method`, key: `${t2 || `target#${this._targetId(l2)}`}::${c2}${a2 ? `::static` : ``}`, host: l2, methodName: c2, original: n3, originalOwner: e3?.owner || l2, hadOwn: r3, ownDescriptor: i3, hooks: [], dispatcher: null };
+      let o3 = this;
+      u2.dispatcher = function(...e4) {
+        let t3 = this, n4 = o3._sortedHooks(u2), r4 = (e5, i4) => {
+          if (e5 >= n4.length) return u2.original.apply(t3, i4);
+          let a3 = n4[e5];
+          return a3.handler({ owner: a3.owner, args: i4, thisArg: t3, target: u2.host, original: u2.original, callNext: (...t4) => r4(e5 + 1, t4.length > 0 ? t4 : i4), callBase: (...e6) => u2.original.apply(t3, e6.length > 0 ? e6 : i4) });
         };
-        return r3(0, e4);
-      }, Object.defineProperty(u2, l2, { configurable: true, enumerable: i3?.enumerable ?? e3?.descriptor?.enumerable ?? false, writable: true, value: d2.dispatcher }), this._setTargetRecord(this._methodRecords, u2, l2, d2);
+        return r4(0, e4);
+      }, Object.defineProperty(l2, c2, { configurable: true, enumerable: i3?.enumerable ?? e3?.descriptor?.enumerable ?? false, writable: true, value: u2.dispatcher }), this._setTargetRecord(this._methodRecords, l2, c2, u2);
     }
-    let f2 = { id: this._nextHookId++, owner: c2, priority: Number.isFinite(Number(s2)) ? Number(s2) : 0, order: this._nextHookId, handler: a2 };
-    d2.hooks.push(f2), this._revision++, T.debug(`[${c2}] wrapMethod ${d2.key}`);
+    let f2 = { id: this._nextHookId++, owner: s2, priority: Number.isFinite(Number(o2)) ? Number(o2) : 0, order: this._nextHookId, handler: i2 };
+    u2.hooks.push(f2), this._revision++, se.debug(`[${s2}] wrapMethod ${u2.key}`);
     let p2 = true;
-    return () => p2 ? (p2 = false, d2.hooks = d2.hooks.filter((e3) => e3 !== f2), this._revision++, d2.hooks.length > 0 || this._restoreRecord(d2), true) : false;
+    return () => p2 ? (p2 = false, u2.hooks = u2.hooks.filter((e3) => e3 !== f2), this._revision++, u2.hooks.length > 0 || this._restoreRecord(u2), true) : false;
   }
   wrapModuleExport({ owner: e2, modulePath: t2, exportName: n2, handler: r2, priority: i2 = 0 }) {
     let a2 = D(n2);
     if (!t2 || !a2) throw Error(`wrapModuleExport() requires modulePath and exportName`);
     if (typeof r2 != `function`) throw Error(`wrapModuleExport() requires handler`);
-    let o2 = s(t2);
+    let o2 = m(t2);
     if (!o2) throw Error(`SystemJS module not found: ${t2}`);
     if (!(a2 in o2)) throw Error(`SystemJS export missing: ${t2} -> ${a2}`);
-    let c2 = Object.getOwnPropertyDescriptor(o2, a2);
-    if (c2 && c2.configurable === false && c2.writable === false) throw Error(`SystemJS export is immutable and cannot be wrapped: ${t2} -> ${a2}`);
-    let l2 = o2[a2];
-    if (typeof l2 == `function`) return this.wrapMethod({ owner: e2, target: o2, methodName: a2, handler: r2, priority: i2 });
-    let u2 = r2({ owner: E(e2), modulePath: t2, exportName: a2, value: l2, module: o2 });
-    o2[a2] = u2;
-    let d2 = true;
-    return () => d2 ? (d2 = false, o2[a2] === u2 && (o2[a2] = l2), true) : false;
+    let s2 = Object.getOwnPropertyDescriptor(o2, a2);
+    if (s2 && s2.configurable === false && s2.writable === false) throw Error(`SystemJS export is immutable and cannot be wrapped: ${t2} -> ${a2}`);
+    let c2 = o2[a2];
+    if (typeof c2 == `function`) return this.wrapMethod({ owner: e2, target: o2, methodName: a2, handler: r2, priority: i2 });
+    let l2 = r2({ owner: E(e2), modulePath: t2, exportName: a2, value: c2, module: o2 });
+    o2[a2] = l2;
+    let u2 = true;
+    return () => u2 ? (u2 = false, o2[a2] === l2 && (o2[a2] = c2), true) : false;
   }
   wrapProperty({ owner: e2, target: t2, key: n2, get: r2, set: i2, priority: a2 = 0 }) {
     let o2 = E(e2), s2 = D(n2);
@@ -348,7 +351,7 @@ var pe = class {
       } }), c2.dispatcherDescriptor = Object.getOwnPropertyDescriptor(t2, s2), this._setTargetRecord(this._propertyRecords, t2, s2, c2);
     }
     let l2 = { id: this._nextHookId++, owner: o2, priority: Number.isFinite(Number(a2)) ? Number(a2) : 0, order: this._nextHookId, get: r2, set: i2 };
-    c2.hooks.push(l2), this._revision++, T.debug(`[${o2}] wrapProperty ${c2.key}`);
+    c2.hooks.push(l2), this._revision++, se.debug(`[${o2}] wrapProperty ${c2.key}`);
     let u2 = true;
     return () => u2 ? (u2 = false, c2.hooks = c2.hooks.filter((e3) => e3 !== l2), this._revision++, c2.hooks.length > 0 || this._restoreRecord(c2), true) : false;
   }
@@ -383,22 +386,22 @@ function k(e2 = `Operation aborted`) {
     return t2.name = `AbortError`, t2;
   }
 }
-function me(e2) {
+function A(e2) {
   let t2 = Number(e2);
   return !Number.isFinite(t2) || t2 < 0 ? 0 : Math.min(t2, 2147483647);
 }
-function he(e2) {
+function j(e2) {
   if (e2 == null) return null;
   if (typeof e2 != `object` || typeof e2.aborted != `boolean` || typeof e2.addEventListener != `function` || typeof e2.removeEventListener != `function`) throw TypeError(`Runtime timer signal must be an AbortSignal`);
   return e2;
 }
-function ge(e2) {
+function le(e2) {
   let t2 = Number(e2);
   return Number.isFinite(t2) ? Math.max(10, Math.min(6e4, Math.round(t2))) : 2e3;
 }
-var _e = class {
+var ue = class {
   constructor(e2 = {}) {
-    this.namespace = String(e2.namespace || `anonymous-mod`), this.state = `active`, this.reason = ``, this._controller = new AbortController(), this._cleanups = /* @__PURE__ */ new Map(), this._nextCleanupId = 1, this._tasks = /* @__PURE__ */ new Set(), this._taskRevision = 0, this._disposePromise = null, this._cleanupTimeoutMs = ge(e2.cleanupTimeoutMs), this._onError = typeof e2.onError == `function` ? e2.onError : null, this._setTimeout = e2.setTimeout || globalThis.setTimeout?.bind(globalThis), this._clearTimeout = e2.clearTimeout || globalThis.clearTimeout?.bind(globalThis), this._setInterval = e2.setInterval || globalThis.setInterval?.bind(globalThis), this._clearInterval = e2.clearInterval || globalThis.clearInterval?.bind(globalThis);
+    this.namespace = String(e2.namespace || `anonymous-mod`), this.state = `active`, this.reason = ``, this._controller = new AbortController(), this._cleanups = /* @__PURE__ */ new Map(), this._nextCleanupId = 1, this._tasks = /* @__PURE__ */ new Set(), this._taskRevision = 0, this._disposePromise = null, this._cleanupTimeoutMs = le(e2.cleanupTimeoutMs), this._onError = typeof e2.onError == `function` ? e2.onError : null, this._setTimeout = e2.setTimeout || globalThis.setTimeout?.bind(globalThis), this._clearTimeout = e2.clearTimeout || globalThis.clearTimeout?.bind(globalThis), this._setInterval = e2.setInterval || globalThis.setInterval?.bind(globalThis), this._clearInterval = e2.clearInterval || globalThis.clearInterval?.bind(globalThis);
   }
   get signal() {
     return this._controller.signal;
@@ -453,21 +456,21 @@ var _e = class {
   setTimeout(e2, t2 = 0, n2 = {}) {
     if (this.assertActive(`setTimeout`), typeof e2 != `function`) throw TypeError(`setTimeout requires a callback`);
     if (typeof this._setTimeout != `function`) throw Error(`setTimeout is unavailable`);
-    let r2 = String(n2.label || `timeout callback`), i2 = he(n2.signal);
+    let r2 = String(n2.label || `timeout callback`), i2 = j(n2.signal);
     if (i2?.aborted) return () => false;
     let a2 = true, o2 = null, s2 = null, c2 = () => a2 ? (a2 = false, i2?.removeEventListener(`abort`, c2), s2 != null && this._clearTimeout?.(s2), o2?.(), true) : false;
     return s2 = this._setTimeout(() => {
       a2 && (a2 = false, i2?.removeEventListener(`abort`, c2), o2?.(), this.guard(e2, { label: r2 })(...Array.isArray(n2.args) ? n2.args : []));
-    }, me(t2)), a2 && (o2 = this.addCleanup(c2, `cancel ${r2}`), i2?.addEventListener(`abort`, c2, { once: true }), i2?.aborted && c2()), c2;
+    }, A(t2)), a2 && (o2 = this.addCleanup(c2, `cancel ${r2}`), i2?.addEventListener(`abort`, c2, { once: true }), i2?.aborted && c2()), c2;
   }
   setInterval(e2, t2 = 0, n2 = {}) {
     if (this.assertActive(`setInterval`), typeof e2 != `function`) throw TypeError(`setInterval requires a callback`);
     if (typeof this._setInterval != `function`) throw Error(`setInterval is unavailable`);
-    let r2 = String(n2.label || `interval callback`), i2 = he(n2.signal);
+    let r2 = String(n2.label || `interval callback`), i2 = j(n2.signal);
     if (i2?.aborted) return () => false;
     let a2 = this.guard(e2, { label: r2 }), o2 = true, s2 = null, c2 = this._setInterval(() => {
       o2 && a2();
-    }, me(t2)), l2 = () => o2 ? (o2 = false, i2?.removeEventListener(`abort`, l2), this._clearInterval?.(c2), s2?.(), true) : false;
+    }, A(t2)), l2 = () => o2 ? (o2 = false, i2?.removeEventListener(`abort`, l2), this._clearInterval?.(c2), s2?.(), true) : false;
     return s2 = this.addCleanup(l2, `cancel ${r2}`), i2?.addEventListener(`abort`, l2, { once: true }), i2?.aborted && l2(), l2;
   }
   sleep(e2 = 0, t2 = {}) {
@@ -521,30 +524,30 @@ var _e = class {
     return this.state = `disposed`, { errors: t2, pendingTasks: this._tasks.size };
   }
 };
-function ve(e2 = {}) {
-  return new _e(e2);
+function de(e2 = {}) {
+  return new ue(e2);
 }
-var ye = /^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$/, be = /^\d+(?:\.\d+){0,2}(?:-[A-Za-z0-9.-]+)?$/, xe = /* @__PURE__ */ new Set([`__proto__`, `constructor`, `prototype`]);
-function A(e2, t2 = `service-error`) {
+var fe = /^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$/, pe = /^\d+(?:\.\d+){0,2}(?:-[A-Za-z0-9.-]+)?$/, me = /* @__PURE__ */ new Set([`__proto__`, `constructor`, `prototype`]);
+function M(e2, t2 = `service-error`) {
   let n2 = Error(e2);
   return n2.name = `ModServiceError`, n2.code = t2, n2;
 }
-function Se(e2, t2 = `service-unavailable`) {
-  return A(`Service '${e2}' is unavailable`, t2);
-}
-function j(e2) {
-  let t2 = String(e2 || ``).trim();
-  if (!ye.test(t2)) throw A(`Service id must be 3-128 characters using letters, numbers, dot, underscore, or hyphen`, `invalid-id`);
-  return t2;
-}
-function M(e2) {
-  let t2 = String(e2 || ``).trim();
-  if (!be.test(t2)) throw A(`Service version must be a numeric version with an optional prerelease suffix`, `invalid-version`);
-  return t2;
+function he(e2, t2 = `service-unavailable`) {
+  return M(`Service '${e2}' is unavailable`, t2);
 }
 function N(e2) {
+  let t2 = String(e2 || ``).trim();
+  if (!fe.test(t2)) throw M(`Service id must be 3-128 characters using letters, numbers, dot, underscore, or hyphen`, `invalid-id`);
+  return t2;
+}
+function P(e2) {
+  let t2 = String(e2 || ``).trim();
+  if (!pe.test(t2)) throw M(`Service version must be a numeric version with an optional prerelease suffix`, `invalid-version`);
+  return t2;
+}
+function F(e2) {
   if (e2 == null) return Object.freeze([]);
-  if (!Array.isArray(e2)) throw A(`Service capabilities must be an array`, `invalid-capabilities`);
+  if (!Array.isArray(e2)) throw M(`Service capabilities must be an array`, `invalid-capabilities`);
   let t2 = /* @__PURE__ */ new Set(), n2 = [];
   for (let r2 of e2) {
     let e3 = String(r2 || ``).trim();
@@ -552,59 +555,59 @@ function N(e2) {
   }
   return Object.freeze(n2.sort());
 }
-function Ce(e2) {
-  if (!e2 || typeof e2 != `object` || Array.isArray(e2)) throw A(`Service api must be a plain object of functions`, `invalid-api`);
+function ge(e2) {
+  if (!e2 || typeof e2 != `object` || Array.isArray(e2)) throw M(`Service api must be a plain object of functions`, `invalid-api`);
   let t2 = Object.getPrototypeOf(e2);
-  if (t2 !== Object.prototype && t2 !== null) throw A(`Service api must be a plain object of functions`, `invalid-api`);
-  if (Object.getOwnPropertySymbols(e2).length > 0) throw A(`Service api cannot contain symbol keys`, `invalid-api`);
+  if (t2 !== Object.prototype && t2 !== null) throw M(`Service api must be a plain object of functions`, `invalid-api`);
+  if (Object.getOwnPropertySymbols(e2).length > 0) throw M(`Service api cannot contain symbol keys`, `invalid-api`);
   let n2 = /* @__PURE__ */ new Map();
   for (let t3 of Object.keys(e2)) {
-    if (xe.has(t3) || typeof e2[t3] != `function`) throw A(`Service api member '${t3}' must be a callable method`, `invalid-api`);
+    if (me.has(t3) || typeof e2[t3] != `function`) throw M(`Service api member '${t3}' must be a callable method`, `invalid-api`);
     n2.set(t3, e2[t3]);
   }
-  if (n2.size === 0) throw A(`Service api must expose at least one method`, `invalid-api`);
+  if (n2.size === 0) throw M(`Service api must expose at least one method`, `invalid-api`);
   return n2;
 }
-function P(e2, t2) {
-  if (!e2 || typeof e2.addCleanup != `function` || !e2.signal || e2.isActive !== true) throw A(`${t2} requires an active managed mod runtime`, `runtime-inactive`);
+function I(e2, t2) {
+  if (!e2 || typeof e2.addCleanup != `function` || !e2.signal || e2.isActive !== true) throw M(`${t2} requires an active managed mod runtime`, `runtime-inactive`);
 }
-function F(e2) {
+function L(e2) {
   return Object.freeze({ id: e2.id, version: e2.version, provider: e2.provider, capabilities: e2.capabilities });
 }
-function I(e2, t2, n2 = {}) {
+function R(e2, t2, n2 = {}) {
   return Object.freeze({ ok: false, reason: t2, id: e2, service: null, ...n2 });
 }
-var we = class {
+var _e = class {
   constructor() {
     this._providers = /* @__PURE__ */ new Map(), this._nextGeneration = 1, this._consumerRelations = /* @__PURE__ */ new Map(), this._consumerRevision = 0, this._retiringProviders = /* @__PURE__ */ new Set();
   }
   provide(e2, t2, n2 = {}, r2 = {}) {
-    P(t2, `services.provide()`);
+    I(t2, `services.provide()`);
     let i2 = String(e2 || ``).trim();
-    if (this._retiringProviders.has(i2)) throw A(`Service provider is retiring`, `provider-retiring`);
-    let a2 = j(n2.id), o2 = M(n2.version), s2 = N(n2.capabilities), c2 = Ce(n2.api), l2 = this._providers.get(a2);
-    if (l2?.active) throw A(`Service '${a2}' is already provided by '${l2.provider}'`, `provider-conflict`);
+    if (this._retiringProviders.has(i2)) throw M(`Service provider is retiring`, `provider-retiring`);
+    let a2 = N(n2.id), o2 = P(n2.version), s2 = F(n2.capabilities), c2 = ge(n2.api), l2 = this._providers.get(a2);
+    if (l2?.active) throw M(`Service '${a2}' is already provided by '${l2.provider}'`, `provider-conflict`);
     let u2 = { id: a2, version: o2, provider: i2, capabilities: s2, methods: c2, generation: this._nextGeneration++, contentDigest: r2.contentDigest ?? null, runtimeGeneration: r2.runtimeGeneration ?? null, active: true, controller: new AbortController(), consumers: /* @__PURE__ */ new Set(), unregisterCleanup: null };
     this._providers.set(a2, u2);
     let d2 = (e3 = `provider-disposed`) => this._disposeProvider(u2, e3);
-    return u2.unregisterCleanup = t2.addCleanup(() => d2(`provider-runtime-disposed`), `unregister mod service ${a2}`), Object.freeze({ ...F(u2), signal: u2.controller.signal, isActive: () => u2.active, dispose: d2 });
+    return u2.unregisterCleanup = t2.addCleanup(() => d2(`provider-runtime-disposed`), `unregister mod service ${a2}`), Object.freeze({ ...L(u2), signal: u2.controller.signal, isActive: () => u2.active, dispose: d2 });
   }
   resolve(e2, t2, n2, r2 = {}, i2 = {}) {
-    P(t2, `services.resolve()`);
-    let a2 = j(n2), o2 = this._providers.get(a2), s2 = null;
-    if (!o2?.active) s2 = I(a2, `not-found`);
-    else if (this._retiringProviders.has(o2.provider)) s2 = I(a2, `provider-retiring`);
+    I(t2, `services.resolve()`);
+    let a2 = N(n2), o2 = this._providers.get(a2), s2 = null;
+    if (!o2?.active) s2 = R(a2, `not-found`);
+    else if (this._retiringProviders.has(o2.provider)) s2 = R(a2, `provider-retiring`);
     else {
       let e3 = String(r2.minVersion || ``).trim(), t3 = String(r2.maxVersion || ``).trim();
-      if (e3 && y(o2.version, M(e3)) < 0) s2 = I(a2, `version-too-low`, { available: F(o2) });
-      else if (t3 && y(o2.version, M(t3)) > 0) s2 = I(a2, `version-too-high`, { available: F(o2) });
+      if (e3 && v(o2.version, P(e3)) < 0) s2 = R(a2, `version-too-low`, { available: L(o2) });
+      else if (t3 && v(o2.version, P(t3)) > 0) s2 = R(a2, `version-too-high`, { available: L(o2) });
       else {
-        let e4 = N(r2.capabilities).filter((e5) => !o2.capabilities.includes(e5));
-        e4.length > 0 && (s2 = I(a2, `missing-capabilities`, { available: F(o2), missingCapabilities: Object.freeze(e4) }));
+        let e4 = F(r2.capabilities).filter((e5) => !o2.capabilities.includes(e5));
+        e4.length > 0 && (s2 = R(a2, `missing-capabilities`, { available: L(o2), missingCapabilities: Object.freeze(e4) }));
       }
     }
     if (s2) {
-      if (r2.required === true) throw A(`Service '${a2}' could not be resolved: ${s2.reason}`, s2.reason);
+      if (r2.required === true) throw M(`Service '${a2}' could not be resolved: ${s2.reason}`, s2.reason);
       return s2;
     }
     return Object.freeze({ ok: true, reason: null, id: a2, service: this._createConsumer(o2, String(e2 || ``).trim(), t2, i2) });
@@ -622,7 +625,7 @@ var we = class {
     };
   }
   list() {
-    return Object.freeze([...this._providers.values()].filter((e2) => e2.active).sort((e2, t2) => e2.id.localeCompare(t2.id)).map(F));
+    return Object.freeze([...this._providers.values()].filter((e2) => e2.active).sort((e2, t2) => e2.id.localeCompare(t2.id)).map(L));
   }
   clear(e2 = `registry-clear`) {
     for (let t2 of [...this._providers.values()]) this._disposeProvider(t2, e2);
@@ -647,10 +650,10 @@ var we = class {
     i2.retire = a2, i2.onScopeAbort = () => a2(`consumer-runtime-disposed`), n2.signal.addEventListener(`abort`, i2.onScopeAbort, { once: true }), i2.unregisterCleanup = n2.addCleanup(() => a2(`consumer-runtime-disposed`), `release mod service ${e2.id}`), e2.consumers.add(i2), this._recordConsumer(e2, t2, n2, r2);
     let o2 = {};
     for (let [t3, r3] of e2.methods) Object.defineProperty(o2, t3, { enumerable: true, value: (...t4) => {
-      if (!i2.active || !e2.active || !n2.isActive) throw Se(e2.id);
+      if (!i2.active || !e2.active || !n2.isActive) throw he(e2.id);
       return Reflect.apply(r3, void 0, t4);
     } });
-    return Object.freeze({ ...F(e2), signal: i2.controller.signal, api: Object.freeze(o2), isActive: () => i2.active && e2.active && n2.isActive });
+    return Object.freeze({ ...L(e2), signal: i2.controller.signal, api: Object.freeze(o2), isActive: () => i2.active && e2.active && n2.isActive });
   }
   _disposeProvider(e2, t2) {
     if (!e2?.active) return false;
@@ -659,69 +662,69 @@ var we = class {
     return e2.consumers.clear(), e2.methods.clear(), true;
   }
 };
-function Te() {
-  return new we();
+function ve() {
+  return new _e();
 }
-function L(e2, t2) {
+function z(e2, t2) {
   throw Object.assign(Error(t2), { code: e2 });
 }
-function R(e2, { fileLoader: t2, hasFeature: n2, getRuntime: r2, isCurrent: i2, isStartupRuntime: a2 = () => false }) {
-  let o2 = x(e2), s2 = /* @__PURE__ */ new Map(), c2 = /* @__PURE__ */ new Map(), l2 = 0;
-  for (let e3 of o2.ordered) {
+function B(e2, { fileLoader: t2, hasFeature: n2, getRuntime: r2, isCurrent: i2, isStartupRuntime: o2 = () => false, attempt: s2 = false }) {
+  let c2 = a(e2, { attempt: s2 }), l2 = /* @__PURE__ */ new Map(), u2 = /* @__PURE__ */ new Map(), d2 = 0;
+  for (let e3 of c2.ordered) {
     let r3 = String(e3.meta?.uuid || ``).trim();
     if (!(!r3 || e3.errors?.length)) try {
-      ne(e3, { hasFeature: n2 });
+      b(e3, { hasFeature: n2, attempt: s2 });
       let i3 = t2.getPackSnapshotFrom?.(e3.dir);
       if (!i3 || i3.digest !== e3.contentDigest) continue;
-      s2.set(r3, Object.freeze({ namespace: r3, version: String(e3.meta.version || `0.0.0`), contentDigest: i3.digest, script: !!e3.meta.js?.entry, depends: Object.freeze([...e3.meta.depends || []]), optionalDepends: Object.freeze([...e3.meta.optionalDepends || []]), required: Object.freeze([...o2.required.get(r3) || []]), snapshot: i3 }));
+      l2.set(r3, Object.freeze({ namespace: r3, version: String(e3.meta.version || `0.0.0`), contentDigest: i3.digest, script: !!e3.meta.js?.entry, depends: Object.freeze([...e3.meta.depends || []]), optionalDepends: Object.freeze([...e3.meta.optionalDepends || []]), required: Object.freeze([...c2.required.get(r3) || []]), snapshot: i3 }));
     } catch {
     }
   }
-  function u2(e3, t3) {
-    e3 || L(`FILES_UNAVAILABLE`, `Package snapshot is unavailable for this load plan`);
+  function f2(e3, t3) {
+    e3 || z(`FILES_UNAVAILABLE`, `Package snapshot is unavailable for this load plan`);
     for (let n3 of [e3.namespace, ...e3.required]) {
-      let e4 = s2.get(n3);
-      if (e4 || L(`FILES_UNAVAILABLE`, `Package provider is unavailable: ${n3}`), e4.script) {
-        let e5 = r2(n3), i3 = a2(t3), o3 = e5 === t3 && e5?.scope?.isActive && ([`setup`, `active`, `degraded`].includes(e5.state) || i3 && e5.state === `startup`), s3 = i3 && a2(e5) && e5?.state === `startup-ready`;
-        !o3 && (!e5?.scope?.isActive || !s3 && ![`active`, `degraded`].includes(e5.state)) && L(`FILES_UNAVAILABLE`, `Package provider is not active: ${n3}`);
+      let e4 = l2.get(n3);
+      if (e4 || z(`FILES_UNAVAILABLE`, `Package provider is unavailable: ${n3}`), e4.script) {
+        let e5 = r2(n3), i3 = o2(t3), a2 = e5 === t3 && e5?.scope?.isActive && ([`setup`, `active`, `degraded`].includes(e5.state) || i3 && e5.state === `startup`), s3 = i3 && o2(e5) && e5?.state === `startup-ready`;
+        !a2 && (!e5?.scope?.isActive || !s3 && ![`active`, `degraded`].includes(e5.state)) && z(`FILES_UNAVAILABLE`, `Package provider is not active: ${n3}`);
       }
     }
   }
   return { getProviderBindings(e3) {
-    let t3 = s2.get(e3);
+    let t3 = l2.get(e3);
     if (!t3) return [];
     let n3 = /* @__PURE__ */ new Set([e3, ...t3.depends, ...t3.optionalDepends]);
-    for (let t4 of s2.values()) !t4.script && t4.depends.includes(e3) && n3.add(t4.namespace);
-    return [...n3].filter((e4) => s2.has(e4)).sort().map((e4) => Object.freeze({ namespace: e4, contentDigest: s2.get(e4).contentDigest }));
+    for (let t4 of l2.values()) !t4.script && t4.depends.includes(e3) && n3.add(t4.namespace);
+    return [...n3].filter((e4) => l2.has(e4)).sort().map((e4) => Object.freeze({ namespace: e4, contentDigest: l2.get(e4).contentDigest }));
   }, getConsumers() {
-    return Object.freeze({ domain: `files`, revision: l2, complete: false, edges: Object.freeze([...c2.values()]) });
+    return Object.freeze({ domain: `files`, revision: d2, complete: false, edges: Object.freeze([...u2.values()]) });
   }, forRuntime(e3) {
-    let t3 = s2.get(e3.namespace), n3 = () => {
-      (!i2(e3) || !e3.scope.isActive) && L(`FILES_INACTIVE`, `Package reader belongs to an inactive mod generation`);
+    let t3 = l2.get(e3.namespace), n3 = () => {
+      (!i2(e3) || !e3.scope.isActive) && z(`FILES_INACTIVE`, `Package reader belongs to an inactive mod generation`);
     }, r3 = (r4, i3 = `files`) => {
-      if (n3(), u2(r4, e3), r4.namespace !== e3.namespace) {
+      if (n3(), f2(r4, e3), r4.namespace !== e3.namespace) {
         let n4 = JSON.stringify([r4.namespace, e3.namespace, i3]);
-        c2.has(n4) || (c2.set(n4, Object.freeze({ provider: r4.namespace, consumer: e3.namespace, kind: i3, providerDigest: r4.contentDigest, consumerDigest: t3.contentDigest })), l2++);
+        u2.has(n4) || (u2.set(n4, Object.freeze({ provider: r4.namespace, consumer: e3.namespace, kind: i3, providerDigest: r4.contentDigest, consumerDigest: t3.contentDigest })), d2++);
       }
-      let a3 = () => {
-        n3(), u2(r4, e3);
+      let a2 = () => {
+        n3(), f2(r4, e3);
       }, o3 = async (e4, t4) => {
-        a3();
+        a2();
         let n4 = await r4.snapshot[e4](t4);
-        return a3(), n4;
+        return a2(), n4;
       };
       return Object.freeze({ namespace: r4.namespace, version: r4.version, contentDigest: r4.contentDigest, listPaths() {
-        return a3(), r4.snapshot.listPaths();
+        return a2(), r4.snapshot.listPaths();
       }, readText: (e4) => o3(`readText`, e4), readBytes: (e4) => o3(`readBytes`, e4) });
     };
     return Object.freeze({ own: () => r3(t3), from(i3) {
-      return n3(), u2(t3, e3), !t3.depends.includes(i3) && !t3.optionalDepends.includes(i3) && L(`FILES_ACCESS_DENIED`, `Package dependency is not declared: ${i3}`), r3(s2.get(i3));
+      return n3(), f2(t3, e3), !t3.depends.includes(i3) && !t3.optionalDepends.includes(i3) && z(`FILES_ACCESS_DENIED`, `Package dependency is not declared: ${i3}`), r3(l2.get(i3));
     }, contributions() {
-      n3(), u2(t3, e3);
+      n3(), f2(t3, e3);
       let i3 = [];
-      for (let t4 of s2.values()) if (!(t4.script || !t4.depends.includes(e3.namespace))) {
+      for (let t4 of l2.values()) if (!(t4.script || !t4.depends.includes(e3.namespace))) {
         try {
-          u2(t4, e3);
+          f2(t4, e3);
         } catch {
           continue;
         }
@@ -731,7 +734,7 @@ function R(e2, { fileLoader: t2, hasFeature: n2, getRuntime: r2, isCurrent: i2, 
     } });
   } };
 }
-function Ee() {
+function ye() {
   let e2 = /* @__PURE__ */ new Map(), t2 = false;
   return Object.freeze({ record(n2) {
     if ([`mod-owned-data`, `native-player-save`].includes(n2?.domain) && /^modData\.(write|saveIdentity)$/.test(n2.operation) && [`unknown`, `changed`].includes(n2.status)) {
@@ -751,163 +754,54 @@ function Ee() {
     return Object.freeze({ coverage: `managed-api-only`, observed: t2 || [...e2.values()].includes(`unknown`) ? `unknown` : e2.size ? `changed` : `unobserved`, operations: Object.freeze([...e2.keys()].sort()), rawAccess: t2, saveRestored: false });
   } });
 }
-var z = (e2, t2) => Object.assign(Error(t2), { code: e2 });
-function B(e2) {
-  let t2 = JSON.stringify(e2, (e3, t3) => {
-    if (t3 === void 0 || typeof t3 == `function` || typeof t3 == `symbol` || typeof t3 == `bigint` || typeof t3 == `number` && !Number.isFinite(t3)) throw z(`MOD_DATA_INVALID`, `Mod data must contain JSON values`);
-    return t3;
-  });
-  return JSON.parse(t2);
-}
-function V(e2) {
-  if (!e2 || typeof e2.modId != `string` || !e2.modId.trim()) throw z(`MOD_DATA_IDENTITY`, `Mod identity is required`);
-  if (e2.kind === `global` && e2.saveId === void 0) return { modId: e2.modId, kind: `global` };
-  if (e2.kind === `save` && typeof e2.saveId == `string` && e2.saveId.trim()) return { modId: e2.modId, kind: `save`, saveId: e2.saveId };
-  throw z(`MOD_DATA_IDENTITY`, `Choose global data or an identified save explicitly`);
-}
-function H(e2, t2) {
-  if (!e2 || e2.formatVersion !== 1 || JSON.stringify(e2.identity) !== JSON.stringify(V(t2)) || !Number.isSafeInteger(e2.schemaVersion) || e2.schemaVersion < 1 || !Number.isSafeInteger(e2.revision) || e2.revision < 1 || !Object.hasOwn(e2, `data`)) throw z(`MOD_DATA_INVALID`, `Invalid mod-owned data record`);
-  return B(e2);
-}
-function De(e2) {
-  let t2 = Promise.resolve(), n2 = (e3) => {
-    let n3 = t2.then(e3);
-    return t2 = n3.catch(() => {
-    }), n3;
-  };
-  return Object.freeze({ open(t3, r2, { assertAccess: i2 = () => {
-  }, reportMutation: a2 = () => {
-  } } = {}) {
-    t3 = V(t3);
-    let o2 = r2?.version, s2 = r2?.migrate, c2 = r2?.validate;
-    if (!Number.isSafeInteger(o2) || o2 < 1 || typeof c2 != `function`) throw z(`MOD_DATA_SCHEMA`, `A positive schema version and validator are required`);
-    let l2 = B(r2.defaults), u2 = async (e3) => {
-      let t4 = B(e3);
-      if (await c2(B(t4)) !== true) throw z(`MOD_DATA_SCHEMA`, `Mod data does not match its schema`);
-      return t4;
-    }, d2 = async () => {
-      i2();
-      let n3 = await e2.read(t3);
-      return n3 === null ? null : H(n3, t3);
-    }, f2 = async (n3, r3) => {
-      let s3 = { formatVersion: 1, identity: t3, schemaVersion: o2, revision: (n3?.revision || 0) + 1, data: await u2(r3) };
-      return i2(), await e2.replace(t3, s3, n3, { assertAccess: i2, reportMutation: a2 }), B(s3.data);
-    }, p2 = async () => {
-      let e3 = await d2();
-      if (e3?.schemaVersion !== o2) throw z(`MOD_DATA_VERSION`, `Reopen mod data with its current schema`);
-      return e3;
-    };
-    return n2(async () => {
-      let e3 = await d2();
-      if (e3 === null) await f2(null, l2);
-      else if (e3.schemaVersion > o2) throw z(`MOD_DATA_DOWNGRADE`, `Stored mod data uses a newer schema; original data was retained`);
-      else if (e3.schemaVersion < o2) {
-        if (typeof s2 != `function`) throw z(`MOD_DATA_MIGRATION`, `A data migration is required`);
-        await f2(e3, await s2(B(e3.data), e3.schemaVersion, o2));
-      } else await u2(e3.data);
-      return i2(), Object.freeze({ read: () => n2(async () => {
-        let e4 = await p2();
-        return i2(), B(e4.data);
-      }), update: (e4) => n2(async () => {
-        if (typeof e4 != `function`) throw z(`MOD_DATA_INVALID`, `An update function is required`);
-        let t4 = await p2();
-        return f2(t4, await e4(B(t4.data)));
-      }) });
-    });
-  } });
-}
-var U = { baseDir: f.AppData }, Oe = `gp-next/mod-data`, ke = () => Object.assign(Error(`Mod-owned data changed before publication`), { code: `MOD_DATA_CONFLICT` });
-async function Ae(e2) {
-  return [...new Uint8Array(await crypto.subtle.digest(`SHA-256`, new TextEncoder().encode(e2)))].map((e3) => e3.toString(16).padStart(2, `0`)).join(``);
-}
-function je(e2 = { exists: g, mkdir: m, readTextFile: p, writeTextFile: _, rename: d, remove: h }) {
-  let t2 = Promise.resolve(), n2 = (e3) => {
-    let n3 = t2.then(e3);
-    return t2 = n3.catch(() => {
-    }), n3;
-  }, r2 = async (e3) => `${Oe}/${await Ae(JSON.stringify(e3))}`, i2 = async (t3, n3) => await e2.exists(t3, U) ? H(JSON.parse(await e2.readTextFile(t3, U)), n3) : null, a2 = async (t3, n3, r3 = () => {
-  }) => {
-    let i3 = `${t3}.${crypto.randomUUID()}.pending`;
-    try {
-      if (await e2.writeTextFile(i3, n3, U), await e2.readTextFile(i3, U) !== n3) throw Error(`Mod data write verification failed`);
-      r3(), await e2.rename(i3, t3, { oldPathBaseDir: f.AppData, newPathBaseDir: f.AppData });
-    } catch (t4) {
-      try {
-        await e2.exists(i3, U) && await e2.remove(i3, U);
-      } catch (e3) {
-        throw AggregateError([t4, e3], `Mod data write and cleanup failed`);
-      }
-      throw t4;
-    }
-  };
-  return Object.freeze({ read(e3) {
-    return e3 = V(e3), n2(async () => i2(`${await r2(e3)}/current.json`, e3));
-  }, replace(t3, o2, s2, { assertAccess: c2 = () => {
-  }, reportMutation: l2 = () => {
-  } } = {}) {
-    if (t3 = V(t3), o2 = H(o2, t3), s2 = s2 === null ? null : H(s2, t3), o2.revision !== (s2?.revision || 0) + 1 || s2 && o2.schemaVersion < s2.schemaVersion) throw ke();
-    return n2(async () => {
-      c2();
-      let n3 = await r2(t3), u2 = `${n3}/current.json`;
-      if (JSON.stringify(await i2(u2, t3)) !== JSON.stringify(s2)) throw ke();
-      if (await e2.mkdir(n3, { ...U, recursive: true }), s2 && s2.schemaVersion !== o2.schemaVersion) {
-        let e3 = JSON.stringify(s2);
-        await a2(`${n3}/schema-${s2.schemaVersion}-${await Ae(e3)}.json`, e3);
-      }
-      await a2(u2, JSON.stringify(o2), () => {
-        c2(), l2({ domain: `mod-owned-data`, operation: `modData.write`, status: `unknown` });
-      }), l2({ domain: `mod-owned-data`, operation: `modData.write`, status: `changed` });
-    });
-  } });
-}
-var Me = `__gpNextSaveId`, Ne = (e2) => typeof e2 == `string` && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(e2), W = (e2, t2) => {
+var V = `__gpNextSaveId`, H = (e2) => typeof e2 == `string` && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(e2), U = (e2, t2) => {
   throw Object.assign(Error(t2), { code: e2 });
 };
-function Pe({ getPlayers: e2, storage: t2, reportMutation: n2 = () => {
+function be({ getPlayers: e2, storage: t2, reportMutation: n2 = () => {
 }, createId: r2 = () => crypto.randomUUID() }) {
   let i2 = () => {
     let t3 = e2(), n3 = t3?.currentPlayer, r3 = t3?.allPlayers;
-    (!n3 || !Array.isArray(r3) || r3.filter((e3) => e3 === n3).length !== 1 || typeof t3.savePP != `function`) && W(`MOD_SAVE_UNAVAILABLE`, `No loaded native save`);
-    let i3 = n3[Me];
-    return i3 !== void 0 && !Ne(i3) && W(`MOD_SAVE_ID_INVALID`, `Native save has an invalid mod identity`), i3 && r3.some((e3) => e3 !== n3 && e3?.__gpNextSaveId === i3) && W(`MOD_SAVE_ID_CONFLICT`, `Multiple native saves share one mod identity`), { players: t3, current: n3, all: r3, id: i3 };
+    (!n3 || !Array.isArray(r3) || r3.filter((e3) => e3 === n3).length !== 1 || typeof t3.savePP != `function`) && U(`MOD_SAVE_UNAVAILABLE`, `No loaded native save`);
+    let i3 = n3[V];
+    return i3 !== void 0 && !H(i3) && U(`MOD_SAVE_ID_INVALID`, `Native save has an invalid mod identity`), i3 && r3.some((e3) => e3 !== n3 && e3?.__gpNextSaveId === i3) && U(`MOD_SAVE_ID_CONFLICT`, `Multiple native saves share one mod identity`), { players: t3, current: n3, all: r3, id: i3 };
   }, a2 = ({ all: e3, current: n3, id: r3 }) => {
-    let i3 = t2.getItem(NATIVE_PLAYER_SAVE_KEY), a3;
+    let i3 = t2.getItem(te), a3;
     try {
       a3 = JSON.parse(i3);
     } catch {
-      W(`MOD_SAVE_UNCONFIRMED`, `Native save could not be read back`);
+      U(`MOD_SAVE_UNCONFIRMED`, `Native save could not be read back`);
     }
-    (!Array.isArray(a3) || a3[e3.indexOf(n3)]?.__gpNextSaveId !== r3 || a3.filter((e4) => e4?.__gpNextSaveId === r3).length !== 1) && W(`MOD_SAVE_UNCONFIRMED`, `Native save identity was not persisted uniquely`);
+    (!Array.isArray(a3) || a3[e3.indexOf(n3)]?.__gpNextSaveId !== r3 || a3.filter((e4) => e4?.__gpNextSaveId === r3).length !== 1) && U(`MOD_SAVE_UNCONFIRMED`, `Native save identity was not persisted uniquely`);
   };
   return Object.freeze({ capture() {
     let e3 = i2();
     if (e3.id) a2(e3);
     else {
       let t4 = r2();
-      (!Ne(t4) || e3.all.some((e4) => e4?.__gpNextSaveId === t4)) && W(`MOD_SAVE_ID_INVALID`, `Could not allocate a unique save identity`), e3.current[Me] = t4, n2({ domain: `native-player-save`, operation: `modData.saveIdentity`, status: `unknown` }), e3.players.savePP(), e3 = i2(), a2(e3), n2({ domain: `native-player-save`, operation: `modData.saveIdentity`, status: `changed` });
+      (!H(t4) || e3.all.some((e4) => e4?.__gpNextSaveId === t4)) && U(`MOD_SAVE_ID_INVALID`, `Could not allocate a unique save identity`), e3.current[V] = t4, n2({ domain: `native-player-save`, operation: `modData.saveIdentity`, status: `unknown` }), e3.players.savePP(), e3 = i2(), a2(e3), n2({ domain: `native-player-save`, operation: `modData.saveIdentity`, status: `changed` });
     }
     let { current: t3, id: o2 } = e3;
     return Object.freeze({ id: o2, assertCurrent() {
       let e4 = i2();
-      (e4.current !== t3 || e4.id !== o2) && W(`MOD_SAVE_CHANGED`, `The active native save changed; reopen mod data`), a2(e4);
+      (e4.current !== t3 || e4.id !== o2) && U(`MOD_SAVE_CHANGED`, `The active native save changed; reopen mod data`), a2(e4);
     } });
   } });
 }
-function Fe({ namespace: e2, scope: t2, service: n2, saveIdentity: r2, reportMutation: i2 }) {
+function xe({ namespace: e2, scope: t2, service: n2, saveIdentity: r2, reportMutation: i2 }) {
   let a2 = (e3) => (t2.assertActive(`storage`), t2.track(Promise.resolve().then(e3), { label: `storage`, report: false }));
   return Object.freeze({ open: (o2) => a2(async () => {
-    if (t2.assertActive(`storage.open`), !o2 || ![`global`, `save`].includes(o2.scope)) throw Object.assign(Error(`Choose global or save scope explicitly`), { code: `MOD_DATA_IDENTITY` });
+    if (t2.assertActive(`storage.open`), n2.assertWriteAdmission?.(), !o2 || ![`global`, `save`].includes(o2.scope)) throw Object.assign(Error(`Choose global or save scope explicitly`), { code: `MOD_DATA_IDENTITY` });
     let s2 = o2.scope === `save` ? r2.capture() : null, c2 = () => {
       t2.assertActive(`storage`), s2?.assertCurrent();
     }, l2 = s2 ? { modId: e2, kind: `save`, saveId: s2.id } : { modId: e2, kind: `global` }, u2 = await n2.open(l2, o2, { assertAccess: c2, reportMutation: i2 });
     return c2(), Object.freeze({ read: () => a2(() => u2.read()), update: (e3) => a2(() => u2.update(e3)) });
   }) });
 }
-var Ie = De(je()), G = new t(`js-mod-loader`), Le = 15e3, Re = 1e4, ze = 2e3, Be = /* @__PURE__ */ new Set([`engine:ready`, `patches:loaded`, `scene:after-launch`, `mods:reload-before`, `mods:reload-after`]);
+var Se = t(h()), W = new r(`js-mod-loader`), Ce = 15e3, we = 1e4, Te = 2e3, G = /* @__PURE__ */ new Set([`engine:ready`, `patches:loaded`, `scene:after-launch`, `mods:reload-before`, `mods:reload-after`]);
 function K(e2) {
   return String(e2?.meta?.uuid || e2?.meta?.name || e2?.dir || `unknown.mod`).trim();
 }
-function Ve(e2) {
+function Ee(e2) {
   return e2?.default && typeof e2.default == `object` ? e2.default : e2?.default && typeof e2.default == `function` ? { setup: e2.default, startup: e2.startup, dispose: typeof e2.dispose == `function` ? e2.dispose : null } : typeof e2?.setup == `function` ? { setup: e2.setup, startup: e2.startup, dispose: typeof e2.dispose == `function` ? e2.dispose : null } : null;
 }
 function q(e2, t2, n2 = 1e3) {
@@ -917,7 +811,7 @@ function q(e2, t2, n2 = 1e3) {
 function J(e2) {
   return String(e2?.message || e2 || `Unknown error`);
 }
-function He(e2, t2) {
+function De(e2, t2) {
   return `gp-next://${encodeURIComponent(e2)}/${t2.split(`/`).map(encodeURIComponent).join(`/`)}`;
 }
 function Y(e2) {
@@ -928,13 +822,13 @@ function Y(e2) {
     return JSON.parse(JSON.stringify(e2));
   }
 }
-function Ue(e2, t2) {
+function Oe(e2, t2) {
   if (Array.isArray(e2) && Array.isArray(t2)) return e2.splice(0, e2.length, ...Y(t2)), true;
   if (!e2 || typeof e2 != `object` || !t2 || typeof t2 != `object`) return false;
   for (let t3 of Object.keys(e2)) delete e2[t3];
   return Object.assign(e2, Y(t2)), true;
 }
-function We(e2, t2) {
+function ke(e2, t2) {
   let n2 = [`onClick`, `getValue`, `setValue`, `disabled`, `visible`];
   return { ...e2 || {}, groups: Array.isArray(e2?.groups) ? e2.groups.map((e3) => ({ ...e3, items: Array.isArray(e3?.items) ? e3.items.map((e4) => {
     let r2 = { ...e4 };
@@ -945,7 +839,7 @@ function We(e2, t2) {
 function X(e2, t2, n2 = {}) {
   let r2 = String(t2 || ``).trim();
   if (!r2) throw Error(`event name is required`);
-  if (Be.has(r2)) {
+  if (G.has(r2)) {
     if (n2.forEmit === true) throw Error(`Platform event '${r2}' is read-only`);
     return r2;
   }
@@ -957,9 +851,9 @@ function Z(e2, t2, n2) {
   });
   return Promise.race([Promise.resolve(e2), i2]).finally(() => clearTimeout(r2));
 }
-function Ge(e2, t2, n2) {
+function Ae(e2, t2, n2) {
   return URL.createObjectURL(new Blob([`${e2}
-//# sourceURL=${He(t2, n2)}
+//# sourceURL=${De(t2, n2)}
 `], { type: `text/javascript` }));
 }
 async function Q(e2, t2, n2 = `dispose`) {
@@ -978,73 +872,73 @@ async function Q(e2, t2, n2 = `dispose`) {
     for (let t3 of e3?.errors || []) r2.push({ stage: `scope`, error: t3, message: J(t3) });
   }), r2.length && t2.warnings.push(`${r2.length} cleanup operation(s) failed`), await a2(`controls`, () => e2._modControlsRegistry.unregisterModControls(t2.namespace)), await a2(`settings`, () => t2.settingsRegistry.unregisterModSettings(t2.namespace)), t2.url &&= (await a2(`module-url`, () => e2._revokeObjectUrl(t2.url)), ``), t2.state = `disposed`, t2.phase = `disposed`, t2.disposedAt = Date.now(), t2.cleanupReport = Object.freeze({ namespace: t2.namespace, generation: t2.generation, errors: Object.freeze(r2.map((e3) => Object.freeze(e3))), pendingTasks: i2, persistentActivity: t2.persistenceAudit?.snapshot() || null }), t2.cleanupReport;
 }
-function Ke(e2) {
+function $(e2) {
   return { get signal() {
     return e2.signal;
   }, isActive: () => e2.isActive, assertActive: (t2) => e2.assertActive(t2), onDispose: (t2, n2 = `author cleanup`) => e2.addCleanup(t2, n2), guard: (t2, n2) => e2.guard(t2, n2), track: (t2, n2) => e2.track(t2, n2), sleep: (t2, n2) => e2.sleep(t2, n2), setTimeout: (t2, n2, r2) => e2.setTimeout(t2, n2, r2), setInterval: (t2, n2, r2) => e2.setInterval(t2, n2, r2) };
 }
-function qe(e2, t2, o2) {
-  let l2 = Object.freeze({ contentDigest: e2._executedScripts.get(o2)?.contentDigest ?? null, runtimeGeneration: o2.generation }), u2 = o2.namespace, d2 = o2.scope, f2 = e2._modControlsRegistry, p2 = /* @__PURE__ */ new WeakSet(), m2 = (e3, t3) => (typeof e3 == `function` && d2.addCleanup(e3, t3), e3), h2 = Ke(d2), g2 = (t3, n2, r2) => (d2.assertActive(r2), m2(e2._hookManager[t3]({ ...n2, owner: u2 }), r2)), _2 = { wrapMethod: (e3) => {
+function je(e2, t2, r2) {
+  let i2 = Object.freeze({ contentDigest: e2._executedScripts.get(r2)?.contentDigest ?? null, runtimeGeneration: r2.generation }), a2 = r2.namespace, o2 = r2.scope, s2 = e2._modControlsRegistry, l2 = /* @__PURE__ */ new WeakSet(), h2 = (e3, t3) => (typeof e3 == `function` && o2.addCleanup(e3, t3), e3), g2 = $(o2), _2 = (t3, n2, r3) => (o2.assertActive(r3), h2(e2._hookManager[t3]({ ...n2, owner: a2 }), r3)), v2 = { wrapMethod: (e3) => {
     if (typeof e3?.handler != `function`) throw TypeError(`Method hook requires a handler`);
-    let t3 = d2.guard(e3.handler, { label: `method hook ${e3.methodName}`, rethrow: true });
-    return g2(`wrapMethod`, { ...e3, handler: (e4) => d2.isActive ? t3(e4) : e4.callNext() }, `restore method hook ${e3.methodName}`);
-  }, onEvent: (t3, n2, r2 = false) => e2._subscribeEvent(o2, t3, n2, r2), defineCleanup: m2 }, v2 = e2._createApi({ ...e2._services, apiVersion: Number(t2?.meta?.apiVersion || 0), behaviorTools: _2, runtime: h2, modNamespace: u2, combatModifierRegistry: e2._combatModifierRegistry, reportPersistentMutation: (e3) => o2.persistenceAudit.record(e3), reportDataRead: (t3, n2) => e2._dataConsumers.read(o2, t3, n2), beforeDataMutation(t3, n2) {
-    if (!n2 || p2.has(n2)) return;
-    e2._dataConsumers.write(o2, t3, n2);
-    let r2 = e2._dataRestoration.capture(n2);
-    p2.add(n2), m2(r2, `restore data mutation ${t3}`);
-  } }), y2 = (t3) => {
-    if (o2.unmanagedDomains.add(t3), e2._managedRebuildGuard) throw Error(`API requires restart during managed rebuild: ${t3}`);
-  }, b2 = { getCc: () => (o2.persistenceAudit.raw(), c()), getClassByName: (e3) => (o2.persistenceAudit.raw(), r(e3)), getSystemModule: (e3) => (o2.persistenceAudit.raw(), s(e3)), getModuleExport: (e3, t3) => (o2.persistenceAudit.raw(), i(e3, t3)), getAllPlayerProperties: () => (o2.persistenceAudit.raw(), n()), isReady: () => a() }, x2 = { defineCleanup: (e3, t3 = `author cleanup`) => m2(e3, t3), wrapMethod: (e3) => _2.wrapMethod(e3), wrapProperty: (e3) => (y2(`unsafe.hooks.wrapProperty`), g2(`wrapProperty`, e3, `restore property hook ${e3?.key || ``}`)), wrapModuleExport: (e3) => (y2(`unsafe.hooks.wrapModuleExport`), g2(`wrapModuleExport`, e3, `restore module export ${e3?.modulePath || ``}:${e3?.exportName || ``}`)), getHooks: () => e2._hookManager.getHooks(), getConflicts: () => e2._hookManager.getConflicts() }, S2 = { meta: Object.freeze({ namespace: u2, id: u2, name: t2?.meta?.name || u2, version: t2?.meta?.version || `0.0.0`, packFormatVersion: t2?.meta?.packFormatVersion || 1, apiVersion: t2?.meta?.apiVersion || 0, capabilities: Object.freeze([...t2?.meta?.capabilities || []]), depends: Object.freeze([...t2?.meta?.depends || []]), optionalDepends: Object.freeze([...t2?.meta?.optionalDepends || []]) }), compat: { getApiVersion: () => 2, getPlatformVersion: () => ee, getPackFormatVersion: () => t2?.meta?.packFormatVersion || 1, hasDeclaredFeature: (e3) => Array.isArray(t2?.meta?.featureFlags) && t2.meta.featureFlags.includes(e3), hasFeature: (t3) => e2._services?.hasFeature?.(t3) === true, warnDeprecated: (e3) => G.warn(`[${u2}] ${e3}`), markDegraded: (e3) => {
-    o2.state = `degraded`, o2.warnings.push(String(e3 || `degraded`));
-  } }, runtime: h2, ui: { toast: (n2, r2 = `info`) => (d2.assertActive(`ui.toast`), e2._showToast(`[${t2?.meta?.name || u2}] ${n2}`, r2)) }, settings: { onApply: (t3, n2 = {}) => {
-    if (d2.assertActive(`settings.onApply`), typeof t3 != `function`) throw TypeError(`settings.onApply requires a handler`);
-    if (o2.settingsApplyHandler) throw Error(`Only one settings application handler is allowed`);
-    let r2 = { callback: d2.guard(t3, { label: `settings application`, rethrow: true }) }, i2 = w({ runtime: d2, signal: n2.signal, label: n2.label || `settings application`, onCancel: () => {
-      o2.settingsApplyHandler === r2 && (o2.settingsApplyHandler = null, e2._settingsApplyRevision++);
+    let t3 = o2.guard(e3.handler, { label: `method hook ${e3.methodName}`, rethrow: true });
+    return _2(`wrapMethod`, { ...e3, handler: (e4) => o2.isActive ? t3(e4) : e4.callNext() }, `restore method hook ${e3.methodName}`);
+  }, onEvent: (t3, n2, i3 = false) => e2._subscribeEvent(r2, t3, n2, i3), defineCleanup: h2 }, y2 = e2._createApi({ ...e2._services, apiVersion: Number(t2?.meta?.apiVersion || 0), behaviorTools: v2, runtime: g2, modNamespace: a2, combatModifierRegistry: e2._combatModifierRegistry, reportPersistentMutation: (e3) => r2.persistenceAudit.record(e3), reportDataRead: (t3, n2) => e2._dataConsumers.read(r2, t3, n2), beforeDataMutation(t3, n2) {
+    if (!n2 || l2.has(n2)) return;
+    e2._dataConsumers.write(r2, t3, n2);
+    let i3 = e2._dataRestoration.capture(n2);
+    l2.add(n2), h2(i3, `restore data mutation ${t3}`);
+  } }), b2 = (t3) => {
+    if (r2.unmanagedDomains.add(t3), e2._managedRebuildGuard) throw Error(`API requires restart during managed rebuild: ${t3}`);
+  }, x2 = { getCc: () => (r2.persistenceAudit.raw(), f()), getClassByName: (e3) => (r2.persistenceAudit.raw(), d(e3)), getSystemModule: (e3) => (r2.persistenceAudit.raw(), m(e3)), getModuleExport: (e3, t3) => (r2.persistenceAudit.raw(), p(e3, t3)), getAllPlayerProperties: () => (r2.persistenceAudit.raw(), u()), isReady: () => c() }, S2 = { defineCleanup: (e3, t3 = `author cleanup`) => h2(e3, t3), wrapMethod: (e3) => v2.wrapMethod(e3), wrapProperty: (e3) => (b2(`unsafe.hooks.wrapProperty`), _2(`wrapProperty`, e3, `restore property hook ${e3?.key || ``}`)), wrapModuleExport: (e3) => (b2(`unsafe.hooks.wrapModuleExport`), _2(`wrapModuleExport`, e3, `restore module export ${e3?.modulePath || ``}:${e3?.exportName || ``}`)), getHooks: () => e2._hookManager.getHooks(), getConflicts: () => e2._hookManager.getConflicts() }, C2 = { meta: Object.freeze({ namespace: a2, id: a2, name: t2?.meta?.name || a2, version: t2?.meta?.version || `0.0.0`, packFormatVersion: t2?.meta?.packFormatVersion || 1, apiVersion: t2?.meta?.apiVersion || 0, capabilities: Object.freeze([...t2?.meta?.capabilities || []]), depends: Object.freeze([...t2?.meta?.depends || []]), optionalDepends: Object.freeze([...t2?.meta?.optionalDepends || []]) }), compat: { getApiVersion: () => 2, getPlatformVersion: () => n, getPackFormatVersion: () => t2?.meta?.packFormatVersion || 1, hasDeclaredFeature: (e3) => Array.isArray(t2?.meta?.featureFlags) && t2.meta.featureFlags.includes(e3), hasFeature: (t3) => e2._services?.hasFeature?.(t3) === true, warnDeprecated: (e3) => W.warn(`[${a2}] ${e3}`), markDegraded: (e3) => {
+    r2.state = `degraded`, r2.warnings.push(String(e3 || `degraded`));
+  } }, runtime: g2, ui: { toast: (n2, r3 = `info`) => (o2.assertActive(`ui.toast`), e2._showToast(`[${t2?.meta?.name || a2}] ${n2}`, r3)) }, settings: { onApply: (t3, n2 = {}) => {
+    if (o2.assertActive(`settings.onApply`), typeof t3 != `function`) throw TypeError(`settings.onApply requires a handler`);
+    if (r2.settingsApplyHandler) throw Error(`Only one settings application handler is allowed`);
+    let i3 = { callback: o2.guard(t3, { label: `settings application`, rethrow: true }) }, a3 = T({ runtime: o2, signal: n2.signal, label: n2.label || `settings application`, onCancel: () => {
+      r2.settingsApplyHandler === i3 && (r2.settingsApplyHandler = null, e2._settingsApplyRevision++);
     } });
-    return i2.active && (o2.settingsApplyHandler = r2, e2._settingsApplyRevision++), i2.cancel;
+    return a3.active && (r2.settingsApplyHandler = i3, e2._settingsApplyRevision++), a3.cancel;
   }, onChange: (e3, t3 = {}) => {
-    if (d2.assertActive(`settings.onChange`), typeof e3 != `function`) throw TypeError(`settings.onChange requires a listener`);
-    let n2 = String(t3.label || `settings change`), r2 = { callback: null, off: null }, i2 = w({ runtime: d2, signal: t3.signal, label: n2, onCancel: () => {
-      r2.off?.(), o2.settingsSubscriptions.delete(r2);
+    if (o2.assertActive(`settings.onChange`), typeof e3 != `function`) throw TypeError(`settings.onChange requires a listener`);
+    let n2 = String(t3.label || `settings change`), i3 = { callback: null, off: null }, s3 = T({ runtime: o2, signal: t3.signal, label: n2, onCancel: () => {
+      i3.off?.(), r2.settingsSubscriptions.delete(i3);
     } });
-    if (!i2.active) return i2.cancel;
-    let a2 = d2.guard(e3, { label: n2 });
-    r2.callback = (e4) => i2.active ? a2(e4) : void 0;
+    if (!s3.active) return s3.cancel;
+    let c2 = o2.guard(e3, { label: n2 });
+    i3.callback = (e4) => s3.active ? c2(e4) : void 0;
     try {
-      r2.off = o2.settingsRegistry.subscribe(u2, r2.callback), o2.settingsSubscriptions.add(r2);
+      i3.off = r2.settingsRegistry.subscribe(a2, i3.callback), r2.settingsSubscriptions.add(i3);
     } catch (e4) {
-      throw i2.cancel(), e4;
+      throw s3.cancel(), e4;
     }
-    return i2.cancel;
-  }, defineSchema: async (e3) => (d2.assertActive(`settings.defineSchema`), o2.settingsSchema = await o2.settingsRegistry.registerModSettings({ ...e3, namespace: u2 }), m2(() => o2.settingsRegistry.unregisterModSettings(u2), `unregister settings schema`), o2.settingsSchema), get: async (e3) => (d2.assertActive(`settings.get`), (await o2.settingsRegistry.getModSettings(u2)).values?.[e3]), set: async (e3, t3) => (d2.assertActive(`settings.set`), o2.settingsRegistry.updateModSetting(u2, e3, t3)), getAll: async () => (d2.assertActive(`settings.getAll`), (await o2.settingsRegistry.getModSettings(u2)).values), reset: async () => (d2.assertActive(`settings.reset`), o2.settingsRegistry.resetModSettings(u2)), export: async () => (d2.assertActive(`settings.export`), o2.settingsRegistry.exportModSettings(u2)), import: async (e3) => (d2.assertActive(`settings.import`), o2.settingsRegistry.importModSettings(u2, e3)) }, controls: { definePanel: (e3) => {
-    d2.assertActive(`controls.definePanel`);
-    let t3 = f2.registerModControls({ ...We(e3, d2), namespace: u2 });
-    return m2(() => f2.unregisterModControls(u2), `unregister runtime controls`), t3;
-  }, clear: () => (d2.assertActive(`controls.clear`), f2.unregisterModControls(u2)) }, events: { onDispose: (e3, t3) => m2(e3, t3 || `event dispose handler`), on: (t3, n2, r2) => e2._subscribeEvent(o2, X(u2, t3), n2, false, r2), once: (t3, n2, r2) => e2._subscribeEvent(o2, X(u2, t3), n2, true, r2), emit: (t3, ...n2) => {
-    d2.assertActive(`events.emit`);
-    let r2 = X(u2, t3, { forEmit: true });
-    return e2._eventConsumers.publish(o2, r2), e2._eventBus.emit(r2, ...n2);
+    return s3.cancel;
+  }, defineSchema: async (e3) => (o2.assertActive(`settings.defineSchema`), r2.settingsSchema = await r2.settingsRegistry.registerModSettings({ ...e3, namespace: a2 }), h2(() => r2.settingsRegistry.unregisterModSettings(a2), `unregister settings schema`), r2.settingsSchema), get: async (e3) => (o2.assertActive(`settings.get`), (await r2.settingsRegistry.getModSettings(a2)).values?.[e3]), set: async (e3, t3) => (o2.assertActive(`settings.set`), r2.settingsRegistry.updateModSetting(a2, e3, t3)), getAll: async () => (o2.assertActive(`settings.getAll`), (await r2.settingsRegistry.getModSettings(a2)).values), reset: async () => (o2.assertActive(`settings.reset`), r2.settingsRegistry.resetModSettings(a2)), export: async () => (o2.assertActive(`settings.export`), r2.settingsRegistry.exportModSettings(a2)), import: async (e3) => (o2.assertActive(`settings.import`), r2.settingsRegistry.importModSettings(a2, e3)) }, controls: { definePanel: (e3) => {
+    o2.assertActive(`controls.definePanel`);
+    let t3 = s2.registerModControls({ ...ke(e3, o2), namespace: a2 });
+    return h2(() => s2.unregisterModControls(a2), `unregister runtime controls`), t3;
+  }, clear: () => (o2.assertActive(`controls.clear`), s2.unregisterModControls(a2)) }, events: { onDispose: (e3, t3) => h2(e3, t3 || `event dispose handler`), on: (t3, n2, i3) => e2._subscribeEvent(r2, X(a2, t3), n2, false, i3), once: (t3, n2, i3) => e2._subscribeEvent(r2, X(a2, t3), n2, true, i3), emit: (t3, ...n2) => {
+    o2.assertActive(`events.emit`);
+    let i3 = X(a2, t3, { forEmit: true });
+    return e2._eventConsumers.publish(r2, i3), e2._eventBus.emit(i3, ...n2);
   }, emitAsync: (t3, ...n2) => {
-    d2.assertActive(`events.emitAsync`);
-    let r2 = X(u2, t3, { forEmit: true });
-    return e2._eventConsumers.publish(o2, r2), e2._eventBus.emitAsync(r2, ...n2);
-  } }, services: { provide: (t3) => (d2.assertActive(`services.provide`), e2._modServiceRegistry.provide(u2, d2, t3, l2)), resolve: (t3, n2) => (d2.assertActive(`services.resolve`), e2._modServiceRegistry.resolve(u2, d2, t3, n2, l2)), list: () => (d2.assertActive(`services.list`), e2._modServiceRegistry.list()) }, files: o2.filesPlan.forRuntime(o2), storage: Fe({ namespace: u2, scope: d2, service: e2._ownedDataService, saveIdentity: e2._createSaveIdentity((e3) => o2.persistenceAudit.record(e3)), reportMutation: (e3) => o2.persistenceAudit.record(e3) }), gpn: { reload: () => (d2.assertActive(`gpn.reload`), e2._services?.reloadAll?.()), status: () => e2._services?.getPatcherStatus?.() ?? null, getOriginalData: (t3) => e2._services?.getOriginalData?.(t3) ?? null }, log: { info: (e3) => G.info(`[${u2}] ${e3}`), warn: (e3) => G.warn(`[${u2}] ${e3}`), error: (e3) => G.error(`[${u2}] ${e3}`) }, unsafe: { get engine() {
-    return y2(`unsafe.engine`), b2;
-  }, hooks: x2 }, ...v2 }, C2 = /* @__PURE__ */ new Set([`meta`, `compat`, `runtime`, `ui`, `settings`, `controls`, `events`, `services`, `files`, `storage`, `log`, `unsafe`]);
-  for (let e3 of Object.keys(S2)) {
-    if (C2.has(e3)) continue;
-    let t3 = S2[e3];
-    Object.defineProperty(S2, e3, { enumerable: true, configurable: false, get() {
-      return y2(e3), t3;
+    o2.assertActive(`events.emitAsync`);
+    let i3 = X(a2, t3, { forEmit: true });
+    return e2._eventConsumers.publish(r2, i3), e2._eventBus.emitAsync(i3, ...n2);
+  } }, services: { provide: (t3) => (o2.assertActive(`services.provide`), e2._modServiceRegistry.provide(a2, o2, t3, i2)), resolve: (t3, n2) => (o2.assertActive(`services.resolve`), e2._modServiceRegistry.resolve(a2, o2, t3, n2, i2)), list: () => (o2.assertActive(`services.list`), e2._modServiceRegistry.list()) }, files: r2.filesPlan.forRuntime(r2), storage: xe({ namespace: a2, scope: o2, service: e2._ownedDataService, saveIdentity: e2._createSaveIdentity((e3) => r2.persistenceAudit.record(e3)), reportMutation: (e3) => r2.persistenceAudit.record(e3) }), gpn: { reload: () => (o2.assertActive(`gpn.reload`), e2._services?.reloadAll?.()), status: () => e2._services?.getPatcherStatus?.() ?? null, getOriginalData: (t3) => e2._services?.getOriginalData?.(t3) ?? null }, log: { info: (e3) => W.info(`[${a2}] ${e3}`), warn: (e3) => W.warn(`[${a2}] ${e3}`), error: (e3) => W.error(`[${a2}] ${e3}`) }, unsafe: { get engine() {
+    return b2(`unsafe.engine`), x2;
+  }, hooks: S2 }, ...y2 }, w2 = /* @__PURE__ */ new Set([`meta`, `compat`, `runtime`, `ui`, `settings`, `controls`, `events`, `services`, `files`, `storage`, `log`, `unsafe`]);
+  for (let e3 of Object.keys(C2)) {
+    if (w2.has(e3)) continue;
+    let t3 = C2[e3];
+    Object.defineProperty(C2, e3, { enumerable: true, configurable: false, get() {
+      return b2(e3), t3;
     } });
   }
-  return S2;
+  return C2;
 }
-var $ = class {
+var Me = class {
   constructor(t2 = {}) {
-    this._runtimes = /* @__PURE__ */ new Map(), this._hookManager = t2.hookManager || new pe(), this._services = null, this._sceneListenerInstalled = false, this._stickyEvents = /* @__PURE__ */ new Map(), this._operation = Promise.resolve(), this._operationActive = 0, this._executedScripts = /* @__PURE__ */ new WeakMap(), this._generation = 0, this._settingsApplyRevision = 0, this._startupSession = null, this._filePlanIds = /* @__PURE__ */ new WeakMap(), this._nextFilePlanId = 1, this._fileConsumerRevision = 0, this._fileConsumerSignature = null, this._cleanupFailure = null, this._lastCleanupReport = null, this._ownedDataService = t2.ownedDataService || Ie, this._createSaveIdentity = t2.createSaveIdentity || ((e2) => Pe({ getPlayers: () => n(), storage: { getItem: (e3) => globalThis.localStorage.getItem(e3) }, reportMutation: e2 })), this._fileLoader = t2.fileLoader || v, this._modSettingsRegistry = t2.modSettingsRegistry || re, this._modControlsRegistry = t2.modControlsRegistry || ie, this._createApi = t2.createApi || oe, this._showToast = t2.showToast || u, this._moduleImporter = t2.moduleImporter || ((t3) => e(() => import(t3), [])), this._createObjectUrl = t2.createObjectUrl || Ge, this._revokeObjectUrl = t2.revokeObjectUrl || ((e2) => URL.revokeObjectURL(e2)), this._setupTimeoutMs = q(t2.defaultSetupTimeoutMs, Le, 10), this._importTimeoutMs = q(t2.defaultImportTimeoutMs, Re, 10), this._eventTimeoutMs = q(t2.defaultEventTimeoutMs, ze, 10), this._eventBus = t2.eventBus || new fe({ onError: (e2, t3) => G.error(`Event '${t3.eventName}' listener failed: ${e2}`) }), this._dataConsumers = le(), this._eventConsumers = ue(), this._dataRestoration = de({ clone: Y, restore: Ue }), this._modServiceRegistry = t2.modServiceRegistry || Te(), this._combatModifierRegistry = t2.combatModifierRegistry || ae({ onError: (e2, t3) => G.error(`[${t3.owner || `unknown`}] combat listener failed: ${e2}`) });
+    this._startupAttempt = t2.startupAttempt === true, this._runtimes = /* @__PURE__ */ new Map(), this._hookManager = t2.hookManager || new ce(), this._services = null, this._sceneListenerInstalled = false, this._stickyEvents = /* @__PURE__ */ new Map(), this._operation = Promise.resolve(), this._operationActive = 0, this._executedScripts = /* @__PURE__ */ new WeakMap(), this._generation = 0, this._settingsApplyRevision = 0, this._startupSession = null, this._filePlanIds = /* @__PURE__ */ new WeakMap(), this._nextFilePlanId = 1, this._fileConsumerRevision = 0, this._fileConsumerSignature = null, this._cleanupFailure = null, this._lastCleanupReport = null, this._ownedDataService = t2.ownedDataService || Se, this._createSaveIdentity = t2.createSaveIdentity || ((e2) => be({ getPlayers: () => u(), storage: { getItem: (e3) => globalThis.localStorage.getItem(e3) }, reportMutation: e2 })), this._fileLoader = t2.fileLoader || _, this._modSettingsRegistry = t2.modSettingsRegistry || S, this._modControlsRegistry = t2.modControlsRegistry || C, this._createApi = t2.createApi || ee, this._showToast = t2.showToast || g, this._moduleImporter = t2.moduleImporter || ((t3) => e(() => import(t3), [])), this._createObjectUrl = t2.createObjectUrl || Ae, this._revokeObjectUrl = t2.revokeObjectUrl || ((e2) => URL.revokeObjectURL(e2)), this._setupTimeoutMs = q(t2.defaultSetupTimeoutMs, Ce, 10), this._importTimeoutMs = q(t2.defaultImportTimeoutMs, we, 10), this._eventTimeoutMs = q(t2.defaultEventTimeoutMs, Te, 10), this._eventBus = t2.eventBus || new oe({ onError: (e2, t3) => W.error(`Event '${t3.eventName}' listener failed: ${e2}`) }), this._dataConsumers = re(), this._eventConsumers = ie(), this._dataRestoration = ae({ clone: Y, restore: Oe }), this._modServiceRegistry = t2.modServiceRegistry || ve(), this._combatModifierRegistry = t2.combatModifierRegistry || w({ onError: (e2, t3) => W.error(`[${t3.owner || `unknown`}] combat listener failed: ${e2}`) });
   }
   _runExclusive(e2) {
     this._operationActive += 1;
@@ -1059,11 +953,9 @@ var $ = class {
     }), n2;
   }
   getStatus() {
-    const conflictCounts = /* @__PURE__ */ new Map();
-    for (const conflict of this._hookManager.getConflicts()) {
-      for (const owner of new Set(conflict.owners)) conflictCounts.set(owner, (conflictCounts.get(owner) || 0) + 1);
-    }
-    return Array.from(this._runtimes.values()).map((e2) => ({ namespace: e2.namespace, name: e2.pack?.meta?.name || e2.namespace, version: e2.pack?.meta?.version || ``, apiVersion: Number(e2.pack?.meta?.apiVersion || 0), state: e2.state, phase: e2.phase, errors: [...e2.errors], warnings: [...e2.warnings], hasControls: e2.hasControls === true, hasSettings: e2.hasSettings === true, entry: e2.pack?.meta?.js?.entry || ``, conflicts: conflictCounts.get(e2.namespace) || 0, generation: e2.generation, setupDurationMs: e2.setupDurationMs ?? null, startupOwned: e2.startupOwned, unmanagedDomains: [...e2.unmanagedDomains].sort(), pendingTasks: e2.scope?.pendingTaskCount || 0, taskRevision: e2.scope?.taskRevision ?? null, persistentActivity: e2.persistenceAudit?.snapshot() || null })).sort((e2, t2) => e2.name.localeCompare(t2.name));
+    let e2 = /* @__PURE__ */ new Map();
+    for (let t2 of this._hookManager.getConflicts()) for (let n2 of new Set(t2.owners)) e2.set(n2, (e2.get(n2) || 0) + 1);
+    return Array.from(this._runtimes.values()).map((t2) => ({ namespace: t2.namespace, name: t2.pack?.meta?.name || t2.namespace, version: t2.pack?.meta?.version || ``, apiVersion: Number(t2.pack?.meta?.apiVersion || 0), state: t2.state, phase: t2.phase, errors: [...t2.errors], warnings: [...t2.warnings], hasControls: t2.hasControls === true, hasSettings: t2.hasSettings === true, entry: t2.pack?.meta?.js?.entry || ``, conflicts: e2.get(t2.namespace) || 0, generation: t2.generation, setupDurationMs: t2.setupDurationMs ?? null, startupOwned: t2.startupOwned, unmanagedDomains: [...t2.unmanagedDomains].sort(), pendingTasks: t2.scope?.pendingTaskCount || 0, taskRevision: t2.scope?.taskRevision ?? null, persistentActivity: t2.persistenceAudit?.snapshot() || null })).sort((e3, t2) => e3.name.localeCompare(t2.name));
   }
   _getFileConsumers() {
     if (!this._filesPlan) return null;
@@ -1096,9 +988,9 @@ var $ = class {
     let a2 = String(t2 || ``);
     if (!a2) throw Error(`events.on() requires an event name`);
     i2 = i2 && typeof i2 == `object` ? i2 : {};
-    let o2 = String(i2.label || `event listener ${a2}`), s2 = e2.scope.guard(n2, { label: o2 }), c2 = this._stickyEvents.has(a2), l2 = () => false, u2 = w({ runtime: e2.scope, signal: i2.signal, label: o2, onCancel: () => l2() });
+    let o2 = String(i2.label || `event listener ${a2}`), s2 = e2.scope.guard(n2, { label: o2 }), c2 = this._stickyEvents.has(a2), l2 = () => false, u2 = T({ runtime: e2.scope, signal: i2.signal, label: o2, onCancel: () => l2() });
     if (!u2.active) return u2.cancel;
-    if (!Be.has(a2)) try {
+    if (!G.has(a2)) try {
       this._eventConsumers.subscribe(e2, a2);
     } catch (e3) {
       throw u2.cancel(), e3;
@@ -1118,7 +1010,7 @@ var $ = class {
     this._services = { reloadAll: typeof e2.reloadAll == `function` ? e2.reloadAll : null, getPatcherStatus: typeof e2.getPatcherStatus == `function` ? e2.getPatcherStatus : null, getOriginalData: typeof e2.getOriginalData == `function` ? e2.getOriginalData : null, getCurrentData: typeof e2.getCurrentData == `function` ? e2.getCurrentData : null, restoreData: typeof e2.restoreData == `function` ? e2.restoreData : null, restoreAllData: typeof e2.restoreAllData == `function` ? e2.restoreAllData : null, listBackups: typeof e2.listBackups == `function` ? e2.listBackups : null, hasBackup: typeof e2.hasBackup == `function` ? e2.hasBackup : null, exportJson: typeof e2.exportJson == `function` ? e2.exportJson : null, exportLang: typeof e2.exportLang == `function` ? e2.exportLang : null, setObjectsData: typeof e2.setObjectsData == `function` ? e2.setObjectsData : null, hasFeature: typeof e2.hasFeature == `function` ? e2.hasFeature : null };
   }
   notifyEngineReady(e2 = {}) {
-    this._stickyEvents.set(`engine:ready`, e2), this._eventBus.emit(`engine:ready`, e2), !this._sceneListenerInstalled && a() && (l((e3) => {
+    this._stickyEvents.set(`engine:ready`, e2), this._eventBus.emit(`engine:ready`, e2), !this._sceneListenerInstalled && c() && (s((e3) => {
       this._eventBus.emit(`scene:after-launch`, { sceneName: e3 });
     }), this._sceneListenerInstalled = true);
   }
@@ -1133,7 +1025,7 @@ var $ = class {
     try {
       return await Z(this._eventBus.emitAsync(e2, t2), r2, `Event '${e2}'`);
     } catch (t3) {
-      return G.warn(`${t3}`), { eventName: e2, delivered: 0, errors: [t3], timedOut: true };
+      return W.warn(`${t3}`), { eventName: e2, delivered: 0, errors: [t3], timedOut: true };
     }
   }
   _startupError(e2, t2) {
@@ -1142,38 +1034,38 @@ var $ = class {
   beginStartupFromPacks(e2, { fileLoader: t2 = this._fileLoader } = {}) {
     return this._runExclusive(async () => {
       if (this._startupSession || this._generation || this._runtimes.size) throw this._startupError(`MOD_RESTART_REQUIRED`, `Startup needs a fresh loader`);
-      let n2 = b(e2);
+      let n2 = i(e2, { attempt: this._startupAttempt });
       if (n2.blocked.size) throw this._startupError(`STARTUP_PLAN_INVALID`, `Startup dependency plan is blocked`);
-      for (let e3 of n2.ordered) C(e3, { hasFeature: this._services?.hasFeature });
-      let r2 = n2.ordered.filter((e3) => e3.meta.js.startup === true), i2 = new Set(r2.map(K)), a2 = new Set(n2.ordered.map(K));
-      for (let e3 of r2) for (let t3 of n2.required.get(K(e3)) || []) if (a2.has(t3) && !i2.has(t3)) throw this._startupError(`STARTUP_DEPENDENCY_LATE`, `Startup dependency must opt in: ${t3}`);
+      for (let e3 of n2.ordered) y(e3, { hasFeature: this._services?.hasFeature, attempt: this._startupAttempt });
+      let r2 = n2.ordered.filter((e3) => e3.meta.js.startup === true), a2 = new Set(r2.map(K)), o2 = new Set(n2.ordered.map(K));
+      for (let e3 of this._startupAttempt ? [] : r2) for (let t3 of n2.required.get(K(e3)) || []) if (o2.has(t3) && !a2.has(t3)) throw this._startupError(`STARTUP_DEPENDENCY_LATE`, `Startup dependency must opt in: ${t3}`);
       this._generation++;
-      let s2 = this._generation, c2 = () => JSON.stringify(e2.map((e3) => [e3.dir, e3.meta, e3.contentDigest, e3.enabled, e3.preflightErrors, e3.errors])), l2 = { phase: `starting`, inUse: false, reader: t2, registrations: ce(o), plan: n2, signature: c2(), signatureNow: c2 };
-      l2.assertCurrent = () => {
+      let s2 = this._generation, c2 = () => JSON.stringify(e2.map((e3) => [e3.dir, e3.meta, e3.contentDigest, e3.enabled, e3.preflightErrors, e3.errors])), u2 = { phase: `starting`, inUse: false, reader: t2, registrations: ne(l), plan: n2, signature: c2(), signatureNow: c2 };
+      u2.assertCurrent = () => {
         let e3 = false;
         try {
-          e3 = l2.signature === l2.signatureNow();
+          e3 = u2.signature === u2.signatureNow();
         } catch {
         }
         if (!e3) {
-          l2.phase = `failed`;
-          for (let e4 of this._runtimes.values()) e4.state = `failed`, e4.phase = l2.inUse ? `failed-restart-required` : `failed`, e4.errors.push(`Startup package plan changed`);
+          u2.phase = `failed`;
+          for (let e4 of this._runtimes.values()) e4.state = `failed`, e4.phase = u2.inUse ? `failed-restart-required` : `failed`, e4.errors.push(`Startup package plan changed`);
           throw this._startupError(`STARTUP_PLAN_STALE`, `Startup package plan changed`);
         }
-      }, this._startupSession = l2, this._filesPlan = R(e2, { fileLoader: t2, hasFeature: this._services?.hasFeature, getRuntime: (e3) => this._runtimes.get(e3), isCurrent: (e3) => this._runtimes.get(e3.namespace) === e3 && l2.phase !== `aborted`, isStartupRuntime: (e3) => !!e3 && i2.has(e3.namespace) && e3.generation === s2 && [`startup`, `startup-ready`].includes(e3.state) });
-      let u2 = Object.freeze({ prepareRegistrations: (e3) => {
-        if (l2.phase !== `ready`) throw Error(`Startup registration plan is unavailable`);
-        return l2.assertCurrent(), l2.registrations.prepare(e3);
-      }, publishRegistrations: () => (l2.assertCurrent(), l2.registrations.publish()), getResources: () => l2.registrations.getResources(), markInUse: () => {
-        if (l2.phase !== `ready`) throw Error(`Startup session is not ready for publication`);
-        return l2.assertCurrent(), l2.inUse ? false : (l2.inUse = true, true);
+      }, this._startupSession = u2, this._filesPlan = B(e2, { fileLoader: t2, hasFeature: this._services?.hasFeature, attempt: this._startupAttempt, getRuntime: (e3) => this._runtimes.get(e3), isCurrent: (e3) => this._runtimes.get(e3.namespace) === e3 && u2.phase !== `aborted`, isStartupRuntime: (e3) => !!e3 && a2.has(e3.namespace) && e3.generation === s2 && [`startup`, `startup-ready`].includes(e3.state) });
+      let d2 = Object.freeze({ prepareRegistrations: (e3) => {
+        if (u2.phase !== `ready`) throw Error(`Startup registration plan is unavailable`);
+        return u2.assertCurrent(), u2.registrations.prepare(e3);
+      }, publishRegistrations: () => (u2.assertCurrent(), u2.registrations.publish()), getResources: () => u2.registrations.getResources(), markInUse: () => {
+        if (u2.phase !== `ready`) throw Error(`Startup session is not ready for publication`);
+        return u2.assertCurrent(), u2.inUse ? false : (u2.inUse = true, true);
       } });
-      l2.handle = u2;
+      u2.handle = d2;
       try {
-        for (let e3 of r2) if (l2.assertCurrent(), await this._loadPack(e3, { startup: true }), l2.assertCurrent(), this._runtimes.get(K(e3))?.state !== `startup-ready`) throw this._startupError(`STARTUP_FAILED`, `Startup mod failed`);
-        return l2.registrations.seal(), l2.phase = `ready`, u2;
+        for (let e3 of r2) if (u2.assertCurrent(), await this._loadPack(e3, { startup: true }), u2.assertCurrent(), this._runtimes.get(K(e3))?.state !== `startup-ready`) throw this._startupError(`STARTUP_FAILED`, `Startup mod failed`);
+        return u2.registrations.seal(), u2.phase = `ready`, d2;
       } catch (e3) {
-        throw l2.phase = `failed`, await this._disposeAll(`startup-failed`), await l2.registrations.dispose(), e3;
+        throw u2.phase = `failed`, await this._disposeAll(`startup-failed`), await u2.registrations.dispose(), e3;
       }
     });
   }
@@ -1214,18 +1106,18 @@ var $ = class {
     t2.emitReloadEvents !== false && await this.emitAsync(`mods:reload-before`, { reason: n2 });
     let r2 = await this._disposeAll(n2);
     if (!r2.ok) throw Object.assign(Error(`Previous JS mod cleanup failed; restart the game before reloading`), { code: `MOD_CLEANUP_FAILED`, report: r2, restartRequired: true });
-    this._generation += 1, this._filesPlan = R(e2, { fileLoader: this._fileLoader, hasFeature: this._services?.hasFeature, getRuntime: (e3) => this._runtimes.get(e3), isCurrent: (e3) => this._runtimes.get(e3.namespace) === e3 });
-    let i2 = b(e2), a2 = (e3, t3, n3, r3 = []) => {
+    this._generation += 1, this._filesPlan = B(e2, { fileLoader: this._fileLoader, hasFeature: this._services?.hasFeature, getRuntime: (e3) => this._runtimes.get(e3), isCurrent: (e3) => this._runtimes.get(e3.namespace) === e3 });
+    let a2 = i(e2), o2 = (e3, t3, n3, r3 = []) => {
       this._runtimes.set(e3, { namespace: e3, pack: t3, state: `failed`, phase: `dependency-check`, startupOwned: false, unmanagedDomains: /* @__PURE__ */ new Set(), settingsRegistry: this._modSettingsRegistry, errors: [...n3], warnings: [...r3], hasControls: false, hasSettings: false, generation: this._generation, scope: null });
     };
-    for (let [e3, t3] of i2.blocked) a2(e3, t3.pack, t3.errors, t3.warnings);
-    for (let e3 of i2.ordered) {
-      let t3 = (i2.required.get(K(e3)) || []).filter((e4) => {
+    for (let [e3, t3] of a2.blocked) o2(e3, t3.pack, t3.errors, t3.warnings);
+    for (let e3 of a2.ordered) {
+      let t3 = (a2.required.get(K(e3)) || []).filter((e4) => {
         let t4 = this._runtimes.get(String(e4 || ``));
         return t4 && t4.state !== `active` && t4.state !== `degraded`;
       });
       if (t3.length > 0) {
-        a2(K(e3), e3, [`Dependencies failed to activate: ${t3.join(`, `)}`]);
+        o2(K(e3), e3, [`Dependencies failed to activate: ${t3.join(`, `)}`]);
         continue;
       }
       await this._loadPack(e3);
@@ -1255,35 +1147,35 @@ var $ = class {
         if (!t3?.scope?.isActive || ![`active`, `degraded`].includes(t3.state)) throw Error(`Runtime is not active: ${e4}`);
         if (t3.startupOwned) throw this._startupError(`MOD_RESTART_REQUIRED`, `Startup scope requires restart: ${e4}`);
       }
-      let e3 = [...this._runtimes.values()].filter((e4) => e4.scope?.isActive), i2 = new Set(e3.map((e4) => e4.namespace)), a2 = [];
+      let e3 = [...this._runtimes.values()].filter((e4) => e4.scope?.isActive), i2 = new Set(e3.map((e4) => e4.namespace)), o2 = [];
       for (let t3 of e3) {
         let e4 = this._executedScripts.get(t3);
         if (!e4) throw Error(`Runtime execution identity is missing: ${t3.namespace}`);
         let n3 = JSON.parse(e4.signature);
-        for (let e5 of [...n3.depends || [], ...n3.optionalDepends || []]) i2.has(e5) && a2.push({ provider: e5, consumer: t3.namespace });
+        for (let e5 of [...n3.depends || [], ...n3.optionalDepends || []]) i2.has(e5) && o2.push({ provider: e5, consumer: t3.namespace });
       }
-      a2.push(...this._getFileConsumers()?.edges || [], ...this._modServiceRegistry.getConsumers().edges, ...this._dataConsumers.getConsumers().edges, ...this._eventConsumers.getConsumers().edges, ...this._getHookConsumers().edges);
-      let o2 = new Set(a2.filter((e4) => r2.has(e4.provider) && i2.has(e4.consumer) && !r2.has(e4.consumer)).map((e4) => e4.consumer));
-      if (o2.size) throw Error(`Grouped cleanup omits consumers: ${[...o2].sort().join(`, `)}`);
-      let s2 = x(e3.filter((e4) => r2.has(e4.namespace)).map((e4) => ({ meta: { uuid: e4.namespace, depends: [...new Set(a2.filter((t3) => ![`data-contribution`, `data-observation`, `event-observation`, `hook-sharing`].includes(t3.kind) && t3.consumer === e4.namespace && r2.has(t3.provider)).map((e5) => e5.provider))] } })));
-      if (s2.blocked.size) throw Error(`Runtime consumer ordering is blocked`);
-      let c2 = this._dataConsumers.closeAdmission(r2), l2, u2, d2;
+      o2.push(...this._getFileConsumers()?.edges || [], ...this._modServiceRegistry.getConsumers().edges, ...this._dataConsumers.getConsumers().edges, ...this._eventConsumers.getConsumers().edges, ...this._getHookConsumers().edges);
+      let s2 = new Set(o2.filter((e4) => r2.has(e4.provider) && i2.has(e4.consumer) && !r2.has(e4.consumer)).map((e4) => e4.consumer));
+      if (s2.size) throw Error(`Grouped cleanup omits consumers: ${[...s2].sort().join(`, `)}`);
+      let c2 = a(e3.filter((e4) => r2.has(e4.namespace)).map((e4) => ({ meta: { uuid: e4.namespace, depends: [...new Set(o2.filter((t3) => ![`data-contribution`, `data-observation`, `event-observation`, `hook-sharing`].includes(t3.kind) && t3.consumer === e4.namespace && r2.has(t3.provider)).map((e5) => e5.provider))] } })));
+      if (c2.blocked.size) throw Error(`Runtime consumer ordering is blocked`);
+      let l2 = this._dataConsumers.closeAdmission(r2), u2, d2, f2;
       try {
-        d2 = this._hookManager.closeOwnerAdmission(r2), u2 = this._eventConsumers.closeAdmission(r2), l2 = this._modServiceRegistry.closeProviderAdmission(r2);
+        f2 = this._hookManager.closeOwnerAdmission(r2), d2 = this._eventConsumers.closeAdmission(r2), u2 = this._modServiceRegistry.closeProviderAdmission(r2);
       } catch (e4) {
-        throw d2?.(), u2?.(), c2(), e4;
+        throw f2?.(), d2?.(), l2(), e4;
       }
-      let f2 = [], p2 = [];
-      for (let e4 of [...s2.ordered].reverse()) {
+      let p2 = [], m2 = [];
+      for (let e4 of [...c2.ordered].reverse()) {
         let t3 = e4.meta.uuid;
         if (!r2.has(t3)) continue;
-        let i3 = this._runtimes.get(t3), a3 = await Q(this, i3, n2);
-        f2.push(a3);
-        for (let e5 of a3.errors) p2.push(Object.freeze({ namespace: t3, ...e5 }));
+        let i3 = this._runtimes.get(t3), a2 = await Q(this, i3, n2);
+        p2.push(a2);
+        for (let e5 of a2.errors) m2.push(Object.freeze({ namespace: t3, ...e5 }));
         this._runtimes.delete(t3);
       }
-      let m2 = Object.freeze({ ok: p2.length === 0, reason: n2, generation: this._generation, mods: Object.freeze(f2), errors: Object.freeze(p2), restartRequired: p2.length > 0 });
-      return this._lastCleanupReport = m2, p2.length ? this._cleanupFailure = m2 : (l2(), d2(), u2(), c2()), m2;
+      let h2 = Object.freeze({ ok: m2.length === 0, reason: n2, generation: this._generation, mods: Object.freeze(p2), errors: Object.freeze(m2), restartRequired: m2.length > 0 });
+      return this._lastCleanupReport = h2, m2.length ? this._cleanupFailure = h2 : (u2(), f2(), d2(), l2()), h2;
     });
   }
   beginManagedRebuild() {
@@ -1294,10 +1186,10 @@ var $ = class {
     };
   }
   getLiveSettingsSupport() {
-    return S({ generation: this._generation, revision: this._settingsApplyRevision, runtimes: [...this._runtimes.values()].filter((e2) => e2.scope?.isActive && [`active`, `degraded`].includes(e2.state)).map((e2) => ({ namespace: e2.namespace, generation: e2.generation, supported: e2.state === `active` && !!e2.settingsApplyHandler })) });
+    return o({ generation: this._generation, revision: this._settingsApplyRevision, runtimes: [...this._runtimes.values()].filter((e2) => e2.scope?.isActive && [`active`, `degraded`].includes(e2.state)).map((e2) => ({ namespace: e2.namespace, generation: e2.generation, supported: e2.state === `active` && !!e2.settingsApplyHandler })) });
   }
   applyLiveSettings(e2, t2) {
-    let n2 = S(e2);
+    let n2 = o(e2);
     return this._runExclusive(async () => {
       if (JSON.stringify(this.getLiveSettingsSupport()) !== JSON.stringify(t2) || this._cleanupFailure) throw Error(`Settings application handlers changed`);
       for (let e3 of n2) {
@@ -1339,58 +1231,58 @@ var $ = class {
   }
   loadRuntimeSubset(e2, { namespaces: t2, expectedGeneration: n2, fileLoader: r2, modSettingsRegistry: i2 } = {}) {
     if (!Array.isArray(e2) || !Array.isArray(t2) || t2.some((e3) => typeof e3 != `string` || !e3.trim()) || new Set(t2).size !== t2.length) return Promise.reject(Error(`Captured packages and unique runtime namespaces are required`));
-    let a2 = new Set(t2), o2 = S(e2.map(({ dir: e3, meta: t3, contentDigest: n3, enabled: r3, errors: i3, preflightErrors: a3 }) => ({ dir: e3, meta: t3, contentDigest: n3, enabled: r3, errors: i3, preflightErrors: a3 })));
+    let s2 = new Set(t2), c2 = o(e2.map(({ dir: e3, meta: t3, contentDigest: n3, enabled: r3, errors: i3, preflightErrors: a2 }) => ({ dir: e3, meta: t3, contentDigest: n3, enabled: r3, errors: i3, preflightErrors: a2 })));
     return this._runExclusive(async () => {
       if (n2 !== this._generation) throw Error(`Runtime generation changed before grouped loading`);
       if (this._cleanupFailure) throw this._startupError(`MOD_CLEANUP_FAILED`, `Previous cleanup requires restart`);
       if (this._startupSession && this._startupSession.phase !== `complete`) throw this._startupError(`STARTUP_SESSION_INVALID`, `Startup has not completed`);
       if (this._startupSession?.assertCurrent(), !i2 || typeof r2?.getPackSnapshotFrom != `function`) throw Error(`Captured files and settings registry are required`);
-      let e3 = x(o2), t3 = { ...e3, ordered: e3.ordered.filter((e4) => e4.meta?.js?.entry) };
+      let e3 = a(c2), t3 = { ...e3, ordered: e3.ordered.filter((e4) => e4.meta?.js?.entry) };
       if (t3.blocked.size) throw Error(`Grouped runtime target dependencies are blocked`);
-      let s2 = /* @__PURE__ */ new Map();
-      for (let e4 of o2.filter((e5) => e5.enabled !== false)) {
+      let o2 = /* @__PURE__ */ new Map();
+      for (let e4 of c2.filter((e5) => e5.enabled !== false)) {
         if (e4.errors?.length) throw Error(`Target package failed preparation: ${K(e4)}`);
-        ne(e4, { hasFeature: this._services?.hasFeature });
+        b(e4, { hasFeature: this._services?.hasFeature });
         let t4 = r2.getPackSnapshotFrom(e4.dir);
         if (!/^[a-f0-9]{64}$/.test(e4.contentDigest || ``) || t4?.digest !== e4.contentDigest) throw Error(`Captured package identity is missing: ${K(e4)}`);
-        if (s2.has(e4.dir)) throw Error(`Captured package directories are ambiguous`);
-        s2.set(e4.dir, t4);
+        if (o2.has(e4.dir)) throw Error(`Captured package directories are ambiguous`);
+        o2.set(e4.dir, t4);
       }
-      let c2 = Object.freeze({ getPackSnapshotFrom: (e4) => s2.get(e4) || null, readTextFrom: async (e4, t4) => s2.get(e4)?.readText(t4.replaceAll(`\\`, `/`)) ?? null }), l2 = R(o2, { fileLoader: c2, hasFeature: this._services?.hasFeature, getRuntime: (e4) => this._runtimes.get(e4), isCurrent: (e4) => this._runtimes.get(e4.namespace) === e4 }), u2 = new Map(t3.ordered.map((e4) => [K(e4), e4]));
-      for (let e4 of a2) {
-        let t4 = u2.get(e4);
+      let l2 = Object.freeze({ getPackSnapshotFrom: (e4) => o2.get(e4) || null, readTextFrom: async (e4, t4) => o2.get(e4)?.readText(t4.replaceAll(`\\`, `/`)) ?? null }), u2 = B(c2, { fileLoader: l2, hasFeature: this._services?.hasFeature, getRuntime: (e4) => this._runtimes.get(e4), isCurrent: (e4) => this._runtimes.get(e4.namespace) === e4 }), d2 = new Map(t3.ordered.map((e4) => [K(e4), e4]));
+      for (let e4 of s2) {
+        let t4 = d2.get(e4);
         if (!t4) throw Error(`Selected runtime is not in the target: ${e4}`);
         if (this._runtimes.has(e4)) throw Error(`Stop the previous runtime before loading: ${e4}`);
         if (t4.meta.js.startup === true) throw this._startupError(`MOD_RESTART_REQUIRED`, `Startup scope requires restart: ${e4}`);
-        let { entryPath: n3 } = C(t4, { hasFeature: this._services?.hasFeature });
-        if (!s2.get(t4.dir).readText(n3)) throw Error(`Captured JS entry is empty: ${e4}`);
+        let { entryPath: n3 } = y(t4, { hasFeature: this._services?.hasFeature, attempt: this._startupAttempt });
+        if (!o2.get(t4.dir).readText(n3)) throw Error(`Captured JS entry is empty: ${e4}`);
       }
-      let d2 = (e4) => {
+      let f2 = (e4) => {
         let { thumbnailUrl: t4, ...n3 } = e4;
         return JSON.stringify(n3);
       };
       for (let e4 of this._runtimes.values()) {
         if (!e4.scope?.isActive) continue;
-        let t4 = u2.get(e4.namespace), n3 = this._executedScripts.get(e4);
-        if (!t4 || !n3 || ![`active`, `degraded`].includes(e4.state) || t4.contentDigest !== n3.contentDigest || d2(t4.meta) !== d2(JSON.parse(n3.signature))) throw Error(`Target changes a retained runtime: ${e4.namespace}`);
-        if ([...t4.meta.depends || [], ...t4.meta.optionalDepends || []].some((e5) => a2.has(e5))) throw Error(`Stop runtime consumers before loading providers: ${e4.namespace}`);
-        if (JSON.stringify(e4.filesPlan.getProviderBindings(e4.namespace)) !== JSON.stringify(l2.getProviderBindings(e4.namespace))) throw Error(`Target changes retained file providers: ${e4.namespace}`);
+        let t4 = d2.get(e4.namespace), n3 = this._executedScripts.get(e4);
+        if (!t4 || !n3 || ![`active`, `degraded`].includes(e4.state) || t4.contentDigest !== n3.contentDigest || f2(t4.meta) !== f2(JSON.parse(n3.signature))) throw Error(`Target changes a retained runtime: ${e4.namespace}`);
+        if ([...t4.meta.depends || [], ...t4.meta.optionalDepends || []].some((e5) => s2.has(e5))) throw Error(`Stop runtime consumers before loading providers: ${e4.namespace}`);
+        if (JSON.stringify(e4.filesPlan.getProviderBindings(e4.namespace)) !== JSON.stringify(u2.getProviderBindings(e4.namespace))) throw Error(`Target changes retained file providers: ${e4.namespace}`);
       }
-      for (let e4 of u2.keys()) if (!a2.has(e4) && !this._runtimes.get(e4)?.scope?.isActive) throw Error(`Target runtime was not selected for loading: ${e4}`);
-      this._filesPlan = l2, this._generation++;
-      let f2 = [];
+      for (let e4 of d2.keys()) if (!s2.has(e4) && !this._runtimes.get(e4)?.scope?.isActive) throw Error(`Target runtime was not selected for loading: ${e4}`);
+      this._filesPlan = u2, this._generation++;
+      let p2 = [];
       try {
         for (let e4 of t3.ordered) {
           let t4 = K(e4);
-          if (!a2.has(t4)) continue;
-          f2.push(t4), await this._loadPack(e4, { reader: c2, filesPlan: l2, settingsRegistry: i2, subset: true });
+          if (!s2.has(t4)) continue;
+          p2.push(t4), await this._loadPack(e4, { reader: l2, filesPlan: u2, settingsRegistry: i2, subset: true });
           let n3 = this._runtimes.get(t4);
           if (![`active`, `degraded`].includes(n3?.state)) throw Error(`Grouped setup failed: ${t4}: ${n3?.errors.join(`; `)}`);
         }
         return this.getStatus();
       } catch (e4) {
         let t4 = [], n3 = [];
-        for (let e5 of f2.reverse()) {
+        for (let e5 of p2.reverse()) {
           let r4 = this._runtimes.get(e5);
           if (!r4) continue;
           let i3 = await Q(this, r4, `grouped-load-failed`);
@@ -1424,34 +1316,34 @@ var $ = class {
     return this._cleanupFailure ? this._lastCleanupReport = this._cleanupFailure : (this._lastCleanupReport = Object.freeze({ ok: n2.length === 0, reason: e2, generation: this._generation, mods: Object.freeze(t2), errors: Object.freeze(n2), restartRequired: n2.length > 0 }), n2.length && (this._cleanupFailure = this._lastCleanupReport)), this._lastCleanupReport;
   }
   async _loadPack(e2, { startup: t2 = false, resume: n2 = false, reader: r2 = this._startupSession?.reader || this._fileLoader, filesPlan: i2 = this._filesPlan, settingsRegistry: a2 = this._modSettingsRegistry, subset: o2 = false } = {}) {
-    let s2 = K(e2), c2 = n2 ? this._runtimes.get(s2) : { namespace: s2, startupOwned: t2, unmanagedDomains: /* @__PURE__ */ new Set(), reader: r2, filesPlan: i2, settingsRegistry: a2, settingsSubscriptions: /* @__PURE__ */ new Set(), persistenceAudit: Ee(), pack: e2, state: `discovered`, phase: `discovered`, url: ``, errors: [], warnings: [], settingsSchema: null, hasControls: false, hasSettings: false, generation: this._generation, setupDurationMs: null, scope: null };
-    n2 || (c2.scope = ve({ namespace: s2, cleanupTimeoutMs: q(e2?.meta?.js?.cleanupTimeoutMs, 2e3, 10), onError: (e3, t3) => {
-      c2.warnings.push(`${t3.label}: ${J(e3)}`), G.warn(`[${s2}] ${t3.label} failed: ${e3}`);
+    let s2 = K(e2), c2 = n2 ? this._runtimes.get(s2) : { namespace: s2, startupOwned: t2, unmanagedDomains: /* @__PURE__ */ new Set(), reader: r2, filesPlan: i2, settingsRegistry: a2, settingsSubscriptions: /* @__PURE__ */ new Set(), persistenceAudit: ye(), pack: e2, state: `discovered`, phase: `discovered`, url: ``, errors: [], warnings: [], settingsSchema: null, hasControls: false, hasSettings: false, generation: this._generation, setupDurationMs: null, scope: null };
+    n2 || (c2.scope = de({ namespace: s2, cleanupTimeoutMs: q(e2?.meta?.js?.cleanupTimeoutMs, 2e3, 10), onError: (e3, t3) => {
+      c2.warnings.push(`${t3.label}: ${J(e3)}`), W.warn(`[${s2}] ${t3.label} failed: ${e3}`);
     } })), this._runtimes.set(s2, c2);
     let l2 = c2.modDef || null, u2 = c2.ctx || null, d2 = c2.moduleDisposeRegistered === true;
     try {
-      let { entryPath: r3, warnings: i3 } = C(e2, { hasFeature: this._services?.hasFeature });
+      let { entryPath: r3, warnings: i3 } = y(e2, { hasFeature: this._services?.hasFeature, attempt: this._startupAttempt });
       if (c2.warnings.push(...i3), !n2) {
         c2.state = `importing`, c2.phase = `read-entry`;
-        let t3 = JSON.stringify(e2.meta), n3 = e2.dir, i4 = e2.contentDigest, a4 = te(e2), o4 = a4 ? a4.source : await c2.reader.readTextFrom(e2.dir, r3.replace(/\//g, `\\`));
+        let t3 = JSON.stringify(e2.meta), n3 = e2.dir, i4 = e2.contentDigest, a4 = x(e2), o4 = a4 ? a4.source : await c2.reader.readTextFrom(e2.dir, r3.replace(/\//g, `\\`));
         if (!o4) throw Error(`JS entry not found or empty: ${r3}`);
         if (e2.dir !== n3 || JSON.stringify(e2.meta) !== t3 || e2.contentDigest !== i4) throw Error(`JS package changed while reading its entry`);
         this._executedScripts.set(c2, Object.freeze({ dir: n3, signature: t3, contentDigest: i4, entryPath: r3, source: o4 })), c2.phase = `import-module`, c2.url = this._createObjectUrl(o4, s2, r3);
         let u3 = q(e2?.meta?.js?.importTimeoutMs, this._importTimeoutMs), d3 = await Z(this._moduleImporter(c2.url, { source: o4, pack: e2, runtime: c2 }), u3, `JS module import`);
-        if (this._startupSession?.assertCurrent(), l2 = Ve(d3), typeof l2?.setup != `function`) throw Error(`JS mod must export setup(ctx) or a default object with setup(ctx)`);
+        if (this._startupSession?.assertCurrent(), l2 = Ee(d3), typeof l2?.setup != `function`) throw Error(`JS mod must export setup(ctx) or a default object with setup(ctx)`);
         c2.modDef = l2;
       }
       if (t2) {
         if (typeof l2.startup != `function`) throw Error(`js.startup requires startup(ctx)`);
         c2.state = `startup`, c2.phase = `startup`;
         let t3 = this._startupSession;
-        u2 = Object.freeze({ meta: Object.freeze({ namespace: s2, version: e2.meta.version }), files: c2.filesPlan.forRuntime(c2), runtime: Ke(c2.scope), log: Object.freeze(Object.fromEntries([`info`, `warn`, `error`].map((e3) => [e3, (t4) => G[e3](`[${s2}] ${t4}`)]))), ...t3.registrations.context(c2) }), c2.ctx = u2;
+        u2 = Object.freeze({ meta: Object.freeze({ namespace: s2, version: e2.meta.version }), files: c2.filesPlan.forRuntime(c2), runtime: $(c2.scope), log: Object.freeze(Object.fromEntries([`info`, `warn`, `error`].map((e3) => [e3, (t4) => W[e3](`[${s2}] ${t4}`)]))), ...t3.registrations.context(c2) }), c2.ctx = u2;
         let n3 = Promise.resolve(l2.startup(u2));
         n3.then(async (e3) => {
           if (!c2.scope.isActive && typeof e3 == `function`) try {
             await e3();
           } catch {
-            G.warn(`[${s2}] late startup cleanup failed`);
+            W.warn(`[${s2}] late startup cleanup failed`);
           }
         }).catch(() => {
         });
@@ -1459,18 +1351,18 @@ var $ = class {
         typeof r4 == `function` && c2.scope.addCleanup(r4, `startup() returned cleanup`), this._startupSession?.assertCurrent(), typeof l2.dispose == `function` && (c2.scope.addCleanup(() => l2.dispose(c2.ctx), `module dispose()`), c2.moduleDisposeRegistered = d2 = true), c2.state = c2.phase = `startup-ready`;
         return;
       }
-      c2.state = `setup`, c2.phase = `setup`, u2 = c2.ctx = qe(this, e2, c2);
+      c2.state = `setup`, c2.phase = `setup`, u2 = c2.ctx = je(this, e2, c2);
       let a3 = Date.now(), o3 = q(e2?.meta?.js?.setupTimeoutMs, this._setupTimeoutMs), f2 = Promise.resolve(l2.setup(u2));
       f2.then(async (e3) => {
         if (!(c2.scope.isActive || typeof e3 != `function`)) try {
           await e3();
         } catch (e4) {
-          G.warn(`[${s2}] late setup cleanup failed: ${e4}`);
+          W.warn(`[${s2}] late setup cleanup failed: ${e4}`);
         }
       }).catch(() => {
       });
       let p2 = await Z(f2, o3, `JS mod setup`);
-      c2.setupDurationMs = Date.now() - a3, typeof p2 == `function` && c2.scope.addCleanup(p2, `setup() returned cleanup`), !d2 && typeof l2.dispose == `function` && (c2.scope.addCleanup(() => l2.dispose(u2), `module dispose()`), d2 = true), this._startupSession?.assertCurrent(), c2.hasControls = !!this._modControlsRegistry.getModControlDefinition(s2), c2.hasSettings = !!c2.settingsSchema, c2.state = c2.warnings.length > 0 ? `degraded` : `active`, c2.phase = `active`, G.info(`[${s2}] JS mod activated`);
+      c2.setupDurationMs = Date.now() - a3, typeof p2 == `function` && c2.scope.addCleanup(p2, `setup() returned cleanup`), !d2 && typeof l2.dispose == `function` && (c2.scope.addCleanup(() => l2.dispose(u2), `module dispose()`), d2 = true), this._startupSession?.assertCurrent(), c2.hasControls = !!this._modControlsRegistry.getModControlDefinition(s2), c2.hasSettings = !!c2.settingsSchema, c2.state = c2.warnings.length > 0 ? `degraded` : `active`, c2.phase = `active`, W.info(`[${s2}] JS mod activated`);
     } catch (e3) {
       if (c2.errors.push(J(e3)), c2.state = `failed`, c2.phase = `rollback`, this._startupSession?.inUse && !o2) throw c2.phase = `failed-restart-required`, this._startupError(e3?.code === `STARTUP_PLAN_STALE` ? e3.code : `STARTUP_SETUP_FAILED`, J(e3));
       if (!d2 && typeof l2?.dispose == `function` && u2) try {
@@ -1478,14 +1370,13 @@ var $ = class {
       } catch (e4) {
         c2.warnings.push(`module dispose() after failure: ${J(e4)}`), c2.initialCleanupErrors = [{ stage: `module-dispose`, error: e4, message: J(e4) }];
       }
-      await Q(this, c2, `load-failed`), c2.state = `failed`, c2.phase = `failed`, G.error(`[${s2}] JS mod failed: ${e3}`);
+      await Q(this, c2, `load-failed`), c2.state = `failed`, c2.phase = `failed`, W.error(`[${s2}] JS mod failed: ${e3}`);
     }
   }
 };
 function createJsModLoader(e2 = {}) {
-  return new $(e2);
+  return new Me(e2);
 }
 export {
-  createJsModLoader,
-  $ as t
+  createJsModLoader
 };

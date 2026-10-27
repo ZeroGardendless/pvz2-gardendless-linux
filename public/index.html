@@ -14,28 +14,6 @@
     <!-- Main Application Stylesheet -->
     <link rel="stylesheet" type="text/css" href="style.css" />
 
-    <!-- Network Bypass: Stops official update checks from throwing console errors -->
-    <script>
-        const originalFetch = window.fetch;
-        window.fetch = async function (...args) {
-            const requestUrl =
-                typeof args[0] === "string"
-                    ? args[0]
-                    : args[0] instanceof Request
-                        ? args[0].url
-                        : "";
-
-            if (requestUrl.includes("pvzge.com/jsons/")) {
-                return new Response(JSON.stringify({ status: "offline_bypass" }), {
-                    status: 200,
-                    headers: { "Content-Type": "application/json" },
-                });
-            }
-
-            return originalFetch.apply(this, args);
-        };
-    </script>
-
     <!-- Native filesystem compatibility -->
     <script>
 // Hidden files (dot-entries like .vscode inside packs) break GPNext's

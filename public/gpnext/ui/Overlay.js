@@ -1,7 +1,9 @@
+import { installOverlayPolish, installOverlayControls } from "./Polish.js";
 import { t as e } from "../core/Logger.js";
-import { d as t, h as n, m as r, p as i, getSettings, u as o } from "../core/SettingsStore.js";
-import { a as s, i as c, r as ee } from "./Translations.js";
-import { a as l } from "./Components.js";
+import { s as t, d as n, u as r, l as i, o } from "../runtime/TrainerShortcuts.js";
+import { getSettings } from "../core/SettingsStore.js";
+import { o as s, a as c, r as ee } from "./Translations.js";
+import { a as l, p as componentStyles } from "./Components.js";
 import { r as u, t as d } from "../data/DataDrawer.js";
 var te = `
 :root {
@@ -1953,6 +1955,9 @@ const uiRefreshCss = `
 }
 `;
 function injectOverlayStyles() {
+  const base = document.createElement("style");
+  base.textContent = componentStyles;
+  document.head.appendChild(base);
   let e2 = document.createElement(`style`);
   e2.id = `gp-next-styles`, e2.textContent = te + te2 + uiRefreshCss, document.head.appendChild(e2);
 }
@@ -1963,7 +1968,7 @@ function buildOverlayDom() {
   let t2 = document.createElement(`span`);
   t2.className = `gp-logo`, t2.textContent = `GP-Next`, y = document.createElement(`span`), y.className = `gp-status`, y.textContent = s(`header.status.waiting`);
   const _gpi = document.createElement(`img`);
-  _gpi.src = `/assets/gpnicon.png`;
+  _gpi.src = `/gpnicon.png`;
   _gpi.style.cssText = `width:32px;height:32px;margin-right:10px;vertical-align:middle`;
   _gpi.alt = ``;
   t2.insertBefore(_gpi, t2.firstChild);
@@ -2217,6 +2222,7 @@ function updateHotkeyHint() {
   x.textContent = e2, x.title = s(`header.hotkeyTitle`, e2);
 }
 function renderActiveTab() {
+  if (!S) return;
   u(), v.classList.remove(`gp-data-content`), v.innerHTML = ``;
   let e2 = k.find((e3) => e3.id === A);
   if (e2 && e2.render) try {
@@ -2228,6 +2234,7 @@ function renderActiveTab() {
   }
 }
 function runTabLifecycleHook(e2, t2) {
+  if (t2 === "onActivate" && !S) return;
   if (typeof e2?.[t2] == `function`) try {
     Promise.resolve(e2[t2]()).catch((n2) => {
       f.error(`Tab '${e2.id}' ${t2} failed: ${n2?.stack || n2}`);
@@ -2280,7 +2287,7 @@ function switchTab(e2) {
   }), v.setAttribute(`aria-labelledby`, `gp-tab-${e2}`), scrollSelectedTabIntoView(), renderActiveTab(), runTabLifecycleHook(t2, `onActivate`)));
 }
 function createOverlay() {
-  return injectOverlayStyles(), buildOverlayDom(), bindOverlayKeyboardShortcuts(), ee(() => {
+  return injectOverlayStyles(), installOverlayPolish(), buildOverlayDom(), installOverlayControls(), bindOverlayKeyboardShortcuts(), ee(() => {
     p.querySelector(`.gp-close-btn`)?.setAttribute(`aria-label`, s(`common.close`)), renderTabButtons(), A && renderActiveTab(), refreshCommandPaletteStrings(), updateHotkeyHint(), C && y && (y.textContent = s(C, ...w)), renderFooter();
   }), renderFooter(), { show: showOverlay, hide: hideOverlay, toggle: toggleOverlay, isOpen: isOverlayOpen, updateStatus: setStatus, updateStatusKey: setStatusFromKey, setVersion, setHotkey: setOverlayHotkey, getHotkey: getOverlayHotkey, setUpdateState, bindUpdateActions, registerTab, switchTab };
 }

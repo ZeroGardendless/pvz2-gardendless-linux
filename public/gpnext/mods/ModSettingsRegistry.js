@@ -1,13 +1,13 @@
 import { n as e } from "../vendor/ModuleHelpers.js";
-import { t } from "../core/Logger.js";
-import { d as n, o as r, r as i, s as a, t as o, u as s } from "../platform/FileSystem.js";
-import { M as c, j as l } from "./FileLoader.js";
-var u = e({ createModSettingsRegistry: () => T, exportModSettings: () => I, getModSettings: () => N, getRegisteredModSettings: () => M, importModSettings: () => L, loadModSettingsFile: () => O, readLegacyModSettingsSnapshot: () => m, registerModSettings: () => A, removeModSettingsNamespaces: () => k, resetModSettings: () => F, stripModSettingsNamespaces: () => w, subscribe: () => D, unregisterModSettings: () => j, updateModSetting: () => P }), d = new t(`mod-settings`), f = 1, p = `gp-next\\mod-settings.json`;
+import { d as t, f as n, o as r, r as i, s as a, t as o } from "../platform/FileSystem.js";
+import { i as s, r as c } from "./GameConfiguration.js";
+import { t as l } from "../core/Logger.js";
+var u = e({ createModSettingsRegistry: () => T, exportModSettings: () => I, getModSettings: () => N, getRegisteredModSettings: () => M, importModSettings: () => L, loadModSettingsFile: () => O, readLegacyModSettingsSnapshot: () => m, registerModSettings: () => A, removeModSettingsNamespaces: () => k, resetModSettings: () => F, stripModSettingsNamespaces: () => w, subscribe: () => D, unregisterModSettings: () => j, updateModSetting: () => P }), d = new l(`mod-settings`), f = 1, p = `gp-next\\mod-settings.json`;
 async function m() {
-  let e2 = { baseDir: n.AppData }, t2 = y(c), i2 = await o(t2, e2) ? t2 : p !== t2 && await o(p, e2) ? p : null, a2 = i2 === null ? null : await r(i2, e2), s2 = a2 === null ? { version: 1, mods: {} } : JSON.parse(a2);
-  if (!s2 || s2.version !== void 0 && s2.version !== 1 || !s2.mods || typeof s2.mods != `object` || Array.isArray(s2.mods)) throw Error(`Unsupported legacy mod settings`);
-  for (let [e3, t3] of Object.entries(s2.mods)) if (!e3.trim() || e3.trim() !== e3 || !t3 || !Number.isFinite(t3.schemaVersion) || !t3.values || typeof t3.values != `object` || Array.isArray(t3.values)) throw Error(`Invalid legacy mod settings entry`);
-  return { path: i2, raw: a2, data: b(s2) };
+  let e2 = { baseDir: n.AppData }, t2 = y(s), i2 = await o(t2, e2) ? t2 : p !== t2 && await o(p, e2) ? p : null, a2 = i2 === null ? null : await r(i2, e2), c2 = a2 === null ? { version: 1, mods: {} } : JSON.parse(a2);
+  if (!c2 || c2.version !== void 0 && c2.version !== 1 || !c2.mods || typeof c2.mods != `object` || Array.isArray(c2.mods)) throw Error(`Unsupported legacy mod settings`);
+  for (let [e3, t3] of Object.entries(c2.mods)) if (!e3.trim() || e3.trim() !== e3 || !t3 || !Number.isFinite(t3.schemaVersion) || !t3.values || typeof t3.values != `object` || Array.isArray(t3.values)) throw Error(`Invalid legacy mod settings entry`);
+  return { path: i2, raw: a2, data: b(c2) };
 }
 function h(e2) {
   return JSON.parse(JSON.stringify(e2));
@@ -83,16 +83,16 @@ function w(e2, t2) {
   return n2;
 }
 function T(e2 = {}) {
-  let t2 = Object.hasOwn(e2, `initialData`);
-  if (t2 && typeof e2.storage?.write != `function`) throw Error(`Captured settings require storage.write`);
-  let u2 = /* @__PURE__ */ new Map(), f2 = /* @__PURE__ */ new Map(), m2 = /* @__PURE__ */ new Map(), T2 = t2 ? b(h(e2.initialData)) : null, E2 = null, D2 = Promise.resolve(), O2 = null;
-  async function k2(n2, r2) {
-    let i2 = T2?.mods[r2.namespace]?.values || {}, a2 = b(h(n2));
-    t2 ? await e2.storage.write(h(a2), Object.freeze({ ...r2 })) : await M2(a2), T2 = a2;
-    let o2 = a2.mods[r2.namespace]?.values || {};
-    if (!(![`set`, `reset`, `import`].includes(r2.operation) || e2.canNotify?.() === false || JSON.stringify(i2) === JSON.stringify(o2))) for (let e3 of [...u2.get(r2.namespace) || []]) {
-      if (!u2.get(r2.namespace)?.has(e3)) continue;
-      let t3 = { namespace: r2.namespace, operation: r2.operation, previous: h(i2), values: h(o2) };
+  let l2 = Object.hasOwn(e2, `initialData`);
+  if (l2 && typeof e2.storage?.write != `function`) throw Error(`Captured settings require storage.write`);
+  let u2 = /* @__PURE__ */ new Map(), f2 = /* @__PURE__ */ new Map(), m2 = /* @__PURE__ */ new Map(), T2 = l2 ? b(h(e2.initialData)) : null, E2 = null, D2 = Promise.resolve(), O2 = null;
+  async function k2(t2, n2) {
+    let r2 = T2?.mods[n2.namespace]?.values || {}, i2 = b(h(t2));
+    l2 ? await e2.storage.write(h(i2), Object.freeze({ ...n2 })) : await M2(i2), T2 = i2;
+    let a2 = i2.mods[n2.namespace]?.values || {};
+    if (!(![`set`, `reset`, `import`].includes(n2.operation) || e2.canNotify?.() === false || JSON.stringify(r2) === JSON.stringify(a2))) for (let e3 of [...u2.get(n2.namespace) || []]) {
+      if (!u2.get(n2.namespace)?.has(e3)) continue;
+      let t3 = { namespace: n2.namespace, operation: n2.operation, previous: h(r2), values: h(a2) };
       try {
         Promise.resolve(e3(t3)).catch((e4) => d.warn(`Settings observer failed`, e4));
       } catch (e4) {
@@ -100,35 +100,35 @@ function T(e2 = {}) {
       }
     }
   }
-  function A2(e3, t3) {
+  function A2(e3, t2) {
     let n2 = v(e3);
-    if (!n2 || typeof t3 != `function`) throw Error(`Settings subscription requires a namespace and listener`);
+    if (!n2 || typeof t2 != `function`) throw Error(`Settings subscription requires a namespace and listener`);
     u2.has(n2) || u2.set(n2, /* @__PURE__ */ new Set());
     let r2 = u2.get(n2);
-    return r2.add(t3), () => {
-      r2.delete(t3), !r2.size && u2.get(n2) === r2 && u2.delete(n2);
+    return r2.add(t2), () => {
+      r2.delete(t2), !r2.size && u2.get(n2) === r2 && u2.delete(n2);
     };
   }
   async function j2() {
-    await i(y(l.ROOT), { baseDir: n.AppData, recursive: true });
+    await i(y(c.ROOT), { baseDir: n.AppData, recursive: true });
   }
   async function M2(e3 = T2) {
-    await j2(), await s(y(c), JSON.stringify(e3, null, 2), { baseDir: n.AppData });
+    await j2(), await t(y(s), JSON.stringify(e3, null, 2), { baseDir: n.AppData });
   }
   function N2(e3) {
     if (O2) return Promise.reject(Error(`Mod settings writes are suspended or closed`));
-    let t3 = D2.then(e3, e3);
-    return D2 = t3.catch(() => {
-    }), t3;
+    let t2 = D2.then(e3, e3);
+    return D2 = t2.catch(() => {
+    }), t2;
   }
   function P2() {
     if (O2) throw Error(`Mod settings writes are already suspended or closed`);
     let e3 = { closed: false, drained: false };
     O2 = e3;
-    let t3 = D2.then(() => {
+    let t2 = D2.then(() => {
       e3.drained = true;
     });
-    return Object.freeze({ ready: t3, resume() {
+    return Object.freeze({ ready: t2, resume() {
       if (O2 !== e3 || e3.closed || !e3.drained) throw Error(`Mod settings barrier cannot resume`);
       O2 = null;
     }, close() {
@@ -143,9 +143,9 @@ function T(e2 = {}) {
   }
   function L2(e3) {
     F2();
-    let t3 = /* @__PURE__ */ new Set(), n2 = e3.map(({ namespace: e4, entry: n3, definition: r2 }) => {
-      if (!e4 || t3.has(e4) || f2.has(e4) || r2 && r2.namespace !== e4) throw Error(`Retained settings schema conflicts with target registry`);
-      t3.add(e4);
+    let t2 = /* @__PURE__ */ new Set(), n2 = e3.map(({ namespace: e4, entry: n3, definition: r2 }) => {
+      if (!e4 || t2.has(e4) || f2.has(e4) || r2 && r2.namespace !== e4) throw Error(`Retained settings schema conflicts with target registry`);
+      t2.add(e4);
       let i2 = T2.mods[e4] ?? null;
       if (JSON.stringify(i2) !== JSON.stringify(n3)) throw Error(`Retained settings changed: ${e4}`);
       return r2 ? _(r2) : null;
@@ -155,21 +155,21 @@ function T(e2 = {}) {
   async function R() {
     if (E2) return h(await E2);
     if (T2) return h(T2);
-    if (t2) throw Error(`Captured mod settings are unavailable`);
+    if (l2) throw Error(`Captured mod settings are unavailable`);
     E2 = (async () => {
       try {
-        let e3 = y(c), t3 = await o(e3, { baseDir: n.AppData }), i2 = !t3 && p !== e3 && await o(p, { baseDir: n.AppData });
-        if (!t3 && !i2) {
+        let e3 = y(s), t2 = await o(e3, { baseDir: n.AppData }), i2 = !t2 && p !== e3 && await o(p, { baseDir: n.AppData });
+        if (!t2 && !i2) {
           let e4 = b(null);
           return await M2(e4), T2 = e4, T2;
         }
-        let s2 = await r(t3 ? e3 : p, { baseDir: n.AppData }), l2 = null;
+        let c2 = await r(t2 ? e3 : p, { baseDir: n.AppData }), l3 = null;
         try {
-          l2 = JSON.parse(s2);
+          l3 = JSON.parse(c2);
         } catch (e4) {
           d.error(`Failed to parse mod-settings.json: ${e4}`);
         }
-        let u3 = b(l2);
+        let u3 = b(l3);
         return await M2(u3), T2 = u3, i2 && await a(p, { baseDir: n.AppData }).catch((e4) => {
           d.warn(`Unable to remove legacy mod settings path: ${e4}`);
         }), T2;
@@ -185,53 +185,53 @@ function T(e2 = {}) {
   }
   async function z(e3) {
     return e3 = Array.from(e3 || [], v), N2(async () => {
-      let t3 = await R(), n2 = w(t3, e3), r2 = Object.keys(t3.mods).length - Object.keys(n2.mods).length;
+      let t2 = await R(), n2 = w(t2, e3), r2 = Object.keys(t2.mods).length - Object.keys(n2.mods).length;
       return await k2(n2, { namespace: null, operation: `removeNamespaces` }), r2;
     });
   }
   async function B(e3) {
-    let t3 = v(e3?.namespace);
-    if (!t3) throw Error(`registerModSettings() requires a namespace`);
-    let n2 = m2.get(t3);
-    n2 || (n2 = {}, m2.set(t3, n2));
-    let r2 = { namespace: t3, title: String(e3?.title || t3), description: typeof e3?.description == `string` ? e3.description : ``, schemaVersion: Number.isFinite(Number(e3?.schemaVersion)) ? Number(e3.schemaVersion) : 1, fields: Array.isArray(e3?.fields) ? e3.fields.map(g) : [] };
+    let t2 = v(e3?.namespace);
+    if (!t2) throw Error(`registerModSettings() requires a namespace`);
+    let n2 = m2.get(t2);
+    n2 || (n2 = {}, m2.set(t2, n2));
+    let r2 = { namespace: t2, title: String(e3?.title || t2), description: typeof e3?.description == `string` ? e3.description : ``, schemaVersion: Number.isFinite(Number(e3?.schemaVersion)) ? Number(e3.schemaVersion) : 1, fields: Array.isArray(e3?.fields) ? e3.fields.map(g) : [] };
     return N2(async () => {
-      let e4 = await R(), i2 = e4.mods[t3];
-      return i2 ? e4.mods[t3] = S(r2, i2) : e4.mods[t3] = { schemaVersion: r2.schemaVersion, values: x(r2) }, await k2(e4, { namespace: t3, operation: `register` }), m2.get(t3) === n2 && f2.set(t3, r2), _(r2);
+      let e4 = await R(), i2 = e4.mods[t2];
+      return i2 ? e4.mods[t2] = S(r2, i2) : e4.mods[t2] = { schemaVersion: r2.schemaVersion, values: x(r2) }, await k2(e4, { namespace: t2, operation: `register` }), m2.get(t2) === n2 && f2.set(t2, r2), _(r2);
     });
   }
   function V(e3) {
     e3 = v(e3), m2.delete(e3), f2.delete(e3), u2.delete(e3);
   }
   function H() {
-    return Array.from(f2.values()).map((e3) => _(e3)).sort((e3, t3) => e3.title.localeCompare(t3.title));
+    return Array.from(f2.values()).map((e3) => _(e3)).sort((e3, t2) => e3.title.localeCompare(t2.title));
   }
   async function U(e3) {
-    let t3 = v(e3), n2 = await R(), r2 = f2.get(t3), i2 = S(r2, n2.mods[t3] || { schemaVersion: 1, values: {} }), a2 = { ...x(r2) };
+    let t2 = v(e3), n2 = await R(), r2 = f2.get(t2), i2 = S(r2, n2.mods[t2] || { schemaVersion: 1, values: {} }), a2 = { ...x(r2) };
     for (let e4 of Array.isArray(r2?.fields) ? r2.fields : []) e4?.key && (a2[e4.key] = C(e4, i2.values?.[e4.key]));
-    for (let [e4, t4] of Object.entries(i2.values || {})) a2[e4] === void 0 && (a2[e4] = t4);
-    return { namespace: t3, schemaVersion: i2.schemaVersion || r2?.schemaVersion || 1, values: h(a2) };
+    for (let [e4, t3] of Object.entries(i2.values || {})) a2[e4] === void 0 && (a2[e4] = t3);
+    return { namespace: t2, schemaVersion: i2.schemaVersion || r2?.schemaVersion || 1, values: h(a2) };
   }
-  async function W(e3, t3, n2) {
+  async function W(e3, t2, n2) {
     return n2 = n2 === void 0 ? void 0 : h(n2), N2(async () => {
-      let r2 = v(e3), i2 = await R(), a2 = f2.get(r2), o2 = Array.isArray(a2?.fields) ? a2.fields.find((e4) => e4?.key === t3) : null;
-      return i2.mods[r2] || (i2.mods[r2] = { schemaVersion: a2?.schemaVersion || 1, values: {} }), i2.mods[r2].schemaVersion = a2?.schemaVersion || i2.mods[r2].schemaVersion || 1, i2.mods[r2].values[t3] = C(o2, n2), await k2(i2, { namespace: r2, operation: `set`, key: t3 }), U(r2);
+      let r2 = v(e3), i2 = await R(), a2 = f2.get(r2), o2 = Array.isArray(a2?.fields) ? a2.fields.find((e4) => e4?.key === t2) : null;
+      return i2.mods[r2] || (i2.mods[r2] = { schemaVersion: a2?.schemaVersion || 1, values: {} }), i2.mods[r2].schemaVersion = a2?.schemaVersion || i2.mods[r2].schemaVersion || 1, i2.mods[r2].values[t2] = C(o2, n2), await k2(i2, { namespace: r2, operation: `set`, key: t2 }), U(r2);
     });
   }
   async function G(e3) {
     return N2(async () => {
-      let t3 = v(e3), n2 = await R(), r2 = f2.get(t3);
-      return n2.mods[t3] = { schemaVersion: r2?.schemaVersion || 1, values: x(r2) }, await k2(n2, { namespace: t3, operation: `reset` }), U(t3);
+      let t2 = v(e3), n2 = await R(), r2 = f2.get(t2);
+      return n2.mods[t2] = { schemaVersion: r2?.schemaVersion || 1, values: x(r2) }, await k2(n2, { namespace: t2, operation: `reset` }), U(t2);
     });
   }
   async function K(e3) {
-    let t3 = v(e3), n2 = await U(t3);
-    return JSON.stringify({ namespace: t3, schemaVersion: n2.schemaVersion, values: n2.values }, null, 2);
+    let t2 = v(e3), n2 = await U(t2);
+    return JSON.stringify({ namespace: t2, schemaVersion: n2.schemaVersion, values: n2.values }, null, 2);
   }
-  async function q(e3, t3) {
-    return t3 = t3 === void 0 ? void 0 : h(t3), N2(async () => {
-      let n2 = v(e3), r2 = f2.get(n2), i2 = await R(), a2 = t3;
-      typeof t3 == `string` && (a2 = JSON.parse(t3));
+  async function q(e3, t2) {
+    return t2 = t2 === void 0 ? void 0 : h(t2), N2(async () => {
+      let n2 = v(e3), r2 = f2.get(n2), i2 = await R(), a2 = t2;
+      typeof t2 == `string` && (a2 = JSON.parse(t2));
       let o2 = a2 && typeof a2 == `object` ? a2 : { values: {} }, s2 = S(r2, { schemaVersion: o2.schemaVersion, values: o2.values });
       return i2.mods[n2] = s2, await k2(i2, { namespace: n2, operation: `import` }), U(n2);
     });

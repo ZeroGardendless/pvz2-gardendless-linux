@@ -1,6 +1,6 @@
-import { t as e } from "../core/Logger.js";
-import { a as t, c as n, f as r, h as i, i as a, l as o, p as s, r as c, s as l, u } from "../runtime/Engine.js";
-import { A as d, I as f, L as p, N as m, k as h } from "./FileLoader.js";
+import { a as e, d as t, n, t as r, u as i } from "./GameConfiguration.js";
+import { t as a } from "../core/Logger.js";
+import { d as o, g as s, h as c, l, m as u, p as d, u as f, v as p, x as m, y as h } from "../ui/Translations.js";
 import { n as g, t as _ } from "../data/EntityInspector.js";
 var v = 1e-9;
 function y(e2) {
@@ -106,11 +106,11 @@ function se(e2) {
   return C.set(e2, n2), n2;
 }
 var ce = Object.freeze([`plant`, `zombie`, `projectile`, `resource`, `tomb`, `tile-liquid`]), le = Object.freeze({ plants: `plant`, zombies: `zombie`, projectiles: `projectile`, resources: `resource`, tombs: `tomb`, tombstone: `tomb`, tombstones: `tomb`, tileliquid: `tile-liquid`, tileliquids: `tile-liquid`, "tile-liquids": `tile-liquid` }), ue = Object.freeze({ plants: `plant`, zombies: `zombie` });
-function w(e2) {
+function de(e2) {
   let t2 = String(e2 || ``).trim().toLowerCase();
   return le[t2] || t2;
 }
-function de(e2, t2) {
+function fe(e2, t2) {
   let n2 = null;
   try {
     n2 = typeof e2.getCapability == `function` ? e2.getCapability(t2) : { available: true };
@@ -119,24 +119,24 @@ function de(e2, t2) {
   }
   return n2 === true && (n2 = { available: true }), (n2 === false || n2 == null) && (n2 = { available: false, reason: `adapter-unavailable` }), Object.freeze({ kind: e2.kind, adapter: e2.id, native: e2.native === true, available: n2.available === true, reason: n2.available === true ? null : String(n2.reason || `adapter-unavailable`), placements: Object.freeze([...n2.placements || e2.placements || [`cell`]]), motionKinds: Object.freeze([...n2.motionKinds || e2.motionKinds || []]), targetSides: Object.freeze([...n2.targetSides || e2.targetSides || []]), types: Object.freeze([...n2.types || e2.types || []]), message: n2.message ? String(n2.message) : null });
 }
-var fe = class {
+var pe = class {
   constructor(e2 = {}) {
-    this._knownKinds = new Set([...e2.knownKinds || ce].map(w).filter(Boolean)), this._adapters = /* @__PURE__ */ new Map();
+    this._knownKinds = new Set([...e2.knownKinds || ce].map(de).filter(Boolean)), this._adapters = /* @__PURE__ */ new Map();
   }
   register(e2) {
-    let t2 = w(e2?.kind), n2 = String(e2?.id || ``).trim();
+    let t2 = de(e2?.kind), n2 = String(e2?.id || ``).trim();
     if (!t2 || !n2 || typeof e2?.spawn != `function`) throw Error(`Spawn adapters require id, kind, and spawn()`);
     if (this._adapters.has(n2)) throw Error(`Spawn adapter '${n2}' is already registered`);
     let r2 = Object.freeze({ ...e2, id: n2, kind: t2, priority: Number.isFinite(Number(e2.priority)) ? Number(e2.priority) : 0, placements: Object.freeze([...e2.placements || [`cell`]]) });
     return this._knownKinds.add(t2), this._adapters.set(n2, r2), () => this._adapters.delete(n2);
   }
   list(e2 = null) {
-    let t2 = e2 == null ? null : w(e2);
+    let t2 = e2 == null ? null : de(e2);
     return [...this._adapters.values()].filter((e3) => t2 == null || e3.kind === t2).sort((e3, t3) => t3.priority - e3.priority || e3.id.localeCompare(t3.id));
   }
   resolve(e2, t2 = {}) {
     for (let n2 of this.list(e2)) {
-      let e3 = de(n2, t2);
+      let e3 = fe(n2, t2);
       if (e3.available) return { adapter: n2, capability: e3 };
     }
     return null;
@@ -144,7 +144,7 @@ var fe = class {
   getCapabilities(e2 = {}) {
     let t2 = {};
     for (let n2 of [...this._knownKinds].sort()) {
-      let r2 = this.list(n2).map((t3) => de(t3, e2));
+      let r2 = this.list(n2).map((t3) => fe(t3, e2));
       t2[n2] = r2.find((e3) => e3.available) || r2[0] || Object.freeze({ kind: n2, adapter: null, native: false, available: false, reason: `adapter-unavailable`, placements: Object.freeze([]), motionKinds: Object.freeze([]), targetSides: Object.freeze([]), types: Object.freeze([]), message: null });
     }
     return Object.freeze(t2);
@@ -153,17 +153,17 @@ var fe = class {
     return this.resolve(e2, t2) != null;
   }
 };
-function T(e2, t2, n2 = {}) {
-  let r2 = { ok: false, kind: w(e2?.kind), type: String(e2?.type || ``), adapter: n2.adapter || null, native: n2.native === true, entities: Object.freeze([]), reason: String(t2 || `spawn-failed`), message: n2.message ? String(n2.message) : null, get disposed() {
+function w(e2, t2, n2 = {}) {
+  let r2 = { ok: false, kind: de(e2?.kind), type: String(e2?.type || ``), adapter: n2.adapter || null, native: n2.native === true, entities: Object.freeze([]), reason: String(t2 || `spawn-failed`), message: n2.message ? String(n2.message) : null, get disposed() {
     return true;
   }, async dispose() {
     return Object.freeze({ ok: true, disposed: false, results: Object.freeze([]) });
   } };
   return Object.freeze(r2);
 }
-function pe(e2) {
+function me(e2) {
   if (!e2 || typeof e2 != `object` || Array.isArray(e2)) return { ok: false, reason: `invalid-descriptor`, descriptor: {} };
-  let t2 = w(e2.kind), n2 = String(e2.type || ``).trim(), r2 = t2 === `resource` ? n2.toLowerCase() : n2, i2 = Number(e2.at?.laneIndex), a2 = Number(e2.at?.columnIndex);
+  let t2 = de(e2.kind), n2 = String(e2.type || ``).trim(), r2 = t2 === `resource` ? n2.toLowerCase() : n2, i2 = Number(e2.at?.laneIndex), a2 = Number(e2.at?.columnIndex);
   if (!t2 || !r2) return { ok: false, reason: `invalid-descriptor`, descriptor: { kind: t2, type: r2 } };
   if (!Number.isInteger(i2) || !Number.isInteger(a2)) return { ok: false, reason: `invalid-location`, descriptor: { kind: t2, type: r2 } };
   let o2 = { kind: t2, type: r2, at: Object.freeze({ laneIndex: i2, columnIndex: a2 }), required: e2.required === true };
@@ -176,12 +176,12 @@ function pe(e2) {
   }
   return { ok: true, descriptor: Object.freeze(o2) };
 }
-function me(e2) {
+function he(e2) {
   let t2 = Number(e2);
   return Number.isFinite(t2) ? Math.max(250, Math.min(3e4, Math.round(t2))) : 15e3;
 }
-function he(e2 = {}) {
-  let t2 = e2.registry || new fe(), n2 = e2.runtime || null, r2 = /* @__PURE__ */ new Map(), i2 = (e3) => {
+function ge(e2 = {}) {
+  let t2 = e2.registry || new pe(), n2 = e2.runtime || null, r2 = /* @__PURE__ */ new Map(), i2 = (e3) => {
     let t3 = e3?.entities ?? e3?.value;
     return (Array.isArray(t3) ? t3 : [t3]).filter(Boolean);
   }, a2 = async (t3, n3, r3, i3) => {
@@ -193,7 +193,7 @@ function he(e2 = {}) {
   }, o2 = async (t3, r3) => {
     let o3 = n2?.signal;
     if (n2?.isActive?.() === false || o3?.aborted) return { kind: `aborted`, reason: `runtime-disposed` };
-    let s3 = Promise.resolve().then(() => t3.spawn(r3, e2)), c2 = null, l2 = null, u2 = me(e2.timeoutMs), d2 = new Promise((e3) => {
+    let s3 = Promise.resolve().then(() => t3.spawn(r3, e2)), c2 = null, l2 = null, u2 = he(e2.timeoutMs), d2 = new Promise((e3) => {
       c2 = globalThis.setTimeout?.(() => e3({ kind: `timeout`, reason: `spawn-timeout` }), u2), o3 && (l2 = () => e3({ kind: `aborted`, reason: `runtime-disposed` }), o3.addEventListener(`abort`, l2, { once: true }));
     }), f2 = s3.then((e3) => ({ kind: `value`, value: e3 }), (e3) => ({ kind: `error`, error: e3 })), p2 = await Promise.race([f2, d2]);
     return globalThis.clearTimeout?.(c2), l2 && o3?.removeEventListener(`abort`, l2), (p2.kind === `timeout` || p2.kind === `aborted`) && f2.then(async (e3) => {
@@ -202,19 +202,19 @@ function he(e2 = {}) {
     }), p2;
   }, s2 = async (r3) => {
     let s3 = t2.resolve(r3.kind, e2);
-    if (!s3) return T(r3, `adapter-unavailable`);
+    if (!s3) return w(r3, `adapter-unavailable`);
     let { adapter: c2, capability: l2 } = s3;
-    if (typeof c2.dispose != `function` && typeof e2.disposeRaw != `function`) return T(r3, `cleanup-unavailable`, { adapter: c2.id, native: l2.native });
+    if (typeof c2.dispose != `function` && typeof e2.disposeRaw != `function`) return w(r3, `cleanup-unavailable`, { adapter: c2.id, native: l2.native });
     let u2 = await o2(c2, r3);
     if (u2.kind !== `value`) {
       let e3 = u2.kind === `error` ? String(u2.error?.message || u2.error) : null;
-      return T(r3, u2.reason || `spawn-failed`, { adapter: c2.id, native: l2.native, message: e3 });
+      return w(r3, u2.reason || `spawn-failed`, { adapter: c2.id, native: l2.native, message: e3 });
     }
     let d2 = u2.value;
-    if (!d2?.ok) return await a2(c2, i2(d2), r3, `spawn-rejected`), T(r3, d2?.reason || `spawn-rejected`, { adapter: c2.id, native: l2.native, message: d2?.message });
+    if (!d2?.ok) return await a2(c2, i2(d2), r3, `spawn-rejected`), w(r3, d2?.reason || `spawn-rejected`, { adapter: c2.id, native: l2.native, message: d2?.message });
     let f2 = i2(d2);
-    if (f2.length === 0) return T(r3, `spawn-rejected`, { adapter: c2.id, native: l2.native });
-    if (n2?.isActive?.() === false || n2?.signal?.aborted) return await a2(c2, f2, r3, `runtime-disposed`), T(r3, `runtime-disposed`, { adapter: c2.id, native: l2.native });
+    if (f2.length === 0) return w(r3, `spawn-rejected`, { adapter: c2.id, native: l2.native });
+    if (n2?.isActive?.() === false || n2?.signal?.aborted) return await a2(c2, f2, r3, `runtime-disposed`), w(r3, `runtime-disposed`, { adapter: c2.id, native: l2.native });
     let p2 = { codename: r3.type, spawnKind: r3.kind, spawnAdapter: c2.id, native: l2.native, spawnAt: r3.at }, m2 = f2.map((e3) => se(e3)), h2 = null;
     try {
       h2 = Object.freeze(f2.map((t3, n3) => e2.wrapEntity?.(t3, r3.kind, Object.freeze({ ...p2, managedSpawnState: m2[n3] }))).filter(Boolean));
@@ -222,13 +222,13 @@ function he(e2 = {}) {
       for (let e4 of m2) e4?.markDisposed?.(`entity-wrap-failed`);
       await a2(c2, f2, r3, `entity-wrap-failed`);
       for (let e4 of m2) e4?.completeDisposal?.(true);
-      return T(r3, `entity-wrap-failed`, { adapter: c2.id, native: l2.native, message: String(e3?.message || e3) });
+      return w(r3, `entity-wrap-failed`, { adapter: c2.id, native: l2.native, message: String(e3?.message || e3) });
     }
     if (h2.length !== f2.length) {
       for (let e3 of m2) e3?.markDisposed?.(`entity-wrap-failed`);
       await a2(c2, f2, r3, `entity-wrap-failed`);
       for (let e3 of m2) e3?.completeDisposal?.(true);
-      return T(r3, `entity-wrap-failed`, { adapter: c2.id, native: l2.native });
+      return w(r3, `entity-wrap-failed`, { adapter: c2.id, native: l2.native });
     }
     let g2 = false, _2 = null, v2 = null, y2 = () => {
       if (m2.every((e3) => e3?.retired === true)) {
@@ -274,9 +274,9 @@ function he(e2 = {}) {
     }, dispose: x2 });
   };
   return Object.freeze({ getCapabilities: () => t2.getCapabilities(e2), supports: (n3) => t2.supports(n3, e2), spawn: (e3) => {
-    let t3 = pe(e3);
+    let t3 = me(e3);
     if (!t3.ok) {
-      let n3 = T(t3.descriptor, t3.reason);
+      let n3 = w(t3.descriptor, t3.reason);
       return e3?.required === true ? Promise.reject(Error(`spawns.spawn(): ${n3.reason}`)) : Promise.resolve(n3);
     }
     let i3 = t3.descriptor, a3 = `${i3.at.laneIndex}:${i3.at.columnIndex}`, o3 = (r2.get(a3) || Promise.resolve()).catch(() => {
@@ -289,21 +289,21 @@ function he(e2 = {}) {
     return r2.set(a3, o3), n2?.track ? n2.track(o3, { label: `spawn ${i3.kind}:${i3.type}` }) : o3;
   } });
 }
-var ge = `chunks:///_virtual/Droppings.ts`, _e = `chunks:///_virtual/NodePools.ts`, ve = Object.freeze({ "sun.tiny": Object.freeze({ prefab: `SunTiny`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "sun.small": Object.freeze({ prefab: `SunSmall`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "sun.mid": Object.freeze({ prefab: `SunMid`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "sun.large": Object.freeze({ prefab: `SunLarge`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "coin.silver": Object.freeze({ prefab: `CoinSilver`, componentModule: `coin.ts`, component: `coin`, motion: `drop` }), "coin.gold": Object.freeze({ prefab: `CoinGold`, componentModule: `coin.ts`, component: `coin`, motion: `drop` }), gem: Object.freeze({ prefab: `Gem`, componentModule: `gem.ts`, component: `gem`, motion: `drop` }), sprout: Object.freeze({ prefab: `Sprout`, componentModule: `sprout.ts`, component: `sprout`, motion: `drop` }), "plant-food": Object.freeze({ prefab: `plantFood`, componentModule: `plantFood.ts`, component: `plantFood`, motion: `float` }) });
-function ye(e2) {
+var _e = `chunks:///_virtual/Droppings.ts`, ve = `chunks:///_virtual/NodePools.ts`, ye = Object.freeze({ "sun.tiny": Object.freeze({ prefab: `SunTiny`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "sun.small": Object.freeze({ prefab: `SunSmall`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "sun.mid": Object.freeze({ prefab: `SunMid`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "sun.large": Object.freeze({ prefab: `SunLarge`, componentModule: `sun.ts`, component: `sun`, motion: `drop` }), "coin.silver": Object.freeze({ prefab: `CoinSilver`, componentModule: `coin.ts`, component: `coin`, motion: `drop` }), "coin.gold": Object.freeze({ prefab: `CoinGold`, componentModule: `coin.ts`, component: `coin`, motion: `drop` }), gem: Object.freeze({ prefab: `Gem`, componentModule: `gem.ts`, component: `gem`, motion: `drop` }), sprout: Object.freeze({ prefab: `Sprout`, componentModule: `sprout.ts`, component: `sprout`, motion: `drop` }), "plant-food": Object.freeze({ prefab: `plantFood`, componentModule: `plantFood.ts`, component: `plantFood`, motion: `float` }) });
+function be(e2) {
   return `chunks:///_virtual/${e2}`;
 }
-function be(e2) {
-  return { droppings: e2.getModuleExport?.(ge, `droppings`), instantiatePooly: e2.getModuleExport?.(_e, `instantiatePooly`), destroyPooly: e2.getModuleExport?.(_e, `destroyPooly`), Vec2: e2.getCc?.()?.Vec2 };
+function xe(e2) {
+  return { droppings: e2.getModuleExport?.(_e, `droppings`), instantiatePooly: e2.getModuleExport?.(ve, `instantiatePooly`), destroyPooly: e2.getModuleExport?.(ve, `destroyPooly`), Vec2: e2.getCc?.()?.Vec2 };
 }
-function xe(e2, t2 = be(e2)) {
-  return !t2.droppings?.layer || typeof t2.instantiatePooly != `function` || typeof t2.destroyPooly != `function` || typeof t2.Vec2 != `function` ? [] : Object.entries(ve).filter(([, n2]) => t2.droppings[n2.prefab] && typeof e2.getModuleExport?.(ye(n2.componentModule), n2.component) == `function`).map(([e3]) => e3);
+function Se(e2, t2 = xe(e2)) {
+  return !t2.droppings?.layer || typeof t2.instantiatePooly != `function` || typeof t2.destroyPooly != `function` || typeof t2.Vec2 != `function` ? [] : Object.entries(ye).filter(([, n2]) => t2.droppings[n2.prefab] && typeof e2.getModuleExport?.(be(n2.componentModule), n2.component) == `function`).map(([e3]) => e3);
 }
-function Se(e2, t2, n2) {
+function Ce(e2, t2, n2) {
   let r2 = e2?.node?.worldPosition || e2?.worldPosition;
   return Number.isFinite(Number(r2?.x)) && Number.isFinite(Number(r2?.y)) ? r2 : t2.getWorldPosition?.(n2.at.laneIndex, n2.at.columnIndex) || null;
 }
-function E(e2, t2, n2) {
+function we(e2, t2, n2) {
   if (e2.height = 0, t2 === `float`) {
     let t3 = Math.random() * Math.PI * 2;
     e2.linearVelocity = new n2(Math.cos(t3) * 5, Math.sin(t3) * 5), e2.bodyLinearVelocity = 0, e2.gravity = 0;
@@ -311,27 +311,27 @@ function E(e2, t2, n2) {
   }
   e2.linearVelocity = new n2(Math.random() * 6 - 3, 0), e2.bodyLinearVelocity = 10, e2.gravity = 1;
 }
-function Ce(e2, t2) {
+function Te(e2, t2) {
   return !e2 || e2.collected === true || e2.node?.isValid === false ? { ok: true, methodName: null, reason: `already-inactive` } : typeof e2.shrink == `function` ? (e2.shrink(0.05), { ok: true, methodName: `shrink`, reason: null }) : e2.node && typeof t2.destroyPooly == `function` ? (t2.destroyPooly(e2.node), { ok: true, methodName: `destroyPooly`, reason: null }) : { ok: false, methodName: null, reason: `cleanup-unavailable` };
 }
-function we(e2 = {}) {
-  return { id: `native.dropping.resource`, kind: `resource`, native: true, placements: [`cell`], types: Object.freeze(Object.keys(ve)), getCapability() {
-    let t2 = xe(e2);
+function Ee(e2 = {}) {
+  return { id: `native.dropping.resource`, kind: `resource`, native: true, placements: [`cell`], types: Object.freeze(Object.keys(ye)), getCapability() {
+    let t2 = Se(e2);
     return { available: t2.length > 0, reason: t2.length > 0 ? null : `native-resource-runtime-unavailable`, types: t2 };
   }, async spawn(t2) {
     if (e2.getSceneName?.() !== `inGameScene`) return { ok: false, reason: `scene-unavailable` };
-    let n2 = ve[t2.type];
+    let n2 = ye[t2.type];
     if (!n2) return { ok: false, reason: `type-not-supported` };
-    let r2 = be(e2);
-    if (!xe(e2, r2).includes(t2.type)) return { ok: false, reason: `type-unavailable` };
-    let i2 = e2.getCell?.(t2.at.laneIndex, t2.at.columnIndex), a2 = Se(i2, e2, t2);
+    let r2 = xe(e2);
+    if (!Se(e2, r2).includes(t2.type)) return { ok: false, reason: `type-unavailable` };
+    let i2 = e2.getCell?.(t2.at.laneIndex, t2.at.columnIndex), a2 = Ce(i2, e2, t2);
     if (!i2 || !a2) return { ok: false, reason: `cell-unavailable` };
-    let o2 = e2.getModuleExport?.(ye(n2.componentModule), n2.component), s2 = null;
+    let o2 = e2.getModuleExport?.(be(n2.componentModule), n2.component), s2 = null;
     try {
       if (s2 = r2.instantiatePooly(r2.droppings[n2.prefab]), !s2) return { ok: false, reason: `native-resource-create-failed` };
       s2.parent = r2.droppings.layer;
       let e3 = s2.getComponent?.(o2);
-      return !e3 || typeof e3.collect != `function` ? (r2.destroyPooly(s2), { ok: false, reason: `native-resource-shape-unsupported` }) : (e3.worldPosition = new r2.Vec2(a2.x, a2.y), E(e3, n2.motion, r2.Vec2), { ok: true, entities: [e3] });
+      return !e3 || typeof e3.collect != `function` ? (r2.destroyPooly(s2), { ok: false, reason: `native-resource-shape-unsupported` }) : (e3.worldPosition = new r2.Vec2(a2.x, a2.y), we(e3, n2.motion, r2.Vec2), { ok: true, entities: [e3] });
     } catch (e3) {
       if (s2) try {
         r2.destroyPooly(s2);
@@ -340,14 +340,14 @@ function we(e2 = {}) {
       throw e3;
     }
   }, dispose(t2) {
-    return Ce(t2, be(e2));
+    return Te(t2, xe(e2));
   } };
 }
-var Te = `chunks:///_virtual/LnC.ts`, Ee = `chunks:///_virtual/TileLiquids.ts`, De = `chunks:///_virtual/JSONs.ts`, Oe = `chunks:///_virtual/NodePools.ts`;
-function ke(e2) {
-  return { LnC: e2.getModuleExport?.(Te, `LnC`), tileliquids: e2.getModuleExport?.(Ee, `tileliquids`), TileLiquidEnum: e2.getModuleExport?.(Ee, `TileLiquidEnum`), PvZ2Object: e2.getModuleExport?.(De, `PvZ2Object`), PvZ2ObjectContainer: e2.getModuleExport?.(De, `PvZ2ObjectContainer`), destroyPooly: e2.getModuleExport?.(Oe, `destroyPooly`) };
+var T = `chunks:///_virtual/LnC.ts`, De = `chunks:///_virtual/TileLiquids.ts`, Oe = `chunks:///_virtual/JSONs.ts`, ke = `chunks:///_virtual/NodePools.ts`;
+function Ae(e2) {
+  return { LnC: e2.getModuleExport?.(T, `LnC`), tileliquids: e2.getModuleExport?.(De, `tileliquids`), TileLiquidEnum: e2.getModuleExport?.(De, `TileLiquidEnum`), PvZ2Object: e2.getModuleExport?.(Oe, `PvZ2Object`), PvZ2ObjectContainer: e2.getModuleExport?.(Oe, `PvZ2ObjectContainer`), destroyPooly: e2.getModuleExport?.(ke, `destroyPooly`) };
 }
-function Ae(e2, t2, n2) {
+function je(e2, t2, n2) {
   let r2 = [];
   try {
     let n3 = e2.PvZ2ObjectContainer?.[t2];
@@ -361,18 +361,18 @@ function Ae(e2, t2, n2) {
   }
   return r2;
 }
-function je(e2, t2) {
+function Me(e2, t2) {
   let n2 = /* @__PURE__ */ new Set();
-  for (let r2 of [...Ae(e2, `CurrentLevel`, t2), ...Ae(e2, `GridItemTypes`, t2)]) if (r2?.objclass === `TileLiquidType`) for (let e3 of Array.isArray(r2.aliases) ? r2.aliases : []) {
+  for (let r2 of [...je(e2, `CurrentLevel`, t2), ...je(e2, `GridItemTypes`, t2)]) if (r2?.objclass === `TileLiquidType`) for (let e3 of Array.isArray(r2.aliases) ? r2.aliases : []) {
     let t3 = String(e3 || ``).trim();
     t3 && n2.add(t3);
   }
   return [...n2].sort((e3, t3) => e3.localeCompare(t3));
 }
-function Me(e2, t2 = ke(e2)) {
-  return typeof t2.LnC?.prototype?.SpawnTileLiquid == `function` ? typeof t2.tileliquids?.getTileLiquidType == `function` && t2.tileliquids?.res != null && Array.isArray(t2.tileliquids?.res?.features) && t2.TileLiquidEnum != null && typeof t2.PvZ2Object?.getObjectsByRTID == `function` ? typeof t2.destroyPooly == `function` ? { available: true, reason: null, types: je(t2, e2) } : { available: false, reason: `native-tile-liquid-cleanup-unavailable` } : { available: false, reason: `native-tile-liquid-runtime-unavailable` } : { available: false, reason: `native-method-unavailable` };
+function Ne(e2, t2 = Ae(e2)) {
+  return typeof t2.LnC?.prototype?.SpawnTileLiquid == `function` ? typeof t2.tileliquids?.getTileLiquidType == `function` && t2.tileliquids?.res != null && Array.isArray(t2.tileliquids?.res?.features) && t2.TileLiquidEnum != null && typeof t2.PvZ2Object?.getObjectsByRTID == `function` ? typeof t2.destroyPooly == `function` ? { available: true, reason: null, types: Me(t2, e2) } : { available: false, reason: `native-tile-liquid-cleanup-unavailable` } : { available: false, reason: `native-tile-liquid-runtime-unavailable` } : { available: false, reason: `native-method-unavailable` };
 }
-function D(e2, t2) {
+function Pe(e2, t2) {
   let n2 = String(t2 || ``).trim();
   if (!n2) return null;
   try {
@@ -381,11 +381,11 @@ function D(e2, t2) {
     return null;
   }
 }
-function Ne(e2, t2, n2) {
+function Fe(e2, t2, n2) {
   let r2 = String(t2?.TileLiquidBasedOn || e2 || ``).trim(), i2 = n2.TileLiquidEnum?.[r2], a2 = Number.isInteger(i2) ? n2.tileliquids.res.features[i2] : null;
-  return !Number.isInteger(i2) || i2 < 0 || a2?.CODENAME !== r2 || !String(a2?.RES || ``).trim() ? { ok: false, reason: `type-host-not-found`, message: `Tile liquid '${e2}' references unknown native host '${r2}'` } : D(n2, a2.PROPS) ? D(n2, t2?.Properties) ? { ok: true } : { ok: false, reason: `type-properties-not-found`, message: `Tile liquid '${e2}' has unresolved properties` } : { ok: false, reason: `type-properties-not-found`, message: `Tile liquid host '${r2}' has unresolved base properties` };
+  return !Number.isInteger(i2) || i2 < 0 || a2?.CODENAME !== r2 || !String(a2?.RES || ``).trim() ? { ok: false, reason: `type-host-not-found`, message: `Tile liquid '${e2}' references unknown native host '${r2}'` } : Pe(n2, a2.PROPS) ? Pe(n2, t2?.Properties) ? { ok: true } : { ok: false, reason: `type-properties-not-found`, message: `Tile liquid '${e2}' has unresolved properties` } : { ok: false, reason: `type-properties-not-found`, message: `Tile liquid host '${r2}' has unresolved base properties` };
 }
-function Pe(e2, t2) {
+function Ie(e2, t2) {
   let n2 = /* @__PURE__ */ new Set(), r2 = /* @__PURE__ */ new Set(), i2 = (e3) => {
     let a2 = String(e3 || ``).trim();
     if (!a2) return { ok: false, reason: `type-redirection-invalid`, message: `Tile liquid redirection has no type` };
@@ -410,23 +410,23 @@ function Pe(e2, t2) {
       }
       if (!e4) return r2.delete(a2), { ok: false, reason: `type-redirection-invalid`, message: `Tile liquid '${a2}' has no positive redirection weight` };
     } else {
-      let e4 = Ne(a2, o2, t2);
+      let e4 = Fe(a2, o2, t2);
       if (!e4.ok) return r2.delete(a2), e4;
     }
     return r2.delete(a2), n2.add(a2), { ok: true };
   };
   return i2(e2);
 }
-function Fe(e2, t2) {
+function E(e2, t2) {
   if (t2.getSceneName?.() !== `inGameScene`) return { ok: false, reason: `scene-unavailable` };
-  let n2 = ke(t2), r2 = Me(t2, n2);
+  let n2 = Ae(t2), r2 = Ne(t2, n2);
   if (!r2.available) return { ok: false, reason: r2.reason };
-  let i2 = Pe(e2.type, n2);
+  let i2 = Ie(e2.type, n2);
   if (!i2.ok) return i2;
   let a2 = t2.getCell?.(e2.at.laneIndex, e2.at.columnIndex);
   return a2 ? typeof a2.SpawnTileLiquid == `function` ? { ok: true, cell: a2, runtime: n2 } : { ok: false, reason: `native-method-unavailable` } : { ok: false, reason: `cell-unavailable` };
 }
-function Ie(e2, t2) {
+function Le(e2, t2) {
   let n2 = e2?.node;
   if (!e2 || !n2 || n2.isValid === false || (`parent` in n2 ? n2.parent == null : n2.active === false)) return { ok: true, methodName: null, reason: `already-inactive` };
   let r2 = [];
@@ -443,110 +443,110 @@ function Ie(e2, t2) {
   }
   return { ok: r2.length === 0, methodName: `die+destroyPooly`, reason: r2.length === 0 ? null : `dispose-failed`, message: r2.length > 0 ? r2.map((e3) => String(e3?.message || e3)).join(`; `) : null };
 }
-function Le(e2 = {}) {
-  return { id: `native.lnc.tile-liquid`, kind: `tile-liquid`, native: true, placements: [`cell`], getCapability: () => Me(e2), async spawn(t2) {
-    let n2 = Fe(t2, e2);
+function Re(e2 = {}) {
+  return { id: `native.lnc.tile-liquid`, kind: `tile-liquid`, native: true, placements: [`cell`], getCapability: () => Ne(e2), async spawn(t2) {
+    let n2 = E(t2, e2);
     if (!n2.ok) return n2;
     let r2 = await n2.cell.SpawnTileLiquid(t2.type);
-    return r2 ? !r2.node || typeof r2.die != `function` ? (Ie(r2, n2.runtime), { ok: false, reason: `native-tile-liquid-shape-unsupported` }) : { ok: true, entities: [r2] } : { ok: false, reason: `spawn-rejected` };
+    return r2 ? !r2.node || typeof r2.die != `function` ? (Le(r2, n2.runtime), { ok: false, reason: `native-tile-liquid-shape-unsupported` }) : { ok: true, entities: [r2] } : { ok: false, reason: `spawn-rejected` };
   }, dispose(t2) {
-    return Ie(t2, ke(e2));
+    return Le(t2, Ae(e2));
   } };
 }
-var Re = `chunks:///_virtual/LnC.ts`, ze = `chunks:///_virtual/Projectiles.ts`, Be = `chunks:///_virtual/Character.ts`, Ve = `chunks:///_virtual/levelController.ts`, He = `chunks:///_virtual/NodePools.ts`;
-function Ue(e2) {
-  return e2.getModuleExport?.(Re, `LnC`)?.prototype || null;
+var ze = `chunks:///_virtual/LnC.ts`, Be = `chunks:///_virtual/Projectiles.ts`, Ve = `chunks:///_virtual/Character.ts`, He = `chunks:///_virtual/levelController.ts`, Ue = `chunks:///_virtual/NodePools.ts`;
+function We(e2) {
+  return e2.getModuleExport?.(ze, `LnC`)?.prototype || null;
 }
-function We(e2, t2) {
-  let n2 = typeof Ue(e2)?.[t2] == `function`;
+function Ge(e2, t2) {
+  let n2 = typeof We(e2)?.[t2] == `function`;
   return { available: n2, reason: n2 ? null : `native-method-unavailable` };
 }
-function Ge(e2, t2, n2) {
+function Ke(e2, t2, n2) {
   if (t2.getSceneName?.() !== `inGameScene`) return { ok: false, reason: `scene-unavailable` };
   if (t2.hasType?.(e2.kind, e2.type) !== true) return { ok: false, reason: `type-not-found` };
   let r2 = t2.getCell?.(e2.at.laneIndex, e2.at.columnIndex);
   return r2 ? typeof r2[n2] == `function` ? { ok: true, cell: r2 } : { ok: false, reason: `native-method-unavailable` } : { ok: false, reason: `cell-unavailable` };
 }
-function Ke(e2) {
-  return { projectileRes: e2.getModuleExport?.(ze, `projectileRes`), projectile: e2.getModuleExport?.(ze, `projectile`), characterType: e2.getModuleExport?.(Be, `CharacterType`), levelPlay: e2.getModuleExport?.(Ve, `LevelPlay`), destroyPooly: e2.getModuleExport?.(He, `destroyPooly`), Vec2: e2.getCc?.()?.Vec2 };
+function qe(e2) {
+  return { projectileRes: e2.getModuleExport?.(Be, `projectileRes`), projectile: e2.getModuleExport?.(Be, `projectile`), characterType: e2.getModuleExport?.(Ve, `CharacterType`), levelPlay: e2.getModuleExport?.(He, `LevelPlay`), destroyPooly: e2.getModuleExport?.(Ue, `destroyPooly`), Vec2: e2.getCc?.()?.Vec2 };
 }
-function qe(e2, t2) {
+function Je(e2, t2) {
   return !e2 || e2.dead === true || e2.node?.isValid === false ? { ok: true, methodName: null, reason: `already-inactive` } : typeof e2.fade == `function` ? (e2.fade(true), { ok: true, methodName: `fade`, reason: null }) : e2.node && typeof t2.destroyPooly == `function` ? (t2.destroyPooly(e2.node), { ok: true, methodName: `destroyPooly`, reason: null }) : { ok: false, methodName: null, reason: `cleanup-unavailable` };
 }
-function Je(e2) {
-  let t2 = Ke(e2), n2 = e2.getSquareSize?.(), r2 = typeof t2.projectileRes?.getProjectile == `function` && t2.projectileRes?.res != null && typeof t2.projectile?.registerProjectile == `function` && Array.isArray(t2.projectile?.manager?.prjPool) && Number.isFinite(t2.characterType?.plant) && Number.isFinite(t2.characterType?.zombie) && typeof t2.destroyPooly == `function` && typeof t2.Vec2 == `function` && Number(n2?.width) > 0 && Number(n2?.height) > 0 && typeof e2.getWorldPosition == `function`;
+function Ye(e2) {
+  let t2 = qe(e2), n2 = e2.getSquareSize?.(), r2 = typeof t2.projectileRes?.getProjectile == `function` && t2.projectileRes?.res != null && typeof t2.projectile?.registerProjectile == `function` && Array.isArray(t2.projectile?.manager?.prjPool) && Number.isFinite(t2.characterType?.plant) && Number.isFinite(t2.characterType?.zombie) && typeof t2.destroyPooly == `function` && typeof t2.Vec2 == `function` && Number(n2?.width) > 0 && Number(n2?.height) > 0 && typeof e2.getWorldPosition == `function`;
   return { available: r2, reason: r2 ? null : `native-projectile-runtime-unavailable`, motionKinds: [`linear`], targetSides: [`plant`, `zombie`] };
 }
-function Ye(e2, t2) {
+function Xe(e2, t2) {
   if (t2.getSceneName?.() !== `inGameScene`) return { ok: false, reason: `scene-unavailable` };
   if (t2.hasType?.(`projectile`, e2.type) !== true) return { ok: false, reason: `type-not-found` };
-  let n2 = Je(t2);
+  let n2 = Ye(t2);
   if (!n2.available) return { ok: false, reason: n2.reason };
   let r2 = t2.getCell?.(e2.at.laneIndex, e2.at.columnIndex), i2 = r2?.inLane?.prjLayer, a2 = r2?.node?.worldPosition || r2?.worldPosition, o2 = t2.getWorldPosition?.(e2.at.laneIndex, e2.at.columnIndex), s2 = Number.isFinite(Number(a2?.x)) && Number.isFinite(Number(a2?.y)) ? a2 : o2;
-  return !r2 || !i2 || !s2 ? { ok: false, reason: `cell-unavailable` } : { ok: true, cell: r2, parent: i2, worldPosition: s2, runtime: Ke(t2) };
+  return !r2 || !i2 || !s2 ? { ok: false, reason: `cell-unavailable` } : { ok: true, cell: r2, parent: i2, worldPosition: s2, runtime: qe(t2) };
 }
-function Xe(e2) {
-  let t2 = We(e2, `SpawnTomb`);
+function Ze(e2) {
+  let t2 = Ge(e2, `SpawnTomb`);
   if (!t2.available) return t2;
-  let n2 = e2.getModuleExport?.(He, `destroyPooly`);
+  let n2 = e2.getModuleExport?.(Ue, `destroyPooly`);
   return { available: typeof n2 == `function`, reason: typeof n2 == `function` ? null : `native-tomb-cleanup-unavailable` };
 }
-function Ze(e2, t2) {
+function Qe(e2, t2) {
   if (!e2 || e2.node?.isValid === false || e2.node?.active === false) return { ok: true, methodName: null, reason: `already-inactive` };
-  let n2 = t2.getModuleExport?.(He, `destroyPooly`);
+  let n2 = t2.getModuleExport?.(Ue, `destroyPooly`);
   return !e2.node || typeof n2 != `function` ? { ok: false, methodName: null, reason: `cleanup-unavailable` } : (n2(e2.node), { ok: true, methodName: `destroyPooly`, reason: null });
 }
-function Qe(e2 = {}) {
-  return [{ id: `native.lnc.plant`, kind: `plant`, native: true, placements: [`cell`], getCapability: () => We(e2, `SpawnPlantByType`), async spawn(t2) {
-    let n2 = Ge(t2, e2, `SpawnPlantByType`);
+function $e(e2 = {}) {
+  return [{ id: `native.lnc.plant`, kind: `plant`, native: true, placements: [`cell`], getCapability: () => Ge(e2, `SpawnPlantByType`), async spawn(t2) {
+    let n2 = Ke(t2, e2, `SpawnPlantByType`);
     if (!n2.ok) return n2;
     let r2 = await n2.cell.SpawnPlantByType(t2.type, true, false, true, true, false, true);
     return r2 ? { ok: true, entities: [r2] } : { ok: false, reason: `spawn-rejected` };
   } }, { id: `native.lnc.zombie`, kind: `zombie`, native: true, placements: [`cell`], getCapability() {
-    let t2 = We(e2, `SpawnZombieByZombieType`);
+    let t2 = Ge(e2, `SpawnZombieByZombieType`);
     if (!t2.available) return t2;
-    let n2 = e2.getModuleExport?.(Re, `LnCSpawnZombieStyleEnum`);
+    let n2 = e2.getModuleExport?.(ze, `LnCSpawnZombieStyleEnum`);
     return { available: Number.isFinite(n2?.appear), reason: Number.isFinite(n2?.appear) ? null : `native-enum-unavailable` };
   }, async spawn(t2) {
-    let n2 = Ge(t2, e2, `SpawnZombieByZombieType`);
+    let n2 = Ke(t2, e2, `SpawnZombieByZombieType`);
     if (!n2.ok) return n2;
-    let r2 = e2.getModuleExport?.(Re, `LnCSpawnZombieStyleEnum`);
+    let r2 = e2.getModuleExport?.(ze, `LnCSpawnZombieStyleEnum`);
     if (!Number.isFinite(r2?.appear)) return { ok: false, reason: `native-enum-unavailable` };
     let i2 = await n2.cell.SpawnZombieByZombieType(t2.type, r2.appear, true, 0.5, 0, null, true, false, false);
     return Array.isArray(i2) && i2.length > 0 ? { ok: true, entities: i2 } : { ok: false, reason: `spawn-rejected` };
-  } }, { id: `native.lnc.tomb`, kind: `tomb`, native: true, placements: [`cell`], getCapability: () => Xe(e2), async spawn(t2) {
-    let n2 = Ge(t2, e2, `SpawnTomb`);
+  } }, { id: `native.lnc.tomb`, kind: `tomb`, native: true, placements: [`cell`], getCapability: () => Ze(e2), async spawn(t2) {
+    let n2 = Ke(t2, e2, `SpawnTomb`);
     if (!n2.ok) return n2;
     let r2 = await n2.cell.SpawnTomb(t2.type, true, false, false, true, true, false);
     return r2 ? { ok: true, entities: [r2] } : { ok: false, reason: `spawn-rejected` };
   }, dispose(t2) {
-    return Ze(t2, e2);
-  } }, { id: `native.projectile.linear`, kind: `projectile`, native: true, placements: [`cell`], motionKinds: [`linear`], targetSides: [`plant`, `zombie`], getCapability: () => Je(e2), async spawn(t2) {
-    let n2 = Ye(t2, e2);
+    return Qe(t2, e2);
+  } }, { id: `native.projectile.linear`, kind: `projectile`, native: true, placements: [`cell`], motionKinds: [`linear`], targetSides: [`plant`, `zombie`], getCapability: () => Ye(e2), async spawn(t2) {
+    let n2 = Xe(t2, e2);
     if (!n2.ok) return n2;
     let { projectileRes: r2, projectile: i2, characterType: a2, levelPlay: o2, Vec2: s2 } = n2.runtime, c2 = e2.getSquareSize(), l2 = null;
     try {
-      if (l2 = await r2.getProjectile(t2.type, n2.parent, false), !l2?.node || typeof l2.fade != `function`) return qe(l2, n2.runtime), { ok: false, reason: `native-projectile-shape-unsupported` };
+      if (l2 = await r2.getProjectile(t2.type, n2.parent, false), !l2?.node || typeof l2.fade != `function`) return Je(l2, n2.runtime), { ok: false, reason: `native-projectile-shape-unsupported` };
       let e3 = t2.motion.velocity;
       return l2.worldPosition = new s2(n2.worldPosition.x, n2.worldPosition.y), l2.height = t2.motion.heightInCells * c2.height, l2.linearVelocity = new s2(e3.columnsPerSecond * c2.width / 60, -e3.lanesPerSecond * c2.height / 60), l2.bodyLinearVelocity = 0, l2.gravity = Number.isFinite(Number(o2?.ExtraGravity)) ? Number(o2.ExtraGravity) : 0, l2.JudgesZombieBodyRecForShooter = true, i2.registerProjectile(l2, a2[t2.targetSide]), l2.rotate?.(), { ok: true, entities: [l2] };
     } catch (e3) {
       try {
-        qe(l2, n2.runtime);
+        Je(l2, n2.runtime);
       } catch {
       }
       throw e3;
     }
   }, dispose(t2) {
-    return qe(t2, Ke(e2));
-  } }, Le(e2), we(e2)];
+    return Je(t2, qe(e2));
+  } }, Re(e2), Ee(e2)];
 }
-function $e(e2, t2) {
+function et(e2, t2) {
   if (e2 == null) return null;
   if (typeof e2 != `object` || typeof e2.aborted != `boolean` || typeof e2.addEventListener != `function` || typeof e2.removeEventListener != `function`) throw TypeError(`${t2} signal must be an AbortSignal`);
   return e2;
 }
-function et(e2 = {}) {
-  let t2 = String(e2.label || `subscription`), n2 = $e(e2.signal, t2), r2 = e2.runtime || null;
+function D(e2 = {}) {
+  let t2 = String(e2.label || `subscription`), n2 = et(e2.signal, t2), r2 = e2.runtime || null;
   r2?.assertActive?.(t2);
   let i2 = true, a2 = false, o2 = null, s2 = () => {
     if (!i2) return false;
@@ -771,7 +771,7 @@ function ut(e2 = {}) {
       } catch {
         return false;
       }
-    }, f2 = null, p2 = false, m2 = null, h2 = et({ runtime: s2, signal: o2.signal, label: o2.label || `status watch`, onCancel() {
+    }, f2 = null, p2 = false, m2 = null, h2 = D({ runtime: s2, signal: o2.signal, label: o2.label || `status watch`, onCancel() {
       f2 = null, m2?.();
     } });
     if (!h2.active) return h2.cancel;
@@ -1157,7 +1157,7 @@ function jt() {
 function Mt(e2 = {}) {
   return [At(e2), jt()];
 }
-var Nt = new e(`projectile-impacts`), Pt = `chunks:///_virtual/commonShot.ts`, Ft = `chunks:///_virtual/Plant.ts`, It = `chunks:///_virtual/Tomb.ts`, Lt = Object.freeze([Object.freeze({ targetKind: `zombie`, methodName: `dealDamageToZombie` }), Object.freeze({ targetKind: `plant`, methodName: `dealDamageToPlant` })]), Rt = `dealSplashDamage`, zt = `detectEnemyNormal`, Bt = Object.freeze([`dealDamageToZombie`, `dealDamageToPlant`, Rt, zt]), Vt = Object.freeze([Object.freeze({ domain: `kongfu-boss-explode-bomb`, modulePath: `chunks:///_virtual/kongfuBossExplodeBomb.ts`, exportName: `kongfuBossExplodeBomb`, methods: Object.freeze([Object.freeze({ targetKind: `zombie`, methodName: `dealDamageToZombie`, impactKind: `splash` }), Object.freeze({ targetKind: `plant`, methodName: `dealDamageToPlant`, impactKind: `splash` })]) })]), Ht = Object.freeze([Object.freeze({ targetKind: `plant`, modulePath: Ft, exportName: `Plant`, methodName: `dealDamage`, impactKinds: [`splash`] }), Object.freeze({ targetKind: `tomb`, modulePath: It, exportName: `Tomb`, methodName: `dealDamage`, impactKinds: [`direct`, `splash`] })]);
+var Nt = new a(`projectile-impacts`), Pt = `chunks:///_virtual/commonShot.ts`, Ft = `chunks:///_virtual/Plant.ts`, It = `chunks:///_virtual/Tomb.ts`, Lt = Object.freeze([Object.freeze({ targetKind: `zombie`, methodName: `dealDamageToZombie` }), Object.freeze({ targetKind: `plant`, methodName: `dealDamageToPlant` })]), Rt = `dealSplashDamage`, zt = `detectEnemyNormal`, Bt = Object.freeze([`dealDamageToZombie`, `dealDamageToPlant`, Rt, zt]), Vt = Object.freeze([Object.freeze({ domain: `kongfu-boss-explode-bomb`, modulePath: `chunks:///_virtual/kongfuBossExplodeBomb.ts`, exportName: `kongfuBossExplodeBomb`, methods: Object.freeze([Object.freeze({ targetKind: `zombie`, methodName: `dealDamageToZombie`, impactKind: `splash` }), Object.freeze({ targetKind: `plant`, methodName: `dealDamageToPlant`, impactKind: `splash` })]) })]), Ht = Object.freeze([Object.freeze({ targetKind: `plant`, modulePath: Ft, exportName: `Plant`, methodName: `dealDamage`, impactKinds: [`splash`] }), Object.freeze({ targetKind: `tomb`, modulePath: It, exportName: `Tomb`, methodName: `dealDamage`, impactKinds: [`direct`, `splash`] })]);
 function Ut(e2, t2 = {}) {
   return new Set((e2 == null ? [] : Array.isArray(e2) ? e2 : [e2]).map((e3) => String(e3 || ``).trim().toLowerCase()).map((e3) => t2[e3] || e3).filter(Boolean));
 }
@@ -1250,7 +1250,7 @@ function Qt(e2 = {}) {
     r2 = r2 && typeof r2 == `object` ? r2 : {};
     let i2 = t2();
     if (!i2.available) throw Error(`impacts.watch(): ${i2.reason}`);
-    let a2 = Wt(e2), o2 = Ut(r2.targetKind ?? r2.targetKinds, { plants: `plant`, zombies: `zombie`, tombs: `tomb` }), s2 = Ut(r2.impactKind ?? r2.impactKinds), c2 = Ut(r2.sourceType ?? r2.sourceTypes), l2 = typeof r2.filter == `function` ? r2.filter : null, u2 = [], d2 = [], f2 = et({ runtime: e2.runtime, signal: r2.signal, label: r2.label || `projectile impact watch`, onCancel() {
+    let a2 = Wt(e2), o2 = Ut(r2.targetKind ?? r2.targetKinds, { plants: `plant`, zombies: `zombie`, tombs: `tomb` }), s2 = Ut(r2.impactKind ?? r2.impactKinds), c2 = Ut(r2.sourceType ?? r2.sourceTypes), l2 = typeof r2.filter == `function` ? r2.filter : null, u2 = [], d2 = [], f2 = D({ runtime: e2.runtime, signal: r2.signal, label: r2.label || `projectile impact watch`, onCancel() {
       for (let e3 of [...u2].reverse()) try {
         e3();
       } catch {
@@ -1355,7 +1355,208 @@ function Qt(e2 = {}) {
     return f2.cancel;
   } });
 }
-function $t(e2 = `Operation aborted`) {
+function $t(e2, t2) {
+  try {
+    return e2();
+  } catch (e3) {
+    try {
+      t2?.(e3);
+    } catch {
+    }
+    return;
+  }
+}
+function en(e2) {
+  if (!e2 || typeof e2 != `object`) return e2;
+  for (let t2 of Object.values(e2)) en(t2);
+  return Object.freeze(e2);
+}
+function tn(e2, t2, n2 = {}, r2 = () => {
+}) {
+  if (typeof t2 != `function`) throw TypeError(`Native observer requires a listener`);
+  if (!e2.runtime?.track || !e2.wrapMethod) throw Error(`Native observation unavailable`);
+  let i2 = [], a2 = D({ runtime: e2.runtime, signal: n2.signal, label: n2.label || `native observation`, onCancel() {
+    let e3 = [];
+    try {
+      r2();
+    } catch (t3) {
+      e3.push(t3);
+    }
+    for (let t3 of i2.splice(0).reverse()) try {
+      t3();
+    } catch (t4) {
+      e3.push(t4);
+    }
+    if (e3.length) throw AggregateError(e3, `Native observer cleanup failed`);
+  } });
+  return { get active() {
+    return a2.active;
+  }, cancel: a2.cancel, add(t3) {
+    if (a2.active) try {
+      let n3 = e2.wrapMethod(t3);
+      if (typeof n3 != `function`) throw Error(`Native hook returned no cleanup`);
+      i2.push(n3);
+    } catch (e3) {
+      try {
+        a2.cancel();
+      } catch (t4) {
+        throw AggregateError([e3, t4], `Native observer installation failed`);
+      }
+      throw e3;
+    }
+  }, emit(r3) {
+    !a2.active || e2.runtime.signal?.aborted || $t(() => e2.runtime.track(Promise.resolve().then(() => {
+      if (a2.active && !e2.runtime.signal?.aborted) return t2(r3);
+    }), { label: n2.label || `native observation listener` }), e2.reportError);
+  } };
+}
+function nn(e2, t2) {
+  let n2 = [], r2 = [], i2 = null;
+  $t(() => {
+    i2 = e2.listModuleEntries?.();
+  }, e2.reportError);
+  for (let a2 of t2) {
+    let t3 = e2.getModuleExport(`chunks:///_virtual/${a2.className}.ts`, a2.className);
+    if (typeof t3?.prototype?.[a2.methodName] != `function`) continue;
+    n2.push(`${a2.className}.${a2.methodName}`);
+    let o2 = /* @__PURE__ */ new Set();
+    for (let [e3, n3] of Array.isArray(i2) ? i2 : []) for (let [i3, s2] of Object.entries(n3 || {})) typeof s2 != `function` || !s2.prototype || o2.has(s2) || (o2.add(s2), t3.prototype.isPrototypeOf(s2.prototype) && Object.hasOwn(s2.prototype, a2.methodName) && r2.push(`${e3}:${i3}.${a2.methodName}`));
+  }
+  return Object.freeze({ available: n2.length > 0 && !!e2.wrapMethod && !!e2.runtime?.track, coverage: Array.isArray(i2) ? `partial` : `unknown`, boundaries: Object.freeze(n2), uncovered: Object.freeze(r2) });
+}
+var rn = [{ className: `Plant`, kind: `plant`, methodName: `defaultDealNormalDamage` }, { className: `Zombie`, kind: `zombie`, methodName: `defaultDealDamage` }, { className: `Tomb`, kind: `tomb`, methodName: `dealDamage` }], an = [{ className: `Plant`, kind: `plant`, methodName: `die` }, { className: `Zombie`, kind: `zombie`, methodName: `playDie` }, { className: `Tomb`, kind: `tomb`, methodName: `die` }];
+function on(e2) {
+  let t2 = (t3) => e2.getModuleExport(`chunks:///_virtual/${t3.className}.ts`, t3.className)?.prototype, n2 = () => {
+    let t3 = [...rn, ...an], n3 = nn(e2, [...t3, { className: `Plant`, methodName: `dealDamage` }, { className: `Plant`, methodName: `dealNormalDamage` }, { className: `Zombie`, methodName: `dealDamage` }]), r3 = new Set(t3.map((e3) => `${e3.className}.${e3.methodName}`)), i2 = n3.boundaries.filter((e3) => r3.has(e3));
+    return Object.freeze({ ...n3, available: n3.available && i2.length > 0, boundaries: Object.freeze(i2) });
+  };
+  function r2(n3, r3, i2 = {}) {
+    let a2 = tn(e2, r3, i2);
+    if (!a2.active) return a2.cancel;
+    if (!(n3 === `death` ? an : rn).some((e3) => typeof t2(e3)?.[e3.methodName] == `function`)) throw a2.cancel(), Error(`Native ${n3} observation unavailable`);
+    let o2 = /* @__PURE__ */ new Map(), s2 = [], c2 = /* @__PURE__ */ new WeakSet(), l2 = (t3) => $t(t3, e2.reportError), u2 = (e3, t3) => en({ ...t3.snapshot(), health: _(e3), alive: e3.dead !== true }), d2 = (e3) => s2.findLast((t3) => t3.target === e3)?.source ?? null, f2 = (t3) => e2.isGameplayActive() === true && t3.displayed !== true && t3.node?.active !== false && t3.node?.isValid !== false && (!t3.node || !(`parent` in t3.node) || t3.node.parent != null);
+    function p2(e3, n4) {
+      let r4 = t2(e3);
+      typeof r4?.[e3.methodName] == `function` && a2.add({ target: r4, methodName: e3.methodName, handler: n4 });
+    }
+    try {
+      p2({ className: `Plant`, methodName: `eat` }, ({ thisArg: t3, args: n4, callNext: r4 }) => {
+        let i3 = l2(() => ({ target: t3, source: n4[1] ? e2.wrapEntity(n4[1], `zombie`) : null }));
+        i3 && s2.push(i3);
+        try {
+          return r4(...n4);
+        } finally {
+          i3 && s2.pop();
+        }
+      });
+      for (let t3 of rn) p2(t3, ({ thisArg: r4, args: i3, callNext: s3 }) => {
+        if (o2.has(r4)) return s3(...i3);
+        let c3 = l2(() => {
+          if (!f2(r4) || r4.dead === true) return null;
+          let n4 = e2.wrapEntity(r4, t3.kind);
+          if (n4.signal?.aborted) return null;
+          let a3 = t3.kind === `plant` ? null : i3[0]?.damageType, o3 = e2.getModuleExport(`chunks:///_virtual/CharacterManager.ts`, `ZombieDamageType`), s4 = typeof a3 == `number` ? o3?.[a3] : null;
+          return { target: n4, source: d2(r4), before: u2(r4, n4), damageType: s4 === `physicle` ? `physical` : typeof s4 == `string` ? s4 : null };
+        });
+        c3 && o2.set(r4, c3);
+        try {
+          let e3 = s3(...i3);
+          return c3 && n3 === `damage` && l2(() => {
+            let e4 = u2(r4, c3.target);
+            a2.emit(Object.freeze({ type: `native-damage`, ...c3, after: e4, health: ee(c3.before, e4), boundary: `${t3.className}.${t3.methodName}` }));
+          }), e3;
+        } finally {
+          c3 && o2.delete(r4);
+        }
+      });
+      if (n3 === `death`) for (let t3 of an) p2(t3, ({ thisArg: n4, args: r4, callNext: i3 }) => {
+        let s3 = l2(() => {
+          if (!f2(n4) || n4.dead === true) return null;
+          let r5 = o2.get(n4), i4 = r5?.target ?? e2.wrapEntity(n4, t3.kind);
+          return !i4.signal || i4.signal.reason?.type === `disposed` || !r5 && i4.signal.aborted || c2.has(i4.signal) ? null : { target: i4, before: u2(n4, i4), damage: r5 };
+        }), d3 = i3(...r4);
+        return s3 && l2(() => {
+          n4.dead !== true || c2.has(s3.target.signal) || (c2.add(s3.target.signal), a2.emit(Object.freeze({ type: `death`, target: s3.target, source: s3.damage?.source ?? null, cause: s3.damage ? `damage` : `unknown`, before: s3.before, after: u2(n4, s3.target), boundary: `${t3.className}.${t3.methodName}` })));
+        }), d3;
+      });
+    } catch (e3) {
+      try {
+        a2.cancel();
+      } catch (t3) {
+        throw AggregateError([e3, t3], `Native combat observer setup failed`);
+      }
+      throw e3;
+    }
+    return a2.cancel;
+  }
+  return Object.freeze({ getCapabilities: n2, watchDamage: (e3, t3) => r2(`damage`, e3, t3), watchDeath: (e3, t3) => r2(`death`, e3, t3) });
+}
+var sn = [`onLoad`, `gameStart`, `judgeWaveCount`, `victory`, `onLoseDarken`, `update`, `onDisable`].map((e2) => ({ className: `levelController`, methodName: e2 }));
+function cn(e2) {
+  let t2 = null, n2 = null, r2 = 0, i2 = /* @__PURE__ */ new Set(), a2 = (t3) => $t(t3, e2.reportError), o2 = () => {
+    let t3 = nn(e2, sn);
+    return Object.freeze({ ...t3, available: t3.available && t3.boundaries.includes(`levelController.onDisable`) && t3.boundaries.includes(`levelController.update`) });
+  }, s2 = (e3, t3, n3 = {}) => {
+    let r3 = Object.freeze({ type: e3, session: t3.public, ...n3 });
+    for (let e4 of i2) e4.emit(r3);
+  };
+  function c2(e3) {
+    !n2 || n2.controller.signal.aborted || (n2.controller.abort(Object.freeze({ type: `session-ended`, reason: e3 })), s2(`ended`, n2, { reason: e3 }));
+  }
+  function l2(e3, t3 = false) {
+    if (!e3) return c2(`left`), n2 = null, null;
+    if (t3 || n2?.raw !== e3) {
+      c2(`replaced`);
+      let t4 = new AbortController();
+      n2 = { raw: e3, controller: t4, started: e3.gameStarted === true, public: Object.freeze({ id: ++r2, levelName: typeof e3.levelNameString == `string` ? e3.levelNameString : null, signal: t4.signal }) }, s2(`entered`, n2);
+    }
+    return n2;
+  }
+  function u2(e3) {
+    let t3 = l2(e3);
+    !t3 || t3.controller.signal.aborted || (e3.gameStarted === true && !t3.started && (t3.started = true, s2(`started`, t3)), e3.gameWon === true ? c2(`won`) : e3.gameLost === true ? c2(`lost`) : e3.gameOver === true && c2(`ended`));
+  }
+  function d2() {
+    if (e2.runtime?.assertActive?.(`game.sessions`), t2) return;
+    let r3 = tn(e2, () => {
+    });
+    t2 = r3;
+    let i3 = e2.getModuleExport(`chunks:///_virtual/levelController.ts`, `levelController`)?.prototype;
+    try {
+      if (!i3 || typeof i3.onDisable != `function` || typeof i3.update != `function`) throw Error(`Gameplay session observation unavailable`);
+      for (let { methodName: t3 } of sn) typeof i3?.[t3] == `function` && r3.add({ target: i3, methodName: t3, handler: ({ thisArg: i4, args: o3, callNext: d3 }) => {
+        let f2 = a2(() => i4.currentWave), p2 = d3(...o3);
+        return a2(() => {
+          if (r3.active) {
+            if (t3 === `onDisable`) {
+              n2?.raw === i4 && (c2(`left`), n2 = null);
+              return;
+            }
+            e2.getController() === i4 && (t3 === `onLoad` && l2(i4, true), t3 === `gameStart` && !n2 && (l2(i4), n2.started = false), u2(i4), t3 === `judgeWaveCount` && n2 && !n2.controller.signal.aborted && Number.isInteger(f2) && Number.isInteger(i4.currentWave) && i4.currentWave !== f2 && s2(`wave`, n2, { previousWave: f2, wave: i4.currentWave }));
+          }
+        }), p2;
+      } });
+      e2.runtime.onDispose(() => {
+        c2(`mod-disposed`), n2 = null;
+      }, `retire gameplay session`), a2(() => u2(e2.getController()));
+    } catch (e3) {
+      throw t2 = null, r3.cancel(), e3;
+    }
+  }
+  return Object.freeze({ getCapabilities: o2, current() {
+    return d2(), a2(() => u2(e2.getController())), n2?.public ?? null;
+  }, watch(t3, r3 = {}) {
+    let a3 = tn(e2, t3, r3, () => i2.delete(a3));
+    if (!a3.active) return a3.cancel;
+    try {
+      d2();
+    } catch (e3) {
+      throw a3.cancel(), e3;
+    }
+    return i2.add(a3), n2 && a3.emit(Object.freeze({ type: `initial`, session: n2.public })), a3.cancel;
+  } });
+}
+function ln(e2 = `Operation aborted`) {
   try {
     return new DOMException(e2, `AbortError`);
   } catch {
@@ -1363,26 +1564,26 @@ function $t(e2 = `Operation aborted`) {
     return t2.name = `AbortError`, t2;
   }
 }
-function en(e2, { allowZero: t2 = true } = {}) {
+function un(e2, { allowZero: t2 = true } = {}) {
   let n2 = Number(e2);
   if (!Number.isFinite(n2) || n2 < 0 || !t2 && n2 === 0) throw TypeError(`Game-clock delay must be a ${t2 ? `non-negative` : `positive`} finite number`);
   return n2;
 }
-function tn(e2) {
+function dn(e2) {
   if (e2 == null) return null;
   if (typeof e2 != `object` || typeof e2.aborted != `boolean` || typeof e2.addEventListener != `function` || typeof e2.removeEventListener != `function`) throw TypeError(`Game-clock signal must be an AbortSignal`);
   return e2;
 }
-function nn(e2, t2 = 0) {
+function fn(e2, t2 = 0) {
   let n2 = Number(e2?.deltaSeconds ?? e2), r2 = Number(e2?.scale), i2 = Number(e2?.frame);
   return Object.freeze({ deltaSeconds: Number.isFinite(n2) && n2 > 0 ? n2 : 0, scale: Number.isFinite(r2) && r2 >= 0 ? r2 : null, paused: e2?.paused === true || n2 <= 0, frame: Number.isFinite(i2) ? Math.trunc(i2) : t2 });
 }
-function rn() {
-  let e2 = l(), t2 = e2?.director, n2 = e2?.Director, r2 = Number(t2?.gameSpeed), i2 = !!t2?.on && !!t2?.off && !!n2?.EVENT_BEFORE_UPDATE && !!n2?.EVENT_AFTER_UPDATE;
+function pn() {
+  let e2 = d(), t2 = e2?.director, n2 = e2?.Director, r2 = Number(t2?.gameSpeed), i2 = !!t2?.on && !!t2?.off && !!n2?.EVENT_BEFORE_UPDATE && !!n2?.EVENT_AFTER_UPDATE;
   return Object.freeze({ available: i2, scale: Number.isFinite(r2) && r2 >= 0 ? r2 : null, paused: i2 && (t2?.isPaused?.() === true || r2 === 0) });
 }
-function an(e2) {
-  let t2 = l(), n2 = t2?.director, r2 = t2?.Director;
+function mn(e2) {
+  let t2 = d(), n2 = t2?.director, r2 = t2?.Director;
   if (!n2?.on || !n2?.off || !r2?.EVENT_BEFORE_UPDATE || !r2?.EVENT_AFTER_UPDATE) throw Error(`Game clock is unavailable`);
   let i2 = 0, a2 = null, o2 = true, s2 = () => {
     let e3 = Number(t2?.game?.deltaTime), r3 = Number(n2.gameSpeed);
@@ -1392,10 +1593,10 @@ function an(e2) {
   };
   return n2.on(r2.EVENT_BEFORE_UPDATE, s2), n2.on(r2.EVENT_AFTER_UPDATE, c2), () => o2 ? (o2 = false, n2.off(r2.EVENT_BEFORE_UPDATE, s2), n2.off(r2.EVENT_AFTER_UPDATE, c2), true) : false;
 }
-function on(e2 = {}) {
-  let t2 = e2.runtime || null, n2 = typeof e2.subscribeGameTick == `function` ? e2.subscribeGameTick : an, r2 = typeof e2.getGameClockState == `function` ? e2.getGameClockState : rn, i2 = /* @__PURE__ */ new Set(), a2 = null, o2 = null, s2 = 0, c2 = (e3, n3) => typeof t2?.onDispose == `function` ? t2.onDispose(e3, n3) : typeof t2?.addCleanup == `function` ? t2.addCleanup(e3, n3) : null, l2 = () => {
+function hn(e2 = {}) {
+  let t2 = e2.runtime || null, n2 = typeof e2.subscribeGameTick == `function` ? e2.subscribeGameTick : mn, r2 = typeof e2.getGameClockState == `function` ? e2.getGameClockState : pn, i2 = /* @__PURE__ */ new Set(), a2 = null, o2 = null, s2 = 0, c2 = (e3, n3) => typeof t2?.onDispose == `function` ? t2.onDispose(e3, n3) : typeof t2?.addCleanup == `function` ? t2.addCleanup(e3, n3) : null, l2 = () => {
     a2 || (a2 = n2((e3) => {
-      let t3 = nn(e3, ++s2);
+      let t3 = fn(e3, ++s2);
       if (!(t3.deltaSeconds <= 0)) for (let e4 of [...i2]) e4.onTick(t3);
     }), typeof a2 != `function` && (a2 = () => false), o2 = c2(p2, `dispose game clock`));
   }, u2 = () => {
@@ -1406,7 +1607,7 @@ function on(e2 = {}) {
     o2 = null, t3?.(), e3();
   }, d2 = (e3, n3) => {
     t2?.assertActive?.(`game clock subscription`);
-    let r3 = tn(n3);
+    let r3 = dn(n3);
     if (r3?.aborted) return () => false;
     i2.add(e3);
     try {
@@ -1446,40 +1647,40 @@ function on(e2 = {}) {
     return r3.cancel = d2(r3, t3?.signal), r3.cancel;
   }, setTimeout(e3, t3 = 0, n3 = {}) {
     if (typeof e3 != `function`) throw TypeError(`clock.setTimeout() requires a callback`);
-    let r3 = en(t3), i3 = String(n3?.label || `game clock timeout`), a3 = { elapsed: 0, pending: false, cancel: null, onTick(t4) {
+    let r3 = un(t3), i3 = String(n3?.label || `game clock timeout`), a3 = { elapsed: 0, pending: false, cancel: null, onTick(t4) {
       a3.elapsed += t4.deltaSeconds, !(a3.elapsed < r3) && (a3.cancel(), f2(a3, e3, t4, i3));
     } };
     return a3.cancel = d2(a3, n3?.signal), a3.cancel;
   }, setInterval(e3, t3, n3 = {}) {
     if (typeof e3 != `function`) throw TypeError(`clock.setInterval() requires a callback`);
-    let r3 = en(t3, { allowZero: false }), i3 = String(n3?.label || `game clock interval`), a3 = { elapsed: 0, pending: false, cancel: null, onTick(t4) {
+    let r3 = un(t3, { allowZero: false }), i3 = String(n3?.label || `game clock interval`), a3 = { elapsed: 0, pending: false, cancel: null, onTick(t4) {
       a3.elapsed += t4.deltaSeconds, !(a3.elapsed < r3 || a3.pending) && (a3.elapsed %= r3, f2(a3, e3, t4, i3));
     } };
     return a3.cancel = d2(a3, n3?.signal), a3.cancel;
   }, sleep(e3 = 0, n3 = {}) {
-    let r3 = en(e3), i3 = n3?.signal, a3 = new Promise((e4, a4) => {
+    let r3 = un(e3), i3 = n3?.signal, a3 = new Promise((e4, a4) => {
       let o3 = false, s3 = null, c3 = (e5, n4) => {
         o3 || (o3 = true, s3?.(), t2?.signal?.removeEventListener?.(`abort`, l3), i3?.removeEventListener?.(`abort`, l3), e5(n4));
-      }, l3 = () => c3(a4, $t(`Game-clock sleep aborted`));
+      }, l3 = () => c3(a4, ln(`Game-clock sleep aborted`));
       s3 = m2.setTimeout(() => c3(e4), r3, { label: n3?.label || `game clock sleep` }), t2?.signal?.addEventListener?.(`abort`, l3, { once: true }), i3?.addEventListener?.(`abort`, l3, { once: true }), (t2?.signal?.aborted || i3?.aborted) && l3();
     });
     return t2?.track?.(a3, { label: n3?.label || `game clock sleep`, report: false }) || a3;
   } };
   return Object.freeze(m2);
 }
-var sn = Object.freeze([`plant`, `zombie`, `neutral`, `unknown`]), cn = Object.freeze([`identity`, `targeting`]), ln = Object.freeze({ plants: `plant`, zombies: `zombie` });
+var gn = Object.freeze([`plant`, `zombie`, `neutral`, `unknown`]), _n = Object.freeze([`identity`, `targeting`]), vn = Object.freeze({ plants: `plant`, zombies: `zombie` });
 function P(e2) {
-  let t2 = String(e2 || ``).trim().toLowerCase(), n2 = ln[t2] || t2;
-  return sn.includes(n2) ? n2 : null;
+  let t2 = String(e2 || ``).trim().toLowerCase(), n2 = vn[t2] || t2;
+  return gn.includes(n2) ? n2 : null;
 }
-function un(e2) {
+function yn(e2) {
   let t2 = String(e2 || ``).trim().toLowerCase();
-  return cn.includes(t2) ? t2 : null;
+  return _n.includes(t2) ? t2 : null;
 }
-function dn({ available: e2 = false, adapters: t2 = [], teams: n2 = [], reason: r2 = null } = {}) {
+function bn({ available: e2 = false, adapters: t2 = [], teams: n2 = [], reason: r2 = null } = {}) {
   return Object.freeze({ available: e2 === true, adapters: Object.freeze([...new Set(t2.map(String).filter(Boolean))]), teams: Object.freeze([...new Set(n2.map(P).filter(Boolean))]), reason: e2 === true ? null : String(r2 || `adapter-unavailable`) });
 }
-var fn = Object.freeze({ team: `unknown`, targetTeam: `unknown` }), pn = class {
+var xn = Object.freeze({ team: `unknown`, targetTeam: `unknown` }), Sn = class {
   constructor() {
     this._adapters = /* @__PURE__ */ new Map();
   }
@@ -1495,8 +1696,8 @@ var fn = Object.freeze({ team: `unknown`, targetTeam: `unknown` }), pn = class {
     return [...this._adapters.values()].sort((e2, t2) => t2.priority - e2.priority || e2.id.localeCompare(t2.id));
   }
 };
-function mn(e2 = {}) {
-  let t2 = e2.registry || new pn(), n2 = typeof e2.unwrap == `function` ? e2.unwrap : (e3) => e3, r2 = typeof e2.getKind == `function` ? e2.getKind : () => null, i2 = (e3, i3 = null) => {
+function Cn(e2 = {}) {
+  let t2 = e2.registry || new Sn(), n2 = typeof e2.unwrap == `function` ? e2.unwrap : (e3) => e3, r2 = typeof e2.getKind == `function` ? e2.getKind : () => null, i2 = (e3, i3 = null) => {
     let a2 = n2(e3), o2 = String(i3 || r2(e3) || ``).trim().toLowerCase(), s2 = Object.freeze({ subject: e3, target: a2, kind: o2 }), c2 = { identity: [], targeting: [] }, l2 = { identity: [], targeting: [] }, u2 = { identity: [], targeting: [] };
     if (a2) for (let e4 of t2.list()) {
       let t3 = true;
@@ -1519,123 +1720,123 @@ function mn(e2 = {}) {
     }
     let d2 = (e4) => {
       let t3 = c2[e4], n3 = l2[e4], r3 = u2[e4], i4 = t3.map((e5) => e5.adapter.id), a3 = n3.flatMap((t4) => e4 === `identity` ? t4.identityTeams : t4.targetingTeams), o3 = [...new Set(t3.map((e5) => e5.team))];
-      return o3.length > 1 ? { team: `unknown`, capability: dn({ adapters: i4, teams: a3, reason: `conflicting-team-evidence` }) } : o3.length === 1 ? { team: o3[0], capability: dn({ available: true, adapters: i4, teams: a3 }) } : { team: `unknown`, capability: dn({ adapters: n3.map((e5) => e5.id), teams: a3, reason: r3.length > 0 ? `adapter-read-failed` : n3.length > 0 ? `team-state-unavailable` : `adapter-unavailable` }) };
+      return o3.length > 1 ? { team: `unknown`, capability: bn({ adapters: i4, teams: a3, reason: `conflicting-team-evidence` }) } : o3.length === 1 ? { team: o3[0], capability: bn({ available: true, adapters: i4, teams: a3 }) } : { team: `unknown`, capability: bn({ adapters: n3.map((e5) => e5.id), teams: a3, reason: r3.length > 0 ? `adapter-read-failed` : n3.length > 0 ? `team-state-unavailable` : `adapter-unavailable` }) };
     }, f2 = d2(`identity`), p2 = d2(`targeting`);
     return Object.freeze({ state: Object.freeze({ team: f2.team, targetTeam: p2.team }), capabilities: Object.freeze({ identity: f2.capability, targeting: p2.capability }) });
   };
   return Object.freeze({ getState(e3, t3 = null) {
-    return e3 ? i2(e3, t3).state : fn;
+    return e3 ? i2(e3, t3).state : xn;
   }, getCapabilities(e3, t3 = null) {
     return i2(e3, t3).capabilities;
   }, supports(e3, t3, n3 = null) {
-    let r3 = un(t3);
+    let r3 = yn(t3);
     return r3 ? i2(e3, n3).capabilities[r3].available : false;
   } });
 }
-var hn = `chunks:///_virtual/Character.ts`;
-function gn(e2) {
-  return e2.getModuleExport?.(hn, `CharacterType`) || null;
+var wn = `chunks:///_virtual/Character.ts`;
+function Tn(e2) {
+  return e2.getModuleExport?.(wn, `CharacterType`) || null;
 }
-function _n(e2 = {}) {
+function En(e2 = {}) {
   return [{ id: `native.entity.plant-identity`, priority: 100, identityTeams: [`plant`], matches: (e3, t2) => t2.kind === `plant`, read: () => ({ team: `plant` }) }, { id: `native.entity.zombie-hypnosis`, priority: 100, identityTeams: [`plant`, `zombie`], matches: (e3, t2) => t2.kind === `zombie`, read(e3) {
     return typeof e3?.hypnotized == `boolean` ? { team: e3.hypnotized ? `plant` : `zombie` } : null;
   } }, { id: `native.entity.tomb-hypnosis`, priority: 100, identityTeams: [`plant`, `zombie`], matches: (e3, t2) => t2.kind === `tomb`, read(e3) {
     return typeof e3?.hypnotized == `boolean` ? { team: e3.hypnotized ? `plant` : `zombie` } : null;
   } }, { id: `native.projectile.target-team`, priority: 100, targetingTeams: [`plant`, `zombie`], matches: (e3, t2) => t2.kind === `projectile`, read(t2) {
     if (!Number.isFinite(Number(t2?.enemyType))) return null;
-    let n2 = gn(e2);
+    let n2 = Tn(e2);
     return !Number.isFinite(n2?.plant) || !Number.isFinite(n2?.zombie) ? null : Number(t2.enemyType) === Number(n2.plant) ? { targetTeam: `plant` } : Number(t2.enemyType) === Number(n2.zombie) ? { targetTeam: `zombie` } : null;
   } }];
 }
-var vn = Object.freeze([`source`, `target`]), yn = Object.freeze([`add`, `multiply`, `clamp`, `block`]), bn = Object.freeze({ source: 0, target: 1 });
-function xn(e2) {
+var Dn = Object.freeze([`source`, `target`]), On = Object.freeze([`add`, `multiply`, `clamp`, `block`]), kn = Object.freeze({ source: 0, target: 1 });
+function An(e2) {
   try {
     return String(e2 ?? ``).trim();
   } catch {
     return ``;
   }
 }
-function Sn(e2) {
+function jn(e2) {
   try {
     return Number(e2);
   } catch {
     return NaN;
   }
 }
-function Cn(e2) {
-  return xn(e2).toLowerCase();
+function Mn(e2) {
+  return An(e2).toLowerCase();
 }
-function wn(e2) {
-  let t2 = Cn(e2 || `physical`);
+function Nn(e2) {
+  let t2 = Mn(e2 || `physical`);
   return { physicle: `physical`, electric: `electricity`, flame: `fire` }[t2] || t2 || `physical`;
 }
-function Tn(e2) {
-  let t2 = Cn(e2);
+function Pn(e2) {
+  let t2 = Mn(e2);
   return { plants: `plant`, zombies: `zombie`, projectiles: `projectile`, resources: `resource`, armors: `armor`, tombs: `tomb`, dinosaurs: `dinosaur` }[t2] || t2;
 }
-function F(e2, t2 = Cn) {
+function F(e2, t2 = Mn) {
   return Object.freeze([...new Set((e2 == null ? [] : Array.isArray(e2) ? e2 : [e2]).map(t2).filter(Boolean))].sort());
 }
-function En(e2) {
+function Fn(e2) {
   return F(e2, (e3) => P(e3));
 }
-function Dn(e2 = {}) {
+function In(e2 = {}) {
   let t2 = e2 && typeof e2 == `object` ? e2 : {};
-  return Object.freeze({ damageTypes: F(t2.damageType ?? t2.damageTypes, wn), tagsAll: F(t2.tagsAll), tagsAny: F(t2.tagsAny), sourceKinds: F(t2.sourceKind ?? t2.sourceKinds, Tn), sourceCodenames: F(t2.sourceCodename ?? t2.sourceCodenames), sourceTeams: En(t2.sourceTeam ?? t2.sourceTeams), targetKinds: F(t2.targetKind ?? t2.targetKinds, Tn), targetCodenames: F(t2.targetCodename ?? t2.targetCodenames), targetTeams: En(t2.targetTeam ?? t2.targetTeams) });
+  return Object.freeze({ damageTypes: F(t2.damageType ?? t2.damageTypes, Nn), tagsAll: F(t2.tagsAll), tagsAny: F(t2.tagsAny), sourceKinds: F(t2.sourceKind ?? t2.sourceKinds, Pn), sourceCodenames: F(t2.sourceCodename ?? t2.sourceCodenames), sourceTeams: Fn(t2.sourceTeam ?? t2.sourceTeams), targetKinds: F(t2.targetKind ?? t2.targetKinds, Pn), targetCodenames: F(t2.targetCodename ?? t2.targetCodenames), targetTeams: Fn(t2.targetTeam ?? t2.targetTeams) });
 }
-function On(e2) {
-  return !e2 || typeof e2 != `object` ? null : { key: e2.key ?? null, kind: Tn(e2.kind), codename: Cn(e2.codename), team: P(e2.team) || `unknown` };
+function Ln(e2) {
+  return !e2 || typeof e2 != `object` ? null : { key: e2.key ?? null, kind: Pn(e2.kind), codename: Mn(e2.codename), team: P(e2.team) || `unknown` };
 }
-function I(e2, t2) {
+function Rn(e2, t2) {
   return e2.length === 0 || e2.includes(t2);
 }
-function kn(e2, t2) {
+function zn(e2, t2) {
   let n2 = e2.phase === `source` ? t2.source : t2.target;
   if (e2.subjectKey != null && n2?.key !== e2.subjectKey) return false;
   let r2 = e2.match;
-  return !(!I(r2.damageTypes, t2.damageType) || r2.tagsAll.some((e3) => !t2.tags.includes(e3)) || r2.tagsAny.length > 0 && !r2.tagsAny.some((e3) => t2.tags.includes(e3)) || !I(r2.sourceKinds, t2.source?.kind || ``) || !I(r2.sourceCodenames, t2.source?.codename || ``) || !I(r2.sourceTeams, t2.source?.team || `unknown`) || !I(r2.targetKinds, t2.target?.kind || ``) || !I(r2.targetCodenames, t2.target?.codename || ``) || !I(r2.targetTeams, t2.target?.team || `unknown`));
+  return !(!Rn(r2.damageTypes, t2.damageType) || r2.tagsAll.some((e3) => !t2.tags.includes(e3)) || r2.tagsAny.length > 0 && !r2.tagsAny.some((e3) => t2.tags.includes(e3)) || !Rn(r2.sourceKinds, t2.source?.kind || ``) || !Rn(r2.sourceCodenames, t2.source?.codename || ``) || !Rn(r2.sourceTeams, t2.source?.team || `unknown`) || !Rn(r2.targetKinds, t2.target?.kind || ``) || !Rn(r2.targetCodenames, t2.target?.codename || ``) || !Rn(r2.targetTeams, t2.target?.team || `unknown`));
 }
-function An(e2, t2 = {}) {
+function Bn(e2, t2 = {}) {
   if (!t2 || typeof t2 != `object`) throw Error(`combat.modifiers.add() requires a descriptor`);
-  let n2 = xn(t2.id);
+  let n2 = An(t2.id);
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(n2)) throw Error(`Combat modifier id must be 1-128 characters using letters, numbers, dot, underscore, or hyphen`);
-  let r2 = Cn(t2.phase);
-  if (!vn.includes(r2)) throw Error(`Combat modifier phase must be 'source' or 'target'`);
-  let i2 = Cn(t2.operation);
-  if (!yn.includes(i2)) throw Error(`Unsupported combat modifier operation '${i2 || `unknown`}'`);
-  let a2 = Sn(t2.priority ?? 0);
+  let r2 = Mn(t2.phase);
+  if (!Dn.includes(r2)) throw Error(`Combat modifier phase must be 'source' or 'target'`);
+  let i2 = Mn(t2.operation);
+  if (!On.includes(i2)) throw Error(`Unsupported combat modifier operation '${i2 || `unknown`}'`);
+  let a2 = jn(t2.priority ?? 0);
   if (!Number.isFinite(a2)) throw Error(`Combat modifier priority must be finite`);
   let o2 = null, s2 = null, c2 = null;
   if (i2 === `add`) {
-    if (o2 = Sn(t2.value), !Number.isFinite(o2)) throw Error(`Combat modifier 'add' requires a finite value`);
+    if (o2 = jn(t2.value), !Number.isFinite(o2)) throw Error(`Combat modifier 'add' requires a finite value`);
   } else if (i2 === `multiply`) {
-    if (o2 = Sn(t2.value), !Number.isFinite(o2) || o2 < 0) throw Error(`Combat modifier 'multiply' requires a finite non-negative value`);
+    if (o2 = jn(t2.value), !Number.isFinite(o2) || o2 < 0) throw Error(`Combat modifier 'multiply' requires a finite non-negative value`);
   } else if (i2 === `clamp`) {
-    if (s2 = t2.min == null ? null : Sn(t2.min), c2 = t2.max == null ? null : Sn(t2.max), s2 == null && c2 == null) throw Error(`Combat modifier 'clamp' requires min and/or max`);
+    if (s2 = t2.min == null ? null : jn(t2.min), c2 = t2.max == null ? null : jn(t2.max), s2 == null && c2 == null) throw Error(`Combat modifier 'clamp' requires min and/or max`);
     if (s2 != null && (!Number.isFinite(s2) || s2 < 0) || c2 != null && (!Number.isFinite(c2) || c2 < 0)) throw Error(`Combat modifier clamp bounds must be finite and non-negative`);
     if (s2 != null && c2 != null && s2 > c2) throw Error(`Combat modifier clamp min cannot exceed max`);
   }
-  let l2 = i2 === `block` ? xn(t2.reason) || `blocked-by-modifier` : null, u2 = Dn(t2.match), d2 = Object.freeze({ id: n2, owner: e2, phase: r2, priority: a2, operation: i2, value: o2, min: s2, max: c2, reason: l2, subjectScoped: t2.subjectKey != null, match: u2 });
+  let l2 = i2 === `block` ? An(t2.reason) || `blocked-by-modifier` : null, u2 = In(t2.match), d2 = Object.freeze({ id: n2, owner: e2, phase: r2, priority: a2, operation: i2, value: o2, min: s2, max: c2, reason: l2, subjectScoped: t2.subjectKey != null, match: u2 });
   return { id: n2, owner: e2, key: `${e2}:${n2}`, phase: r2, priority: a2, operation: i2, value: o2, min: s2, max: c2, reason: l2, subjectKey: t2.subjectKey ?? null, match: u2, metadata: d2 };
 }
-function jn(e2) {
+function Vn(e2) {
   return Object.freeze({ ...e2.metadata, active: e2.state === `active`, state: e2.state, stateReason: e2.stateReason });
 }
-var Mn = class {
+var Hn = class {
   constructor(e2 = {}) {
     this._records = /* @__PURE__ */ new Map(), this._listeners = /* @__PURE__ */ new Set(), this._onError = typeof e2.onError == `function` ? e2.onError : () => {
     };
   }
   register(e2, t2, n2) {
-    let r2 = xn(e2);
+    let r2 = An(e2);
     if (!r2) throw Error(`Combat modifier owner is required`);
     if (typeof t2?.onDispose != `function`) throw Error(`Combat modifiers require a managed mod runtime`);
     if (t2.signal?.aborted || typeof t2.isActive == `function` && t2.isActive() === false) throw Error(`Cannot add a combat modifier to an inactive runtime`);
-    let i2 = An(r2, n2);
+    let i2 = Bn(r2, n2);
     if (this._records.has(i2.key)) throw Error(`Combat modifier '${i2.id}' is already registered by '${r2}'`);
     let a2 = new AbortController(), o2 = { ...i2, controller: a2, state: `active`, stateReason: null, unregisterScopeCleanup: null, handle: null }, s2 = (e3 = `disposed`, t3 = false) => {
       if (o2.state !== `active`) return false;
-      if (o2.state = `disposed`, o2.stateReason = xn(e3) || `disposed`, this._records.delete(o2.key), !t3) {
+      if (o2.state = `disposed`, o2.stateReason = An(e3) || `disposed`, this._records.delete(o2.key), !t3) {
         let e4 = o2.unregisterScopeCleanup;
         o2.unregisterScopeCleanup = null;
         try {
@@ -1645,7 +1846,7 @@ var Mn = class {
       }
       return a2.abort(Object.freeze({ type: `disposed`, reason: o2.stateReason })), true;
     };
-    o2.handle = Object.freeze({ id: o2.id, owner: o2.owner, phase: o2.phase, signal: a2.signal, isActive: () => o2.state === `active`, snapshot: () => jn(o2), dispose: s2 }), this._records.set(o2.key, o2);
+    o2.handle = Object.freeze({ id: o2.id, owner: o2.owner, phase: o2.phase, signal: a2.signal, isActive: () => o2.state === `active`, snapshot: () => Vn(o2), dispose: s2 }), this._records.set(o2.key, o2);
     try {
       o2.unregisterScopeCleanup = t2.onDispose(() => s2(`runtime-disposed`, true), `dispose combat modifier ${o2.id}`);
     } catch (e3) {
@@ -1657,14 +1858,14 @@ var Mn = class {
     return this._sortedRecords().map((e2) => e2.metadata);
   }
   _sortedRecords() {
-    return [...this._records.values()].filter((e2) => e2.state === `active`).sort((e2, t2) => bn[e2.phase] - bn[t2.phase] || t2.priority - e2.priority || e2.owner.localeCompare(t2.owner) || e2.id.localeCompare(t2.id));
+    return [...this._records.values()].filter((e2) => e2.state === `active`).sort((e2, t2) => kn[e2.phase] - kn[t2.phase] || t2.priority - e2.priority || e2.owner.localeCompare(t2.owner) || e2.id.localeCompare(t2.id));
   }
   evaluate(e2 = {}) {
-    let t2 = Sn(e2.requestedAmount ?? e2.amount), n2 = wn(e2.damageType), r2 = F(e2.tags), i2 = { requestedAmount: t2, amount: t2, damageType: n2, tags: r2, source: On(e2.source), target: On(e2.target) };
+    let t2 = jn(e2.requestedAmount ?? e2.amount), n2 = Nn(e2.damageType), r2 = F(e2.tags), i2 = { requestedAmount: t2, amount: t2, damageType: n2, tags: r2, source: Ln(e2.source), target: Ln(e2.target) };
     if (!Number.isFinite(t2) || t2 <= 0) return Object.freeze({ ok: false, requestedAmount: t2, amount: t2, damageType: n2, tags: r2, blocked: false, reason: `invalid-amount`, applications: Object.freeze([]) });
     let a2 = [], o2 = false, s2 = null;
     for (let e3 of this._sortedRecords()) {
-      if (!kn(e3, i2)) continue;
+      if (!zn(e3, i2)) continue;
       let c2 = i2.amount, l2 = c2;
       if (e3.operation === `add` ? l2 += e3.value : e3.operation === `multiply` ? l2 *= e3.value : e3.operation === `clamp` ? (e3.min != null && (l2 = Math.max(e3.min, l2)), e3.max != null && (l2 = Math.min(e3.max, l2))) : e3.operation === `block` && (o2 = true, s2 = e3.reason), !Number.isFinite(l2)) return Object.freeze({ ok: false, requestedAmount: t2, amount: c2, damageType: n2, tags: r2, blocked: false, reason: `modifier-result-invalid`, applications: Object.freeze(a2) });
       if (i2.amount = Math.max(0, l2), a2.push(Object.freeze({ id: e3.id, owner: e3.owner, phase: e3.phase, operation: e3.operation, before: c2, after: i2.amount, blocked: o2, reason: o2 ? s2 : null })), o2) break;
@@ -1677,7 +1878,7 @@ var Mn = class {
   }
   subscribe(e2, t2) {
     if (typeof t2 != `function`) throw Error(`Combat damage listener must be a function`);
-    let n2 = { owner: xn(e2), listener: t2, active: true };
+    let n2 = { owner: An(e2), listener: t2, active: true };
     return this._listeners.add(n2), () => n2.active ? (n2.active = false, this._listeners.delete(n2), true) : false;
   }
   emit(e2) {
@@ -1696,30 +1897,30 @@ var Mn = class {
     this._listeners.clear();
   }
 };
-function Nn(e2 = {}) {
-  return new Mn(e2);
+function Un(e2 = {}) {
+  return new Hn(e2);
 }
-var Pn = new Map(d.map((e2) => [e2.type, e2])), Fn = new Map(m.map((e2) => [e2.type, e2]));
-new e(`worldmap-runtime`);
-var In = new e(`combat-modifiers`), Ln = /* @__PURE__ */ new WeakMap(), Rn = { coin: `CoinCount`, gem: `GemCount`, sprout: `SproutCount` };
+var Wn = new Map(n.map((e2) => [e2.type, e2])), Gn = new Map(e.map((e2) => [e2.type, e2]));
+new a(`worldmap-runtime`);
+var Kn = new a(`combat-modifiers`), qn = new a(`native-observation`), Jn = /* @__PURE__ */ new WeakMap(), Yn = { coin: `CoinCount`, gem: `GemCount`, sprout: `SproutCount` };
+function I(e2) {
+  return Jn.get(e2) || null;
+}
 function L(e2) {
-  return Ln.get(e2) || null;
+  return I(e2)?.target || e2;
 }
-function R(e2) {
-  return L(e2)?.target || e2;
+function Xn(e2) {
+  return I(e2)?.kind || null;
 }
-function zn(e2) {
-  return L(e2)?.kind || null;
-}
-function Bn(e2) {
-  let t2 = L(e2)?.managedState;
+function Zn(e2) {
+  let t2 = I(e2)?.managedState;
   return t2?.disposed === true || t2?.retired === true;
 }
-function Vn(e2) {
-  let t2 = L(e2);
+function Qn(e2) {
+  let t2 = I(e2);
   return t2?.managedState || t2?.target || `entity:${e2?.id || `unknown`}`;
 }
-function z(e2) {
+function R(e2) {
   if (e2 == null) return e2;
   try {
     return structuredClone(e2);
@@ -1727,134 +1928,134 @@ function z(e2) {
     return JSON.parse(JSON.stringify(e2));
   }
 }
-function B(e2, t2) {
-  return z(t2);
+function z(e2, t2) {
+  return R(t2);
 }
-function V(e2, t2) {
-  let n2 = typeof e2?.getCurrentData == `function` ? e2.getCurrentData(t2) : c(t2)?.json ?? null;
+function B(e2, t2) {
+  let n2 = typeof e2?.getCurrentData == `function` ? e2.getCurrentData(t2) : l(t2)?.json ?? null;
   return n2 && e2?.reportDataRead?.(t2, n2), n2;
 }
-function H(e2, t2) {
+function V(e2, t2) {
   return typeof e2?.getOriginalData == `function` ? e2.getOriginalData(t2) : null;
 }
-function Hn(e2) {
-  let t2 = Pn.get(e2);
-  if (t2) return { type: e2, kind: `features`, category: Wn(e2), config: t2 };
-  let n2 = Fn.get(e2);
-  return n2 ? { type: e2, kind: `objects`, category: Wn(e2), config: n2 } : String(e2 || ``).toLowerCase() === `lang` ? { type: `lang`, kind: `lang`, category: `localization`, config: null } : { type: e2, kind: `unknown`, category: Wn(e2), config: null };
+function $n(e2) {
+  let t2 = Wn.get(e2);
+  if (t2) return { type: e2, kind: `features`, category: tr(e2), config: t2 };
+  let n2 = Gn.get(e2);
+  return n2 ? { type: e2, kind: `objects`, category: tr(e2), config: n2 } : String(e2 || ``).toLowerCase() === `lang` ? { type: `lang`, kind: `lang`, category: `localization`, config: null } : { type: e2, kind: `unknown`, category: tr(e2), config: null };
 }
-function Un(e2) {
-  let t2 = Hn(e2);
+function er(e2) {
+  let t2 = $n(e2);
   return Object.freeze({ type: t2.type, kind: t2.kind, category: t2.category });
 }
-function Wn(e2) {
+function tr(e2) {
   let t2 = String(e2 || ``);
   return /^Plant/.test(t2) ? `plants` : /^Zombie/.test(t2) ? `zombies` : /^Projectile/.test(t2) ? `projectiles` : /^Armor/.test(t2) ? `armors` : /^TileLiquid/.test(t2) ? `tileLiquids` : /^Tile/.test(t2) || /^Tiles/.test(t2) ? `tiles` : /^Tomb/.test(t2) ? `tombstones` : /^Dinosaur/.test(t2) ? `dinosaurs` : /^Lawn/.test(t2) || t2 === `BoardGridMaps` ? `lawns` : /^Upgrade/.test(t2) || t2 === `MintObtainRoute` ? `upgrades` : /^Worldmap/.test(t2) ? `worldMap` : /^Store/.test(t2) ? `store` : t2 === `LevelModules` ? `levelModules` : t2 === `NarrativeList` || t2 === `PropertySheets` ? `meta` : t2 === `lang` ? `localization` : `misc`;
 }
-function Gn(e2, t2, n2 = false) {
-  let r2 = n2 ? H(e2, t2) : V(e2, t2);
-  if (!r2) return [];
-  let i2 = Pn.get(t2);
-  return i2 ? p(i2, r2) : Array.isArray(r2?.objects) ? r2.objects.map((e3) => ({ id: String(e3?.aliases?.[0] ?? `?`), label: String(e3?.aliases?.[0] ?? `?`), aliases: Array.isArray(e3?.aliases) ? [...e3.aliases] : [] })) : [];
+function nr(e2, n2, r2 = false) {
+  let i2 = r2 ? V(e2, n2) : B(e2, n2);
+  if (!i2) return [];
+  let a2 = Wn.get(n2);
+  return a2 ? t(a2, i2) : Array.isArray(i2?.objects) ? i2.objects.map((e3) => ({ id: String(e3?.aliases?.[0] ?? `?`), label: String(e3?.aliases?.[0] ?? `?`), aliases: Array.isArray(e3?.aliases) ? [...e3.aliases] : [] })) : [];
 }
-function Kn(e2, t2, n2, r2 = {}) {
-  let i2 = r2.useOriginal === true ? H(e2, t2) : V(e2, t2);
-  if (!i2) return null;
-  let a2 = Pn.get(t2);
-  return a2 ? B(e2, f(a2, i2, String(n2 || ``))?.entry ?? null) : Array.isArray(i2?.objects) ? B(e2, i2.objects.find((e3) => String(e3?.aliases?.[0]) === String(n2 || ``)) ?? null) : null;
+function rr(e2, t2, n2, r2 = {}) {
+  let a2 = r2.useOriginal === true ? V(e2, t2) : B(e2, t2);
+  if (!a2) return null;
+  let o2 = Wn.get(t2);
+  return o2 ? z(e2, i(o2, a2, String(n2 || ``))?.entry ?? null) : Array.isArray(a2?.objects) ? z(e2, a2.objects.find((e3) => String(e3?.aliases?.[0]) === String(n2 || ``)) ?? null) : null;
 }
-function U(e2, t2, n2, r2 = {}) {
+function H(e2, t2, n2, r2 = {}) {
   if (typeof n2 != `function`) throw Error(`mutate() requires a mutator function`);
-  let i2 = V(e2, t2);
+  let i2 = B(e2, t2);
   if (!i2) return null;
   e2?.beforeDataMutation?.(t2, i2);
-  let a2 = n2(i2, { type: t2, current: i2, original: H(e2, t2), info: Hn(t2) });
+  let a2 = n2(i2, { type: t2, current: i2, original: V(e2, t2), info: $n(t2) });
   return a2 === void 0 ? i2 : a2;
 }
-function qn() {
-  return a(`levelController`);
+function ir() {
+  return f(`levelController`);
 }
-function Jn() {
-  return n(`UIInGame`)?.component ?? null;
+function ar() {
+  return u(`UIInGame`)?.component ?? null;
 }
-function Yn() {
-  return r(`chunks:///_virtual/levelController.ts`, `LevelPlay`)?.component ?? null;
+function or() {
+  return p(`chunks:///_virtual/levelController.ts`, `LevelPlay`)?.component ?? null;
 }
-function Xn() {
-  return n(`SunCount`)?.component ?? null;
+function sr() {
+  return u(`SunCount`)?.component ?? null;
 }
-function Zn() {
-  return n(`PlantFoodCount`)?.component ?? null;
+function cr() {
+  return u(`PlantFoodCount`)?.component ?? null;
 }
-function W() {
-  return t();
+function U() {
+  return o();
 }
-function Qn(e2, t2, r2 = () => {
+function lr(e2, t2, n2 = () => {
 }) {
-  let i2 = (e3) => (e3 && (typeof e3 == `object` || typeof e3 == `function`) && r2(`unknown`), e3), a2 = String(t2 || Rn[e2] || ``), o2 = a2 ? n(a2) : null;
-  if (o2?.component) return i2(o2.component._value ?? o2.component.value ?? 0);
-  let s2 = W();
-  if (s2?.currentPlayer && e2 in s2.currentPlayer) return i2(s2.currentPlayer[e2]);
+  let r2 = (e3) => (e3 && (typeof e3 == `object` || typeof e3 == `function`) && n2(`unknown`), e3), i2 = String(t2 || Yn[e2] || ``), a2 = i2 ? u(i2) : null;
+  if (a2?.component) return r2(a2.component._value ?? a2.component.value ?? 0);
+  let o2 = U();
+  if (o2?.currentPlayer && e2 in o2.currentPlayer) return r2(o2.currentPlayer[e2]);
   try {
-    let t3 = localStorage.getItem(`PvZ2_PlayerProperties`), n2 = t3 ? JSON.parse(t3) : null;
-    if (Array.isArray(n2) && n2[0] && e2 in n2[0]) return n2[0][e2];
+    let t3 = localStorage.getItem(`PvZ2_PlayerProperties`), n3 = t3 ? JSON.parse(t3) : null;
+    if (Array.isArray(n3) && n3[0] && e2 in n3[0]) return n3[0][e2];
   } catch {
   }
   return 0;
 }
-function $n(e2, t2, r2, i2 = () => {
+function ur(e2, t2, n2, r2 = () => {
 }) {
-  let a2 = String(r2 || Rn[e2] || ``), o2 = a2 ? n(a2) : null;
-  if (o2?.component) return i2(`unknown`), o2.component.value = t2, i2(`changed`), t2;
-  let s2 = W();
-  if (s2?.currentPlayer) return i2(`unknown`), s2.currentPlayer[e2] = t2, s2.savePP?.(), typeof s2.savePP == `function` && i2(`changed`), t2;
+  let i2 = String(n2 || Yn[e2] || ``), a2 = i2 ? u(i2) : null;
+  if (a2?.component) return r2(`unknown`), a2.component.value = t2, r2(`changed`), t2;
+  let o2 = U();
+  if (o2?.currentPlayer) return r2(`unknown`), o2.currentPlayer[e2] = t2, o2.savePP?.(), typeof o2.savePP == `function` && r2(`changed`), t2;
   try {
-    let n2 = localStorage.getItem(`PvZ2_PlayerProperties`), r3 = n2 ? JSON.parse(n2) : null;
-    if (Array.isArray(r3) && r3[0]) {
-      r3[0][e2] = t2;
-      let n3 = JSON.stringify(r3);
-      i2(`unknown`), localStorage.setItem(`PvZ2_PlayerProperties`, n3), i2(`changed`);
+    let n3 = localStorage.getItem(`PvZ2_PlayerProperties`), i3 = n3 ? JSON.parse(n3) : null;
+    if (Array.isArray(i3) && i3[0]) {
+      i3[0][e2] = t2;
+      let n4 = JSON.stringify(i3);
+      r2(`unknown`), localStorage.setItem(`PvZ2_PlayerProperties`, n4), r2(`changed`);
     }
   } catch {
   }
   return t2;
 }
-function er(e2, t2, n2, r2) {
-  return $n(e2, Number(Qn(e2, n2) || 0) + Number(t2 || 0), n2, r2);
+function dr(e2, t2, n2, r2) {
+  return ur(e2, Number(lr(e2, n2) || 0) + Number(t2 || 0), n2, r2);
 }
-function G(e2) {
+function W(e2) {
   return Array.isArray(e2) ? e2.filter(Boolean).map(String) : e2 == null ? [] : [String(e2)];
 }
-function tr(e2) {
-  let t2 = G(e2);
+function fr(e2) {
+  let t2 = W(e2);
   for (let e3 of t2) {
-    let t3 = e3 === `Zombie` || e3 === `Armor` ? r(`chunks:///_virtual/${e3}.ts`, e3) : n(e3);
+    let t3 = e3 === `Zombie` || e3 === `Armor` ? p(`chunks:///_virtual/${e3}.ts`, e3) : u(e3);
     if (t3) return { name: e3, cls: t3 };
   }
   return null;
 }
-function nr(e2, t2) {
-  for (let n2 of G(t2)) if (typeof e2?.[n2] == `function`) return n2;
+function pr(e2, t2) {
+  for (let n2 of W(t2)) if (typeof e2?.[n2] == `function`) return n2;
   return null;
 }
-var rr = `chunks:///_virtual/worldMapScene.ts`, ir = `chunks:///_virtual/WorldMap.ts`, ar = `chunks:///_virtual/EndlessZoneEntrance.ts`, or = `chunks:///_virtual/Plants.ts`, sr = `chunks:///_virtual/Trophies.ts`, cr = `chunks:///_virtual/LevelNodes.ts`, lr = `chunks:///_virtual/NodePools.ts`, ur = { 0: `level`, 1: `plant`, 2: `giftBox`, 3: `upgrade`, 4: `epicPortal` }, dr = { 0: `normal`, 1: `minigame`, 2: `gargantuar`, 3: `zomboss` };
-function fr() {
-  return r(rr, `worldMapScene`) || n(`worldMapScene`) || null;
+var mr = `chunks:///_virtual/worldMapScene.ts`, hr = `chunks:///_virtual/WorldMap.ts`, gr = `chunks:///_virtual/EndlessZoneEntrance.ts`, _r = `chunks:///_virtual/Plants.ts`, vr = `chunks:///_virtual/Trophies.ts`, yr = `chunks:///_virtual/LevelNodes.ts`, br = `chunks:///_virtual/NodePools.ts`, xr = { 0: `level`, 1: `plant`, 2: `giftBox`, 3: `upgrade`, 4: `epicPortal` }, Sr = { 0: `normal`, 1: `minigame`, 2: `gargantuar`, 3: `zomboss` };
+function Cr() {
+  return p(mr, `worldMapScene`) || u(`worldMapScene`) || null;
 }
-function pr() {
-  return fr()?.component || a(fr()) || a(`worldMapScene`) || null;
+function wr() {
+  return Cr()?.component || f(Cr()) || f(`worldMapScene`) || null;
 }
-function mr() {
-  return r(ir, `WorldMap`) || n(`WorldMap`) || null;
+function Tr() {
+  return p(hr, `WorldMap`) || u(`WorldMap`) || null;
 }
-function hr() {
-  return pr()?.currentWM ?? null;
+function Er() {
+  return wr()?.currentWM ?? null;
 }
-function gr() {
-  return r(ar, `EndlessZoneEntrance`) || n(`EndlessZoneEntrance`) || null;
+function Dr() {
+  return p(gr, `EndlessZoneEntrance`) || u(`EndlessZoneEntrance`) || null;
 }
-function _r(e2) {
-  let t2 = gr();
+function Or(e2) {
+  let t2 = Dr();
   if (!t2 || !e2?.islandNode) return null;
   try {
     return e2.islandNode.getComponentInChildren?.(t2) ?? null;
@@ -1862,87 +2063,87 @@ function _r(e2) {
     return null;
   }
 }
-function vr() {
-  return r(`chunks:///_virtual/PlayerProperties.ts`, `WorldMapSceneDisplayEnum`) ?? null;
+function kr() {
+  return p(`chunks:///_virtual/PlayerProperties.ts`, `WorldMapSceneDisplayEnum`) ?? null;
 }
-function yr() {
-  return r(ir, `islandDisplayEnum`) ?? null;
+function Ar() {
+  return p(hr, `islandDisplayEnum`) ?? null;
 }
-function br() {
-  return r(cr, `levelNodeRes`) ?? null;
+function jr() {
+  return p(yr, `levelNodeRes`) ?? null;
 }
-function xr() {
-  return r(lr, `instantiatePooly`);
+function Mr() {
+  return p(br, `instantiatePooly`);
 }
-function Sr() {
-  return r(or, `plants`) ?? null;
+function Nr() {
+  return p(_r, `plants`) ?? null;
 }
-function Cr() {
-  return r(sr, `UpgradeEnum`) ?? null;
+function Pr() {
+  return p(vr, `UpgradeEnum`) ?? null;
 }
-function K(e2) {
+function G(e2) {
   return String(e2 ?? ``).trim().toLowerCase();
 }
-function wr(e2, t2) {
+function Fr(e2, t2) {
   if (!e2) return null;
   if (typeof t2 == `string`) return Object.keys(e2).find((e3) => Number.isNaN(Number(e3)) && e3.toLowerCase() === t2.toLowerCase()) ?? null;
   let n2 = e2?.[t2];
   return typeof n2 == `string` ? n2 : null;
 }
-function Tr(e2, t2) {
+function Ir(e2, t2) {
   if (!e2 || t2 == null) return null;
   if (typeof t2 == `number` && Number.isFinite(t2)) return t2;
-  let n2 = K(t2);
-  for (let t3 of Object.keys(e2)) if (Number.isNaN(Number(t3)) && K(t3) === n2) {
+  let n2 = G(t2);
+  for (let t3 of Object.keys(e2)) if (Number.isNaN(Number(t3)) && G(t3) === n2) {
     let n3 = e2[t3];
     return typeof n3 == `number` ? n3 : null;
   }
   return null;
 }
-function Er(e2, t2 = false) {
-  let n2 = t2 ? H(e2, `WorldmapFeatures`) : V(e2, `WorldmapFeatures`);
+function Lr(e2, t2 = false) {
+  let n2 = t2 ? V(e2, `WorldmapFeatures`) : B(e2, `WorldmapFeatures`);
   return Array.isArray(n2?.WORLDMAPS) ? n2.WORLDMAPS : [];
 }
-function Dr(e2, t2) {
+function Rr(e2, t2) {
   if (!Array.isArray(e2) || e2.length === 0) return -1;
   if (typeof t2 == `number` && Number.isInteger(t2) && t2 >= 0 && t2 < e2.length) return t2;
-  let n2 = Tr(vr(), t2);
+  let n2 = Ir(kr(), t2);
   if (n2 != null && e2[n2]) return n2;
-  let r2 = K(t2);
-  return r2 ? e2.findIndex((e3) => K(e3?.CODENAME) === r2) : -1;
+  let r2 = G(t2);
+  return r2 ? e2.findIndex((e3) => G(e3?.CODENAME) === r2) : -1;
 }
-function Or(e2, t2) {
-  let n2 = Dr(e2, t2);
+function zr(e2, t2) {
+  let n2 = Rr(e2, t2);
   return n2 >= 0 ? e2[n2] : null;
 }
-function kr(e2, t2, n2 = false) {
-  let r2 = Er(e2, n2);
+function Br(e2, t2, n2 = false) {
+  let r2 = Lr(e2, n2);
   if (!t2) return null;
   let i2 = t2.displayEnum;
-  return Or(r2, i2) || Or(r2, t2?.MapProps?.CODENAME) || null;
+  return zr(r2, i2) || zr(r2, t2?.MapProps?.CODENAME) || null;
 }
-function Ar(e2) {
+function Vr(e2) {
   let t2 = e2?.islandDisplay;
-  return ur[t2] ?? wr(yr(), t2) ?? `unknown`;
+  return xr[t2] ?? Fr(Ar(), t2) ?? `unknown`;
 }
-function jr(e2, t2 = 0) {
+function Hr(e2, t2 = 0) {
   if (e2?.__gpnCustomId) return String(e2.__gpnCustomId);
-  let n2 = Ar(e2);
+  let n2 = Vr(e2);
   if (n2 === `level` && Array.isArray(e2?.levelJsonsID) && e2.levelJsonsID.length > 0) return `level:${String(e2.levelJsonsID[0])}`;
-  let r2 = _r(e2);
+  let r2 = Or(e2);
   return n2 === `level` && Array.isArray(r2?.levelsID) && r2.levelsID.length > 0 ? `level:${String(r2.levelsID[0])}` : n2 === `plant` && e2?.plantDisplayed != null ? `plant:${String(e2.plantDisplayed)}` : n2 === `upgrade` && e2?.upgradeDisplayed != null ? `upgrade:${String(e2.upgradeDisplayed)}` : n2 === `epicPortal` && Array.isArray(e2?.epicLevelJsonsID) && e2.epicLevelJsonsID.length > 0 ? `epic:${String(e2.epicLevelJsonsID[0])}` : n2 === `giftBox` ? `giftBox:${String(e2?.levelNodeName || t2)}` : `${n2}:${String(e2?.levelNodeName || t2)}`;
 }
-function Mr(e2) {
+function Ur(e2) {
   let t2 = e2?.islandNode, n2 = t2?.worldPosition ?? null, r2 = t2?.position ?? null;
   return { x: Number(r2?.x ?? 0), y: Number(r2?.y ?? 0), z: Number(r2?.z ?? 0), worldX: Number(n2?.x ?? 0), worldY: Number(n2?.y ?? 0), worldZ: Number(n2?.z ?? 0) };
 }
-function Nr(e2) {
-  return dr[e2?.levelNodeAppearance] ?? `normal`;
+function Wr(e2) {
+  return Sr[e2?.levelNodeAppearance] ?? `normal`;
 }
-function Pr(e2) {
+function Gr(e2) {
   let t2 = (Array.isArray(e2?.levelIslands) ? e2.levelIslands : []).map((e3, t3) => {
-    let n3 = _r(e3);
-    return { id: jr(e3, t3), index: t3, type: Ar(e3), appearance: Ar(e3) === `level` ? Nr(e3) : null, customId: e3?.__gpnCustomId ? String(e3.__gpnCustomId) : null, levelIds: Array.isArray(e3?.levelJsonsID) ? [...e3.levelJsonsID] : [], endlessLevelIds: Array.isArray(n3?.levelsID) ? [...n3.levelsID] : [], epicLevelIds: Array.isArray(e3?.epicLevelJsonsID) ? [...e3.epicLevelJsonsID] : [], plantDisplayed: e3?.plantDisplayed ?? null, upgradeDisplayed: e3?.upgradeDisplayed ?? null, levelNodeName: e3?.levelNodeName ?? ``, affectsMaxX: e3?.affectsMaxX !== false, rawDisplayEnum: e3?.islandDisplay ?? null, unlocked: e3?._unlocked === true, finished: e3?._finished === true, willPush: e3?._willPush === true, position: Mr(e3), raw: e3, islandNode: e3?.islandNode ?? null, nextIds: [] };
+    let n3 = Or(e3);
+    return { id: Hr(e3, t3), index: t3, type: Vr(e3), appearance: Vr(e3) === `level` ? Wr(e3) : null, customId: e3?.__gpnCustomId ? String(e3.__gpnCustomId) : null, levelIds: Array.isArray(e3?.levelJsonsID) ? [...e3.levelJsonsID] : [], endlessLevelIds: Array.isArray(n3?.levelsID) ? [...n3.levelsID] : [], epicLevelIds: Array.isArray(e3?.epicLevelJsonsID) ? [...e3.epicLevelJsonsID] : [], plantDisplayed: e3?.plantDisplayed ?? null, upgradeDisplayed: e3?.upgradeDisplayed ?? null, levelNodeName: e3?.levelNodeName ?? ``, affectsMaxX: e3?.affectsMaxX !== false, rawDisplayEnum: e3?.islandDisplay ?? null, unlocked: e3?._unlocked === true, finished: e3?._finished === true, willPush: e3?._willPush === true, position: Ur(e3), raw: e3, islandNode: e3?.islandNode ?? null, nextIds: [] };
   }), n2 = new Map(t2.map((e3) => [e3.islandNode, e3.id]));
   for (let e3 of t2) {
     let t3 = e3.raw, r2 = [];
@@ -1950,43 +2151,43 @@ function Pr(e2) {
   }
   return t2;
 }
-function Fr(e2, t2) {
+function Kr(e2, t2) {
   if (!e2 || t2 == null) return false;
   if (t2 === e2.raw || t2 === e2.islandNode) return true;
   if (typeof t2 == `function`) return t2(e2) === true;
   if (typeof t2 == `string`) {
-    let n3 = K(t2);
-    return K(e2.id) === n3 || K(e2.levelNodeName) === n3 || e2.levelIds.some((e3) => K(e3) === n3) || Array.isArray(e2.endlessLevelIds) && e2.endlessLevelIds.some((e3) => K(e3) === n3) || e2.epicLevelIds.some((e3) => K(e3) === n3);
+    let n3 = G(t2);
+    return G(e2.id) === n3 || G(e2.levelNodeName) === n3 || e2.levelIds.some((e3) => G(e3) === n3) || Array.isArray(e2.endlessLevelIds) && e2.endlessLevelIds.some((e3) => G(e3) === n3) || e2.epicLevelIds.some((e3) => G(e3) === n3);
   }
   if (typeof t2 == `number`) return e2.index === t2;
   if (typeof t2 != `object`) return false;
   if (t2.id != null) {
-    let n3 = K(t2.id), r2 = K(e2.id) === n3, i2 = K(e2.customId) === n3;
+    let n3 = G(t2.id), r2 = G(e2.id) === n3, i2 = G(e2.customId) === n3;
     if (!r2 && !i2) return false;
   }
   if (t2.customId != null) {
-    let n3 = K(t2.customId), r2 = K(e2.customId) === n3, i2 = K(e2.id) === n3;
+    let n3 = G(t2.customId), r2 = G(e2.customId) === n3, i2 = G(e2.id) === n3;
     if (!r2 && !i2) return false;
   }
   if (t2.index != null && Number(t2.index) !== e2.index || t2.type != null && String(t2.type) !== e2.type || t2.appearance != null && String(t2.appearance) !== String(e2.appearance)) return false;
   let n2 = [...e2.levelIds, ...Array.isArray(e2.endlessLevelIds) ? e2.endlessLevelIds : []];
-  if (t2.levelId != null && !n2.some((e3) => K(e3) === K(t2.levelId))) return false;
+  if (t2.levelId != null && !n2.some((e3) => G(e3) === G(t2.levelId))) return false;
   if (t2.levelIds != null) {
-    let e3 = Array.isArray(t2.levelIds) ? t2.levelIds : [t2.levelIds], r2 = new Set(n2.map(K));
-    for (let t3 of e3.map(K)) if (!r2.has(t3)) return false;
+    let e3 = Array.isArray(t2.levelIds) ? t2.levelIds : [t2.levelIds], r2 = new Set(n2.map(G));
+    for (let t3 of e3.map(G)) if (!r2.has(t3)) return false;
   }
-  if (t2.portalLevelId != null && !e2.epicLevelIds.some((e3) => K(e3) === K(t2.portalLevelId))) return false;
+  if (t2.portalLevelId != null && !e2.epicLevelIds.some((e3) => G(e3) === G(t2.portalLevelId))) return false;
   if (t2.portalLevelIds != null) {
-    let n3 = Array.isArray(t2.portalLevelIds) ? t2.portalLevelIds : [t2.portalLevelIds], r2 = new Set(e2.epicLevelIds.map(K));
-    for (let e3 of n3.map(K)) if (!r2.has(e3)) return false;
+    let n3 = Array.isArray(t2.portalLevelIds) ? t2.portalLevelIds : [t2.portalLevelIds], r2 = new Set(e2.epicLevelIds.map(G));
+    for (let e3 of n3.map(G)) if (!r2.has(e3)) return false;
   }
-  return !(t2.plantDisplayed != null && String(t2.plantDisplayed) !== String(e2.plantDisplayed) || t2.upgradeDisplayed != null && String(t2.upgradeDisplayed) !== String(e2.upgradeDisplayed) || t2.levelNodeName != null && K(t2.levelNodeName) !== K(e2.levelNodeName) || typeof t2.predicate == `function` && t2.predicate(e2) !== true);
+  return !(t2.plantDisplayed != null && String(t2.plantDisplayed) !== String(e2.plantDisplayed) || t2.upgradeDisplayed != null && String(t2.upgradeDisplayed) !== String(e2.upgradeDisplayed) || t2.levelNodeName != null && G(t2.levelNodeName) !== G(e2.levelNodeName) || typeof t2.predicate == `function` && t2.predicate(e2) !== true);
 }
-function q(e2, t2) {
-  return Pr(e2).find((e3) => Fr(e3, t2)) ?? null;
+function K(e2, t2) {
+  return Gr(e2).find((e3) => Kr(e3, t2)) ?? null;
 }
-function Ir(e2, t2 = {}) {
-  let n2 = Pr(e2);
+function qr(e2, t2 = {}) {
+  let n2 = Gr(e2);
   if (!n2.length) return null;
   let r2 = String(t2?.type || ``).trim(), i2 = r2 === `level` ? String(t2?.appearance || ``).trim() : ``, a2 = n2.filter((e3) => e3?.type === r2);
   if (!a2.length) return null;
@@ -1997,11 +2198,11 @@ function Ir(e2, t2 = {}) {
   }
   return s2[0]?.raw ?? null;
 }
-function Lr(e2) {
+function Jr(e2) {
   let t2 = [];
   return e2 ? (e2.nextIsland && t2.push(e2.nextIsland), Array.isArray(e2.otherNextIslands) && t2.push(...e2.otherNextIslands), t2.filter(Boolean)) : t2;
 }
-function Rr(e2) {
+function Yr(e2) {
   if (!e2 || !Array.isArray(e2.levelIslands)) return;
   let t2 = 0, n2 = 0;
   for (let r2 of e2.levelIslands) {
@@ -2011,12 +2212,12 @@ function Rr(e2) {
   }
   e2.minMapX = t2, e2.maxMapX = n2;
 }
-function zr(e2 = {}) {
+function q(e2 = {}) {
   return e2?.skipRefresh !== true && e2?.refresh !== false;
 }
 function J(e2) {
   if (!e2?.levelPathLayer) return;
-  let t2 = l(), n2 = xr() || ((e3) => t2?.instantiate?.(e3)), r2 = br();
+  let t2 = d(), n2 = Mr() || ((e3) => t2?.instantiate?.(e3)), r2 = jr();
   if (typeof n2 != `function` || typeof r2?.path != `function`) return;
   for (let t3 of e2.levelIslands || []) {
     for (let e3 of t3?._pathDBs || []) try {
@@ -2030,7 +2231,7 @@ function J(e2) {
     let s2 = o2?.islandNode?.worldPosition;
     if (!s2) continue;
     let c2 = [];
-    for (let l2 of Lr(o2)) {
+    for (let l2 of Jr(o2)) {
       let o3 = l2?.worldPosition;
       if (!o3) continue;
       let u2 = n2(r2.path());
@@ -2048,8 +2249,8 @@ function J(e2) {
     }
   }
 }
-function Br(e2, t2 = {}) {
-  let n2 = l()?.Vec3, r2 = e2?.islandNode;
+function Xr(e2, t2 = {}) {
+  let n2 = d()?.Vec3, r2 = e2?.islandNode;
   if (!r2 || !n2) return null;
   let i2 = new n2(t2.x ?? r2.position.x, t2.y ?? r2.position.y, t2.z ?? r2.position.z ?? 0), a2 = r2.worldPosition?.clone?.() ?? null;
   r2.position = i2;
@@ -2060,16 +2261,16 @@ function Br(e2, t2 = {}) {
   };
   return s2(e2?._levelNode), s2(e2?._plantOnDisplay), s2(e2?._upgradeOnDisplay?.node), s2(e2?._epicPortalDB?.node?.parent), s2(e2?._giftbox?.node), s2(e2?.zombossHead?.node?.parent), i2;
 }
-function Vr(e2) {
+function Zr(e2) {
   if (!e2) return null;
-  let t2 = l();
+  let t2 = d();
   try {
     return t2?.instantiate?.(e2) ?? e2.clone?.() ?? null;
   } catch {
     return null;
   }
 }
-function Hr(e2, t2) {
+function Qr(e2, t2) {
   if (!e2 || !t2) return null;
   let n2 = e2?.constructor;
   if (typeof n2 != `function`) return null;
@@ -2079,11 +2280,11 @@ function Hr(e2, t2) {
     return null;
   }
 }
-function Ur(e2) {
-  let t2 = Vr(e2);
+function $r(e2) {
+  let t2 = Zr(e2);
   return t2 && e2?.parent && (t2.parent = e2.parent), t2;
 }
-function Wr(e2, t2) {
+function ei(e2, t2) {
   if (!Array.isArray(e2) || !e2.length || !t2) return [];
   let n2 = e2.find((e3) => e3?.constructor)?.constructor;
   if (typeof n2 != `function`) return [];
@@ -2094,7 +2295,7 @@ function Wr(e2, t2) {
     return [];
   }
 }
-function Gr(e2, t2) {
+function ti(e2, t2) {
   if (!e2 || !t2) return null;
   let n2 = e2?.constructor;
   if (typeof n2 != `function`) return null;
@@ -2105,8 +2306,8 @@ function Gr(e2, t2) {
     return null;
   }
 }
-function Kr(e2, t2 = {}) {
-  let n2 = t2?.template == null ? Ir(e2, t2) : q(e2, t2.template)?.raw ?? null;
+function ni(e2, t2 = {}) {
+  let n2 = t2?.template == null ? qr(e2, t2) : K(e2, t2.template)?.raw ?? null;
   if (!n2) return null;
   let r2 = null;
   try {
@@ -2114,11 +2315,11 @@ function Kr(e2, t2 = {}) {
   } catch {
     r2 = Object.create(Object.getPrototypeOf(n2) || Object.prototype);
   }
-  r2.islandDisplay = n2?.islandDisplay, r2.upgradeDisplayed = n2?.upgradeDisplayed, r2.plantDisplayed = n2?.plantDisplayed, r2.levelNodeAppearance = n2?.levelNodeAppearance, r2.zombossHeadPFB = n2?.zombossHeadPFB ?? null, r2.affectsMaxX = n2?.affectsMaxX !== false, r2.levelNodeName = typeof n2?.levelNodeName == `string` ? n2.levelNodeName : ``, r2._inWorldMap = e2, r2.__gpnTemplateRaw = n2, r2._islandRank = Number.isFinite(n2?._islandRank) ? n2._islandRank : 0, r2.__gpnCustomId = t2.customId ? String(t2.customId) : null, r2.levelJsonsID = Array.isArray(n2?.levelJsonsID) ? [...n2.levelJsonsID] : [], r2.epicLevelJsonsID = Array.isArray(n2?.epicLevelJsonsID) ? [...n2.epicLevelJsonsID] : [], r2.otherNextIslands = [], r2.nextIsland = null, r2.displayedIslandDBs = [], r2._pathDBs = [], r2._levelNodeDB = null, r2._epicPortalDB = null, r2._giftbox = null, r2._finished = false, r2._unlocked = false, r2._willPush = false, r2._plantIcon = null, r2._commodity = n2?._commodity?.constructor ? new n2._commodity.constructor() : n2?._commodity ?? null, r2.islandNode = Ur(n2?.islandNode), r2._levelNode = Ur(n2?._levelNode), r2._plantOnDisplay = Ur(n2?._plantOnDisplay);
-  let i2 = Ur(n2?._upgradeOnDisplay?.node);
-  r2._upgradeOnDisplay = Hr(n2?._upgradeOnDisplay, i2);
-  let a2 = Ur(n2?.zombossHead?.node?.parent);
-  return r2.zombossHead = Gr(n2?.zombossHead, a2), r2.displayedIslandDBs = Wr(n2?.displayedIslandDBs, r2.islandNode), e2.levelIslands.push(r2), r2;
+  r2.islandDisplay = n2?.islandDisplay, r2.upgradeDisplayed = n2?.upgradeDisplayed, r2.plantDisplayed = n2?.plantDisplayed, r2.levelNodeAppearance = n2?.levelNodeAppearance, r2.zombossHeadPFB = n2?.zombossHeadPFB ?? null, r2.affectsMaxX = n2?.affectsMaxX !== false, r2.levelNodeName = typeof n2?.levelNodeName == `string` ? n2.levelNodeName : ``, r2._inWorldMap = e2, r2.__gpnTemplateRaw = n2, r2._islandRank = Number.isFinite(n2?._islandRank) ? n2._islandRank : 0, r2.__gpnCustomId = t2.customId ? String(t2.customId) : null, r2.levelJsonsID = Array.isArray(n2?.levelJsonsID) ? [...n2.levelJsonsID] : [], r2.epicLevelJsonsID = Array.isArray(n2?.epicLevelJsonsID) ? [...n2.epicLevelJsonsID] : [], r2.otherNextIslands = [], r2.nextIsland = null, r2.displayedIslandDBs = [], r2._pathDBs = [], r2._levelNodeDB = null, r2._epicPortalDB = null, r2._giftbox = null, r2._finished = false, r2._unlocked = false, r2._willPush = false, r2._plantIcon = null, r2._commodity = n2?._commodity?.constructor ? new n2._commodity.constructor() : n2?._commodity ?? null, r2.islandNode = $r(n2?.islandNode), r2._levelNode = $r(n2?._levelNode), r2._plantOnDisplay = $r(n2?._plantOnDisplay);
+  let i2 = $r(n2?._upgradeOnDisplay?.node);
+  r2._upgradeOnDisplay = Qr(n2?._upgradeOnDisplay, i2);
+  let a2 = $r(n2?.zombossHead?.node?.parent);
+  return r2.zombossHead = ti(n2?.zombossHead, a2), r2.displayedIslandDBs = ei(n2?.displayedIslandDBs, r2.islandNode), e2.levelIslands.push(r2), r2;
 }
 function Y(e2) {
   try {
@@ -2126,11 +2327,11 @@ function Y(e2) {
   } catch {
   }
 }
-function qr(e2, t2, n2) {
+function ri(e2, t2, n2) {
   let r2 = String(t2 || ``).trim(), i2 = String(n2 || ``).trim();
   r2 === `level` ? i2 !== `zomboss` && (Y(e2?.zombossHead?.node?.parent), e2.zombossHead = null) : (Y(e2?._levelNode), e2._levelNode = null, e2._levelNodeDB = null, Y(e2?.zombossHead?.node?.parent), e2.zombossHead = null), r2 !== `plant` && (Y(e2?._plantOnDisplay), e2._plantOnDisplay = null), r2 !== `upgrade` && (Y(e2?._upgradeOnDisplay?.node), e2._upgradeOnDisplay = null), r2 !== `epicPortal` && (Y(e2?._epicPortalDB?.node?.parent), e2._epicPortalDB = null), r2 !== `giftBox` && (Y(e2?._giftbox?.node), e2._giftbox = null);
 }
-function Jr(e2, t2) {
+function ii(e2, t2) {
   switch (String(t2 || ``).trim()) {
     case `level`:
       return !!e2?._levelNode;
@@ -2146,9 +2347,9 @@ function Jr(e2, t2) {
       return false;
   }
 }
-function Yr(e2, t2, n2) {
+function ai(e2, t2, n2) {
   if (!e2 || !t2) return false;
-  let r2 = l(), i2 = br(), a2 = xr() || ((e3) => r2?.instantiate?.(e3)), o2 = e2.levelNodeLayer, s2 = t2?.islandNode?.worldPosition, c2 = r2?.Vec3, u2 = r2?.dragonBones?.ArmatureDisplay, d2 = t2?.__gpnTemplateRaw ?? null;
+  let r2 = d(), i2 = jr(), a2 = Mr() || ((e3) => r2?.instantiate?.(e3)), o2 = e2.levelNodeLayer, s2 = t2?.islandNode?.worldPosition, c2 = r2?.Vec3, l2 = r2?.dragonBones?.ArmatureDisplay, u2 = t2?.__gpnTemplateRaw ?? null;
   if (!o2 || typeof a2 != `function`) return false;
   let f2 = (e3) => {
     if (!e3) return null;
@@ -2183,17 +2384,17 @@ function Yr(e2, t2, n2) {
   }, h2 = (e3, t3 = null) => {
     if (!e3) return null;
     let n3 = t3 ? e3.getChildByName?.(t3) : null;
-    return (typeof u2 == `function` ? n3?.getComponent?.(u2) ?? e3.getComponent?.(u2) ?? e3.getComponentInChildren?.(u2) : null) ?? m2(n3) ?? m2(e3) ?? null;
+    return (typeof l2 == `function` ? n3?.getComponent?.(l2) ?? e3.getComponent?.(l2) ?? e3.getComponentInChildren?.(l2) : null) ?? m2(n3) ?? m2(e3) ?? null;
   }, g2 = (e3, t3, n3 = null, r3) => {
-    let i3 = (t4) => t4 ? e3 ? Hr(e3, t4) ?? Gr(e3, t4) ?? null : h2(t4, n3) : null, a3 = (e4, t4 = null) => {
+    let i3 = (t4) => t4 ? e3 ? Qr(e3, t4) ?? ti(e3, t4) ?? null : h2(t4, n3) : null, a3 = (e4, t4 = null) => {
       if (!e4 || !p2(e4)) return false;
       let n4 = t4 ?? i3(e4);
       return n4 ? (r3(n4), true) : false;
     };
-    return a3(Ur(t3)) ? true : a3(t3, e3 ?? null);
+    return a3($r(t3)) ? true : a3(t3, e3 ?? null);
   };
   if (String(n2 || ``).trim() === `epicPortal`) {
-    if (g2(d2?._epicPortalDB ?? null, d2?._epicPortalDB?.node?.parent ?? null, `display`, (e4) => {
+    if (g2(u2?._epicPortalDB ?? null, u2?._epicPortalDB?.node?.parent ?? null, `display`, (e4) => {
       t2._epicPortalDB = e4;
     })) return true;
     if (typeof i2?.epicPortal != `function`) return false;
@@ -2201,7 +2402,7 @@ function Yr(e2, t2, n2) {
     return !e3 || !p2(e3) ? false : (t2._epicPortalDB = h2(e3, `display`), !!t2._epicPortalDB);
   }
   if (String(n2 || ``).trim() === `giftBox`) {
-    if (g2(d2?._giftbox ?? null, d2?._giftbox?.node ?? null, null, (e4) => {
+    if (g2(u2?._giftbox ?? null, u2?._giftbox?.node ?? null, null, (e4) => {
       t2._giftbox = e4;
     })) return true;
     if (typeof i2?.giftbox != `function`) return false;
@@ -2210,15 +2411,15 @@ function Yr(e2, t2, n2) {
   }
   return false;
 }
-function Xr(e2, t2) {
+function oi(e2, t2) {
   if (!e2 || !t2) return false;
-  let n2 = (Ir(e2, { type: `level`, appearance: `normal` }) || Ir(e2, { type: `level` }))?.raw ?? null;
-  return n2 ? (Y(t2?.islandNode), t2.islandNode = Ur(n2?.islandNode), t2.displayedIslandDBs = t2.islandNode ? Wr(n2?.displayedIslandDBs, t2.islandNode) : [], !!t2.islandNode) : false;
+  let n2 = (qr(e2, { type: `level`, appearance: `normal` }) || qr(e2, { type: `level` }))?.raw ?? null;
+  return n2 ? (Y(t2?.islandNode), t2.islandNode = $r(n2?.islandNode), t2.displayedIslandDBs = t2.islandNode ? ei(n2?.displayedIslandDBs, t2.islandNode) : [], !!t2.islandNode) : false;
 }
-function Zr(e2) {
+function si(e2) {
   return e2 && (e2._giftbox && !e2?._giftbox?.node && (e2._giftbox = null), e2._epicPortalDB && !e2?._epicPortalDB?.node && (e2._epicPortalDB = null), Array.isArray(e2.displayedIslandDBs) && (e2.displayedIslandDBs = e2.displayedIslandDBs.filter((e3) => e3?.node)), Array.isArray(e2._pathDBs) && (e2._pathDBs = e2._pathDBs.filter((e3) => e3?.node)), e2);
 }
-function Qr(e2) {
+function ci(e2) {
   if (!e2) return false;
   let t2 = (e3) => {
     try {
@@ -2230,16 +2431,16 @@ function Qr(e2) {
   for (let n2 of e2?._pathDBs || []) t2(n2?.node?.parent);
   return e2._pathDBs = [], true;
 }
-function $r(e2, t2) {
+function li(e2, t2) {
   if (!e2 || !t2) return null;
   let n2 = e2;
   for (; n2?.parent && n2.parent !== t2; ) n2 = n2.parent;
   return n2?.parent === t2 ? n2 : null;
 }
-function ei(e2) {
+function ui(e2) {
   let t2 = /* @__PURE__ */ new Map(), n2 = (e3, n3) => {
     if (!e3 || !n3) return;
-    let r2 = $r(n3, e3);
+    let r2 = li(n3, e3);
     if (!r2) return;
     let i2 = t2.get(e3);
     i2 || (i2 = /* @__PURE__ */ new Set(), t2.set(e3, i2)), i2.add(r2);
@@ -2250,9 +2451,9 @@ function ei(e2) {
   }
   return t2;
 }
-function ti(e2) {
+function di(e2) {
   if (!e2) return false;
-  let t2 = ei(e2), n2 = false;
+  let t2 = ui(e2), n2 = false;
   for (let [e3, r2] of t2.entries()) {
     let t3 = Array.isArray(e3?.children) ? [...e3.children] : [];
     for (let e4 of t3) if (!r2.has(e4)) try {
@@ -2262,19 +2463,19 @@ function ti(e2) {
   }
   return n2;
 }
-function ni(e2, t2, n2 = 100) {
+function fi(e2, t2, n2 = 100) {
   let r2 = t2?.islandNode, i2 = r2?.position;
   if (!r2 || !i2 || !Array.isArray(e2?.levelIslands)) return null;
   for (let r3 of e2.levelIslands) {
     if (!r3?.islandNode || r3 === t2) continue;
     let e3 = Number(r3.islandNode.position?.x ?? 0) - Number(i2.x ?? 0), a2 = Number(r3.islandNode.position?.y ?? 0) - Number(i2.y ?? 0);
-    if (Math.sqrt(e3 * e3 + a2 * a2) < n2) return jr(r3);
+    if (Math.sqrt(e3 * e3 + a2 * a2) < n2) return Hr(r3);
   }
   return null;
 }
-function ri(e2) {
+function pi(e2) {
   if (typeof e2 == `number` && Number.isFinite(e2)) return e2;
-  let t2 = Sr();
+  let t2 = Nr();
   if (!t2 || e2 == null) return null;
   try {
     let n2 = t2.getPlantEnumByCodename?.(String(e2));
@@ -2287,53 +2488,53 @@ function ri(e2) {
     return null;
   }
 }
-function ii(e2) {
-  let t2 = Cr();
-  return t2 ? Tr(t2, e2) : typeof e2 == `number` ? e2 : null;
+function mi(e2) {
+  let t2 = Pr();
+  return t2 ? Ir(t2, e2) : typeof e2 == `number` ? e2 : null;
 }
-function ai(e2, t2) {
-  let n2 = ri(t2);
+function hi(e2, t2) {
+  let n2 = pi(t2);
   if (n2 == null || !e2) return null;
   e2.plantDisplayed = n2;
-  let r2 = W()?.getPlantProgressByID?.(n2)?.progress ?? 0;
+  let r2 = U()?.getPlantProgressByID?.(n2)?.progress ?? 0;
   try {
     e2.showPlant?.(r2 <= 0);
   } catch {
   }
   return n2;
 }
-function oi(e2) {
-  let t2 = yr();
+function gi(e2) {
+  let t2 = Ar();
   if (t2) {
-    let n2 = Tr(t2, e2);
+    let n2 = Ir(t2, e2);
     if (n2 != null) return n2;
   }
   return { level: 0, plant: 1, giftBox: 2, upgrade: 3, epicPortal: 4 }[String(e2 || ``)] ?? null;
 }
-function si(e2) {
+function _i(e2) {
   return typeof e2 == `number` && Number.isFinite(e2) ? e2 : { normal: 0, minigame: 1, gargantuar: 2, zomboss: 3 }[String(e2 || ``).trim()] ?? null;
 }
-function ci(e2, t2) {
-  let n2 = ii(t2);
+function vi(e2, t2) {
+  let n2 = mi(t2);
   if (n2 == null || !e2) return null;
   e2.upgradeDisplayed = n2;
-  let r2 = (W()?.getUpgradeProgressByID?.(n2)?.progress ?? 0) > 0;
+  let r2 = (U()?.getUpgradeProgressByID?.(n2)?.progress ?? 0) > 0;
   try {
     e2._upgradeOnDisplay?.readID?.(n2, r2);
   } catch {
   }
   return n2;
 }
-function li(e2, t2) {
+function yi(e2, t2) {
   if (!e2) return null;
-  for (let n2 of G(t2)) if (typeof e2?.[n2] == `function`) return { target: e2, methodName: n2, method: e2[n2] };
+  for (let n2 of W(t2)) if (typeof e2?.[n2] == `function`) return { target: e2, methodName: n2, method: e2[n2] };
   return null;
 }
-function ui(e2, t2, n2 = [], r2 = {}) {
-  e2 = R(e2);
-  let i2 = li(e2, t2);
+function bi(e2, t2, n2 = [], r2 = {}) {
+  e2 = L(e2);
+  let i2 = yi(e2, t2);
   if (!i2) {
-    if (r2.required === true) throw Error(`No supported method found: ${G(t2).join(`, `)}`);
+    if (r2.required === true) throw Error(`No supported method found: ${W(t2).join(`, `)}`);
     return { ok: false, methodName: null, value: void 0, reason: `method-not-found` };
   }
   try {
@@ -2343,16 +2544,16 @@ function ui(e2, t2, n2 = [], r2 = {}) {
     return { ok: false, methodName: i2.methodName, value: void 0, reason: `method-threw`, error: e3 };
   }
 }
-function di(e2, t2 = {}) {
-  let n2 = `chunks:///_virtual/CharacterManager.ts`, i2 = r(n2, `ZombieDamageDetails`), a2 = r(n2, `ZombieDamageType`);
-  if (typeof i2 != `function`) return null;
-  let o2 = t2.damageType ?? t2.type ?? `physicle`, s2 = typeof o2 == `number` ? o2 : a2?.[String(o2)] ?? a2?.physicle;
-  return new i2(Number(e2 || 0), t2.armorProtection !== false, t2.armorKnockSound !== false, t2.bodyKnockSound !== false, t2.direction ?? null, s2, t2.flash !== false, t2.armorAlsoDamagedWhenNotProtecting === true);
+function xi(e2, t2 = {}) {
+  let n2 = `chunks:///_virtual/CharacterManager.ts`, r2 = p(n2, `ZombieDamageDetails`), i2 = p(n2, `ZombieDamageType`);
+  if (typeof r2 != `function`) return null;
+  let a2 = t2.damageType ?? t2.type ?? `physicle`, o2 = typeof a2 == `number` ? a2 : i2?.[String(a2)] ?? i2?.physicle;
+  return new r2(Number(e2 || 0), t2.armorProtection !== false, t2.armorKnockSound !== false, t2.bodyKnockSound !== false, t2.direction ?? null, o2, t2.flash !== false, t2.armorAlsoDamagedWhenNotProtecting === true);
 }
-function fi(e2, t2 = {}) {
+function Si(e2, t2 = {}) {
   let n2 = (e3) => {
-    let t3 = L(e3)?.managedState || null;
-    if (t3?.disposed === true || t3?.retired === true || (e3 = R(e3), !e3)) return false;
+    let t3 = I(e3)?.managedState || null;
+    if (t3?.disposed === true || t3?.retired === true || (e3 = L(e3), !e3)) return false;
     let n3 = true;
     if (t3 && typeof e3.collected == `boolean` && (t3.lastKnownCollected = e3.collected), e3.collected === true && typeof e3.collect == `function` && (n3 = false), (e3.node?.isValid === false || e3.node?.active === false) && (n3 = false), t3 && e3.node && `parent` in e3.node && e3.node.parent == null && (n3 = false), n3 && typeof e3.isAlive == `function`) try {
       n3 = e3.isAlive() === true;
@@ -2361,20 +2562,20 @@ function fi(e2, t2 = {}) {
     }
     else n3 && typeof e3.dead == `boolean` ? n3 = e3.dead !== true : n3 && typeof e3.isValid == `boolean` && (n3 = e3.isValid);
     return t3 && (n3 ? t3.observedActive = true : t3.observedActive && (typeof t3.retire == `function` ? t3.retire(`observed-inactive`) : t3.retired = true), t3.disposed === true || t3.retired === true) ? false : n3;
-  }, i2 = (e3) => {
-    if (Bn(e3)) return Object.freeze({ inspect: false, damage: false, heal: false, eliminate: false, moveToCell: false, collect: false });
-    let i3 = R(e3), a3 = n2(e3), o3 = String(zn(e3) || mi(i3)), s3 = !!li(i3, [`dealDamage`, `takeDamage`]), c3 = _(i3) !== null, l2 = !(o3 === `zombie` || o3 === `tomb`) || typeof t2.createDamageDetails == `function` || typeof r(`chunks:///_virtual/CharacterManager.ts`, `ZombieDamageDetails`) == `function`, u2 = !!i3 && (typeof i3.setInLnC == `function` || `worldPositionX` in Object(i3) || `worldPositionY` in Object(i3));
-    return Object.freeze({ inspect: !!i3, damage: a3 && c3 && s3 && l2, heal: a3 && c3 && !!li(i3, [`heal`]), eliminate: a3 && !!li(i3, [`kill`, `playDie`, `die`]), moveToCell: a3 && u2, collect: a3 && !!li(i3, [`collect`]) });
-  }, a2 = (e3, t3) => {
+  }, r2 = (e3) => {
+    if (Zn(e3)) return Object.freeze({ inspect: false, damage: false, heal: false, eliminate: false, moveToCell: false, collect: false });
+    let r3 = L(e3), i3 = n2(e3), a3 = String(Xn(e3) || wi(r3)), o3 = !!yi(r3, [`dealDamage`, `takeDamage`]), s3 = _(r3) !== null, c2 = !(a3 === `zombie` || a3 === `tomb`) || typeof t2.createDamageDetails == `function` || typeof p(`chunks:///_virtual/CharacterManager.ts`, `ZombieDamageDetails`) == `function`, l2 = !!r3 && (typeof r3.setInLnC == `function` || `worldPositionX` in Object(r3) || `worldPositionY` in Object(r3));
+    return Object.freeze({ inspect: !!r3, damage: i3 && s3 && o3 && c2, heal: i3 && s3 && !!yi(r3, [`heal`]), eliminate: i3 && !!yi(r3, [`kill`, `playDie`, `die`]), moveToCell: i3 && l2, collect: i3 && !!yi(r3, [`collect`]) });
+  }, i2 = (e3, t3) => {
     let n3 = String(t3 || ``).trim();
-    return n3 ? i2(e3)[n3] === true : false;
-  }, o2 = (e3) => {
-    let t3 = R(e3), r2 = L(e3) ? e3 : null;
-    return { alive: n2(e3), health: r2 && typeof r2.getHealth == `function` ? r2.getHealth() : _(t3) };
-  }, s2 = (e3, t3, n3, r2 = {}) => {
-    let i3 = o2(t3);
-    return { ...e3, ...r2, observed: { before: n3, after: i3, ...ee(n3, i3) } };
-  }, c2 = (e3) => {
+    return n3 ? r2(e3)[n3] === true : false;
+  }, a2 = (e3) => {
+    let t3 = L(e3), r3 = I(e3) ? e3 : null;
+    return { alive: n2(e3), health: r3 && typeof r3.getHealth == `function` ? r3.getHealth() : _(t3) };
+  }, o2 = (e3, t3, n3, r3 = {}) => {
+    let i3 = a2(t3);
+    return { ...e3, ...r3, observed: { before: n3, after: i3, ...ee(n3, i3) } };
+  }, s2 = (e3) => {
     let t3 = NaN;
     try {
       t3 = Number(e3);
@@ -2382,44 +2583,44 @@ function fi(e2, t2 = {}) {
     }
     return { amount: t3, valid: Number.isFinite(t3) && t3 > 0 };
   };
-  return { getCapabilities: i2, supports: a2, invoke(e3, t3 = {}) {
-    if (L(e3)?.managedState && !n2(e3)) {
+  return { getCapabilities: r2, supports: i2, invoke(e3, t3 = {}) {
+    if (I(e3)?.managedState && !n2(e3)) {
       if (t3.required === true) throw Error(`entity-inactive`);
       return { ok: false, methodName: null, value: void 0, reason: `entity-inactive` };
     }
-    return ui(e3, t3.methods || t3.methodNames || t3.method, t3.args || [], t3);
-  }, damage(e3, n3, r2 = {}) {
-    let i3 = R(e3), a3 = r2 && typeof r2 == `object` ? r2 : {}, l2 = c2(n3), u2 = l2.amount, d2 = o2(e3);
-    if (!l2.valid) return { ...s2({ ok: false, methodName: null, value: void 0, reason: `invalid-amount` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
-    if (!d2.alive) return { ...s2({ ok: false, methodName: null, value: void 0, reason: `entity-inactive` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
-    if (!d2.health) return { ...s2({ ok: false, methodName: null, value: void 0, reason: `health-unavailable` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
-    let f2 = String(a3.kind || zn(e3) || mi(i3)), p2 = [u2];
+    return bi(e3, t3.methods || t3.methodNames || t3.method, t3.args || [], t3);
+  }, damage(e3, n3, r3 = {}) {
+    let i3 = L(e3), c2 = r3 && typeof r3 == `object` ? r3 : {}, l2 = s2(n3), u2 = l2.amount, d2 = a2(e3);
+    if (!l2.valid) return { ...o2({ ok: false, methodName: null, value: void 0, reason: `invalid-amount` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
+    if (!d2.alive) return { ...o2({ ok: false, methodName: null, value: void 0, reason: `entity-inactive` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
+    if (!d2.health) return { ...o2({ ok: false, methodName: null, value: void 0, reason: `health-unavailable` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
+    let f2 = String(c2.kind || Xn(e3) || wi(i3)), p2 = [u2];
     if (f2 === `zombie` || f2 === `tomb`) {
       let n4 = null;
       try {
-        n4 = typeof t2.createDamageDetails == `function` ? t2.createDamageDetails(u2, a3) : di(u2, a3);
+        n4 = typeof t2.createDamageDetails == `function` ? t2.createDamageDetails(u2, c2) : xi(u2, c2);
       } catch (t3) {
-        if (a3.required === true) throw t3;
-        return { ...s2({ ok: false, methodName: null, value: void 0, reason: `damage-adapter-threw`, error: t3 }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
+        if (c2.required === true) throw t3;
+        return { ...o2({ ok: false, methodName: null, value: void 0, reason: `damage-adapter-threw`, error: t3 }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
       }
-      if (!n4) return { ...s2({ ok: false, methodName: null, value: void 0, reason: `damage-adapter-unavailable` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
+      if (!n4) return { ...o2({ ok: false, methodName: null, value: void 0, reason: `damage-adapter-unavailable` }, e3, d2, { requestedAmount: u2 }), accepted: false, appliedAmount: 0 };
       p2 = [n4];
     }
-    let m2 = s2(ui(i3, [`dealDamage`, `takeDamage`], p2, a3), e3, d2, { requestedAmount: u2 }), h2 = m2.observed?.totalDelta, g2 = typeof h2 == `number` && Number.isFinite(h2) && h2 < 0 ? Math.abs(h2) : 0, _2 = m2.ok === true && g2 > 0;
+    let m2 = o2(bi(i3, [`dealDamage`, `takeDamage`], p2, c2), e3, d2, { requestedAmount: u2 }), h2 = m2.observed?.totalDelta, g2 = typeof h2 == `number` && Number.isFinite(h2) && h2 < 0 ? Math.abs(h2) : 0, _2 = m2.ok === true && g2 > 0;
     return { ...m2, accepted: _2, appliedAmount: g2, reason: m2.ok === true && !_2 ? `damage-no-change` : m2.reason };
   }, heal(e3, t3, n3 = {}) {
-    let r2 = R(e3), i3 = c2(t3), a3 = i3.amount, l2 = n3 && typeof n3 == `object` ? n3 : {}, u2 = o2(e3);
-    if (!i3.valid) return { ...s2({ ok: false, methodName: null, value: void 0, reason: `invalid-amount` }, e3, u2, { requestedAmount: a3 }), accepted: false, appliedAmount: 0 };
-    if (!u2.alive) return { ...s2({ ok: false, methodName: null, value: void 0, reason: `entity-inactive` }, e3, u2, { requestedAmount: a3 }), accepted: false, appliedAmount: 0 };
-    if (!u2.health) return { ...s2({ ok: false, methodName: null, value: void 0, reason: `health-unavailable` }, e3, u2, { requestedAmount: a3 }), accepted: false, appliedAmount: 0 };
-    let d2 = s2(ui(r2, [`heal`], [a3], l2), e3, u2, { requestedAmount: a3 }), f2 = d2.observed?.totalDelta, p2 = typeof f2 == `number` && Number.isFinite(f2) && f2 > 0 ? f2 : 0, m2 = d2.ok === true && p2 > 0;
+    let r3 = L(e3), i3 = s2(t3), c2 = i3.amount, l2 = n3 && typeof n3 == `object` ? n3 : {}, u2 = a2(e3);
+    if (!i3.valid) return { ...o2({ ok: false, methodName: null, value: void 0, reason: `invalid-amount` }, e3, u2, { requestedAmount: c2 }), accepted: false, appliedAmount: 0 };
+    if (!u2.alive) return { ...o2({ ok: false, methodName: null, value: void 0, reason: `entity-inactive` }, e3, u2, { requestedAmount: c2 }), accepted: false, appliedAmount: 0 };
+    if (!u2.health) return { ...o2({ ok: false, methodName: null, value: void 0, reason: `health-unavailable` }, e3, u2, { requestedAmount: c2 }), accepted: false, appliedAmount: 0 };
+    let d2 = o2(bi(r3, [`heal`], [c2], l2), e3, u2, { requestedAmount: c2 }), f2 = d2.observed?.totalDelta, p2 = typeof f2 == `number` && Number.isFinite(f2) && f2 > 0 ? f2 : 0, m2 = d2.ok === true && p2 > 0;
     return { ...d2, accepted: m2, appliedAmount: p2, reason: d2.ok === true && !m2 ? `heal-no-change` : d2.reason };
   }, eliminate(e3, t3 = {}) {
-    let n3 = R(e3), r2 = t3 && typeof t3 == `object` ? t3 : {}, i3 = o2(e3);
-    return i3.alive ? s2(ui(n3, [`kill`, `playDie`, `die`], [], r2), e3, i3) : s2({ ok: false, methodName: null, value: void 0, reason: `entity-inactive` }, e3, i3);
+    let n3 = L(e3), r3 = t3 && typeof t3 == `object` ? t3 : {}, i3 = a2(e3);
+    return i3.alive ? o2(bi(n3, [`kill`, `playDie`, `die`], [], r3), e3, i3) : o2({ ok: false, methodName: null, value: void 0, reason: `entity-inactive` }, e3, i3);
   }, collect(e3, t3 = {}) {
-    let r2 = L(e3)?.managedState || null, i3 = R(e3), a3 = t3 && typeof t3 == `object` ? t3 : {};
-    if (!n2(e3)) return { ok: false, accepted: false, collected: r2 ? r2.lastKnownCollected === true : i3?.collected === true, methodName: null, value: void 0, reason: `entity-inactive` };
+    let r3 = I(e3)?.managedState || null, i3 = L(e3), a3 = t3 && typeof t3 == `object` ? t3 : {};
+    if (!n2(e3)) return { ok: false, accepted: false, collected: r3 ? r3.lastKnownCollected === true : i3?.collected === true, methodName: null, value: void 0, reason: `entity-inactive` };
     let o3 = null;
     if (typeof i3?.collectable == `function`) try {
       o3 = i3.collectable() === true;
@@ -2427,18 +2628,18 @@ function fi(e2, t2 = {}) {
       o3 = false;
     }
     if (o3 === false) return { ok: true, accepted: false, collected: i3?.collected === true, methodName: `collect`, value: void 0, reason: `collect-rejected` };
-    let s3 = ui(i3, [`collect`], [], a3), c3 = i3?.collected === true, l2 = typeof i3?.collected == `boolean`, u2 = s3.ok === true && (l2 ? c3 : s3.value !== false);
-    return { ...s3, accepted: u2, collected: c3, reason: s3.ok === true && !u2 ? `collect-rejected` : s3.reason };
-  }, moveToCell(t3, r2, i3) {
-    return n2(t3) ? e2.snapEntityToCell(R(t3), r2, i3) : false;
+    let s3 = bi(i3, [`collect`], [], a3), c2 = i3?.collected === true, l2 = typeof i3?.collected == `boolean`, u2 = s3.ok === true && (l2 ? c2 : s3.value !== false);
+    return { ...s3, accepted: u2, collected: c2, reason: s3.ok === true && !u2 ? `collect-rejected` : s3.reason };
+  }, moveToCell(t3, r3, i3) {
+    return n2(t3) ? e2.snapEntityToCell(L(t3), r3, i3) : false;
   }, isAlive: n2 };
 }
-function pi(e2 = {}) {
-  let t2 = e2.registry || Nn({ onError: (e3) => In.error(e3) }), n2 = String(e2.owner || `anonymous-mod`), r2 = e2.runtime || null, i2 = e2.actions, a2 = e2.teams, o2 = (t3) => {
+function Ci(e2 = {}) {
+  let t2 = e2.registry || Un({ onError: (e3) => Kn.error(e3) }), n2 = String(e2.owner || `anonymous-mod`), r2 = e2.runtime || null, i2 = e2.actions, a2 = e2.teams, o2 = (t3) => {
     if (!t3) return null;
-    let n3 = R(t3), r3 = zn(t3) || mi(n3), i3 = null;
+    let n3 = L(t3), r3 = Xn(t3) || wi(n3), i3 = null;
     try {
-      i3 = L(t3) ? t3.snapshot?.() : null;
+      i3 = I(t3) ? t3.snapshot?.() : null;
     } catch {
     }
     let o3 = null;
@@ -2446,22 +2647,22 @@ function pi(e2 = {}) {
       o3 = a2?.getState(t3, r3);
     } catch {
     }
-    return { key: Vn(t3), kind: i3?.kind || r3, codename: i3?.codename || _i(n3, r3, e2.services), team: i3?.team || o3?.team || `unknown` };
+    return { key: Qn(t3), kind: i3?.kind || r3, codename: i3?.codename || Di(n3, r3, e2.services), team: i3?.team || o3?.team || `unknown` };
   }, s2 = (e3) => e3 ? Object.freeze({ kind: String(e3.kind || `entity`), codename: e3.codename == null ? null : String(e3.codename), team: P(e3.team) || `unknown` }) : null, c2 = (e3) => {
-    let t3 = R(e3), n3 = null;
+    let t3 = L(e3), n3 = null;
     try {
-      n3 = L(e3) && typeof e3.getHealth == `function` ? e3.getHealth() : _(t3);
+      n3 = I(e3) && typeof e3.getHealth == `function` ? e3.getHealth() : _(t3);
     } catch {
     }
-    return { alive: i2.isAlive(e3), health: z(n3) };
+    return { alive: i2.isAlive(e3), health: R(n3) };
   }, l2 = (e3, t3) => {
     let n3 = c2(e3);
     return { before: t3, after: n3, ...ee(t3, n3) };
   }, u2 = (e3, n3) => {
-    let r3 = Object.freeze({ type: `damage-resolved`, request: e3, result: Object.freeze({ ok: n3.ok === true, accepted: n3.accepted === true, reason: n3.reason || null, requestedAmount: n3.requestedAmount, finalAmount: n3.finalAmount, appliedAmount: Number(n3.appliedAmount || 0), observed: z(n3.observed) }), timestamp: Date.now() });
+    let r3 = Object.freeze({ type: `damage-resolved`, request: e3, result: Object.freeze({ ok: n3.ok === true, accepted: n3.accepted === true, reason: n3.reason || null, requestedAmount: n3.requestedAmount, finalAmount: n3.finalAmount, appliedAmount: Number(n3.appliedAmount || 0), observed: R(n3.observed) }), timestamp: Date.now() });
     t2.emit(r3);
   }, d2 = { ...i2, damage(e3, n3, r3 = {}) {
-    let a3 = r3 && typeof r3 == `object` ? r3 : {}, d3 = a3.source ?? null, f2 = L(e3) ? e3 : null, p2 = L(d3) ? d3 : null, m2 = o2(e3), h2 = p2 ? o2(p2) : null, g2 = c2(e3);
+    let a3 = r3 && typeof r3 == `object` ? r3 : {}, d3 = a3.source ?? null, f2 = I(e3) ? e3 : null, p2 = I(d3) ? d3 : null, m2 = o2(e3), h2 = p2 ? o2(p2) : null, g2 = c2(e3);
     if (d3 != null && !p2) return { ok: false, accepted: false, methodName: null, value: void 0, reason: `source-handle-required`, requestedAmount: NaN, finalAmount: 0, appliedAmount: 0, observed: l2(e3, g2) };
     let _2 = t2.evaluate({ requestedAmount: n3, damageType: a3.damageType ?? a3.type ?? `physical`, tags: a3.tags, source: h2, target: m2 }), v2 = Object.freeze({ source: p2, target: f2, sourceSnapshot: s2(h2), targetSnapshot: s2(m2), requestedAmount: _2.requestedAmount, amount: _2.amount, damageType: _2.damageType, tags: _2.tags, blocked: _2.blocked, blockReason: _2.blocked ? _2.reason : null, applications: _2.applications }), y2 = null;
     if (!_2.ok) y2 = { ok: false, accepted: false, methodName: null, value: void 0, reason: _2.reason, requestedAmount: _2.requestedAmount, finalAmount: _2.amount, appliedAmount: 0, observed: l2(e3, g2), combat: v2 };
@@ -2473,18 +2674,18 @@ function pi(e2 = {}) {
     return u2(v2, y2), y2;
   } };
   return Object.freeze({ actions: Object.freeze(d2), api: Object.freeze({ getCapabilities() {
-    return Object.freeze({ available: true, coverage: `api-actions-only`, nativeInterception: false, sourceAttribution: true, typedDamage: true, operations: yn });
+    return Object.freeze({ available: true, coverage: `api-actions-only`, nativeInterception: false, sourceAttribution: true, typedDamage: true, operations: On });
   }, modifiers: Object.freeze({ add: (e3 = {}) => {
     let a3 = e3?.subject ?? null;
-    if (a3 != null && !L(a3)) throw Error(`combat.modifiers.add(): subject must be a stable entity handle`);
+    if (a3 != null && !I(a3)) throw Error(`combat.modifiers.add(): subject must be a stable entity handle`);
     if (a3 != null && !i2.isAlive(a3)) throw Error(`combat.modifiers.add(): subject entity is inactive`);
-    let o3 = t2.register(n2, r2, { ...e3, subjectKey: a3 == null ? null : Vn(a3) });
+    let o3 = t2.register(n2, r2, { ...e3, subjectKey: a3 == null ? null : Qn(a3) });
     return a3?.onInactive(() => o3.dispose(`subject-inactive`), { signal: o3.signal, label: `combat modifier ${o3.id} subject lifetime` }), o3;
   }, list: () => t2.list() }), watchDamage: (e3, i3 = {}) => {
     if (typeof e3 != `function`) throw Error(`combat.watchDamage() requires a listener`);
     if (typeof r2?.track != `function`) throw Error(`combat.watchDamage() requires a managed mod runtime`);
     i3 = i3 && typeof i3 == `object` ? i3 : {};
-    let a3 = String(i3.label || `combat damage watch`), o3 = typeof r2.guard == `function` ? r2.guard(e3, { label: a3 }) : e3, s3 = () => false, c3 = et({ runtime: r2, signal: i3.signal, label: a3, onCancel: () => s3() });
+    let a3 = String(i3.label || `combat damage watch`), o3 = typeof r2.guard == `function` ? r2.guard(e3, { label: a3 }) : e3, s3 = () => false, c3 = D({ runtime: r2, signal: i3.signal, label: a3, onCancel: () => s3() });
     return c3.active && (s3 = t2.subscribe(n2, (e4) => {
       if (!c3.active) return;
       let t3 = Promise.resolve().then(() => o3(e4));
@@ -2492,36 +2693,36 @@ function pi(e2 = {}) {
     })), c3.cancel;
   } }) });
 }
-function mi(e2) {
+function wi(e2) {
   let t2 = String(e2?.constructor?.name || e2?.name || ``).toLowerCase();
   return t2.includes(`plant`) ? `plant` : t2.includes(`zombie`) ? `zombie` : t2.includes(`projectile`) || t2.includes(`shot`) ? `projectile` : t2.includes(`armor`) ? `armor` : t2.includes(`tomb`) ? `tomb` : t2.includes(`tileliquid`) || t2.includes(`tile-liquid`) ? `tile-liquid` : t2.includes(`dinosaur`) ? `dinosaur` : `entity`;
 }
-function hi(e2) {
+function Ti(e2) {
   let t2 = String(e2 || ``).trim().toLowerCase();
   return !t2 || t2 === `all` || t2 === `entity` || t2 === `entities` ? null : { plants: `plant`, zombies: `zombie`, projectiles: `projectile`, armors: `armor`, tombs: `tomb`, tileliquid: `tile-liquid`, tileliquids: `tile-liquid`, "tile-liquids": `tile-liquid`, dinosaurs: `dinosaur` }[t2] || t2;
 }
-function gi(e2, t2) {
+function Ei(e2, t2) {
   let n2 = String(e2?.node?.name || ``).replace(/\(clone\)$/i, ``).replace(/prj$/i, ``).trim().toLowerCase();
   if (!n2) return null;
-  let r2 = Pn.get(`ProjectileFeatures`), i2 = V(t2, `ProjectileFeatures`), a2 = r2?.key && Array.isArray(i2?.[r2.key]) ? i2[r2.key] : [], o2 = new Set(a2.filter((e3) => String(e3?.RES || ``).trim().toLowerCase() === n2).map((e3) => String(e3?.[r2?.idKey || `CODENAME`] || ``).trim()).filter(Boolean));
+  let r2 = Wn.get(`ProjectileFeatures`), i2 = B(t2, `ProjectileFeatures`), a2 = r2?.key && Array.isArray(i2?.[r2.key]) ? i2[r2.key] : [], o2 = new Set(a2.filter((e3) => String(e3?.RES || ``).trim().toLowerCase() === n2).map((e3) => String(e3?.[r2?.idKey || `CODENAME`] || ``).trim()).filter(Boolean));
   return o2.size === 1 ? [...o2][0] : null;
 }
-function _i(e2, t2 = null, n2 = null, r2 = null) {
+function Di(e2, t2 = null, n2 = null, r2 = null) {
   let i2 = r2?.codename;
   if (typeof i2 == `string` && i2.trim()) return i2.trim();
   let a2 = g(e2);
   if (a2) return a2;
-  let o2 = hi(t2) || mi(e2);
-  if (o2 === `projectile`) return gi(e2, n2);
+  let o2 = Ti(t2) || wi(e2);
+  if (o2 === `projectile`) return Ei(e2, n2);
   if (o2 !== `plant`) return null;
-  let c2 = Number(e2?.ID);
-  if (!Number.isFinite(c2)) return null;
-  let l2 = s(`chunks:///_virtual/Plants.ts`)?.PlantEnum?.[c2];
-  return typeof l2 == `string` && l2.trim() ? l2.trim() : null;
+  let s2 = Number(e2?.ID);
+  if (!Number.isFinite(s2)) return null;
+  let c2 = h(`chunks:///_virtual/Plants.ts`)?.PlantEnum?.[s2];
+  return typeof c2 == `string` && c2.trim() ? c2.trim() : null;
 }
-function vi(e2, t2, n2, r2 = null, i2 = null, a2 = null, o2 = null) {
+function X(e2, t2, n2, r2 = null, i2 = null, a2 = null, o2 = null) {
   if (!e2) return null;
-  let s2 = i2 && typeof i2 == `object` ? Object.freeze({ ...i2 }) : null, c2 = hi(r2) || mi(e2), l2 = s2?.managedSpawnState || oe(e2), u2 = Object.freeze({ id: String(e2?.uuid || e2?.node?.uuid || e2?.name || e2?.constructor?.name || `entity`), className: String(e2?.constructor?.name || ``), codename: _i(e2, c2, a2, s2), nodeName: String(e2?.node?.name || ``), numericId: Number.isFinite(Number(e2?.ID)) ? Number(e2.ID) : null }), d2 = (e3) => ({ laneIndex: Number.isInteger(e3?.laneIndex) && e3.laneIndex >= 0 ? e3.laneIndex : s2?.spawnAt?.laneIndex ?? null, columnIndex: Number.isInteger(e3?.columnIndex) && e3.columnIndex >= 0 ? e3.columnIndex : s2?.spawnAt?.columnIndex ?? null, position: e3?.world ? { x: Number(e3.world.x || 0), y: Number(e3.world.y || 0), z: Number(e3.world.z || 0) } : null }), f2 = l2 ? d2(t2.describe(e2)) : null, p2 = l2 ? z(_(e2)) : null, m2 = o2?.getState(e2, c2) ?? Object.freeze({ team: `unknown`, targetTeam: `unknown` }), h2 = null, g2 = { get id() {
+  let s2 = i2 && typeof i2 == `object` ? Object.freeze({ ...i2 }) : null, c2 = Ti(r2) || wi(e2), l2 = s2?.managedSpawnState || oe(e2), u2 = Object.freeze({ id: String(e2?.uuid || e2?.node?.uuid || e2?.name || e2?.constructor?.name || `entity`), className: String(e2?.constructor?.name || ``), codename: Di(e2, c2, a2, s2), nodeName: String(e2?.node?.name || ``), numericId: Number.isFinite(Number(e2?.ID)) ? Number(e2.ID) : null }), d2 = (e3) => ({ laneIndex: Number.isInteger(e3?.laneIndex) && e3.laneIndex >= 0 ? e3.laneIndex : s2?.spawnAt?.laneIndex ?? null, columnIndex: Number.isInteger(e3?.columnIndex) && e3.columnIndex >= 0 ? e3.columnIndex : s2?.spawnAt?.columnIndex ?? null, position: e3?.world ? { x: Number(e3.world.x || 0), y: Number(e3.world.y || 0), z: Number(e3.world.z || 0) } : null }), f2 = l2 ? d2(t2.describe(e2)) : null, p2 = l2 ? R(_(e2)) : null, m2 = o2?.getState(e2, c2) ?? Object.freeze({ team: `unknown`, targetTeam: `unknown` }), h2 = null, g2 = { get id() {
     return u2.id;
   }, get kind() {
     return c2;
@@ -2537,14 +2738,14 @@ function vi(e2, t2, n2, r2 = null, i2 = null, a2 = null, o2 = null) {
     let n3 = a2?.runtime, r3 = String(t3?.label || `entity inactive listener`), i3 = typeof n3?.guard == `function` ? n3.guard(e3, { label: r3 }) : e3, o3 = (e4) => {
       let t4 = e4?.terminalEvent || { type: e4?.disposed ? `disposed` : `retired`, reason: e4?.disposalReason || e4?.retirementReason || `inactive` };
       i3(Object.freeze({ type: t4.type, reason: t4.reason, entity: g2 }));
-    }, s3 = () => false, c3 = et({ runtime: n3, signal: t3?.signal, label: r3, onCancel: () => s3?.() });
+    }, s3 = () => false, c3 = D({ runtime: n3, signal: t3?.signal, label: r3, onCancel: () => s3?.() });
     return c3.active ? l2.signal?.aborted ? (c3.cancel(), o3(l2), c3.cancel) : (s3 = l2.onTerminal((e4) => {
       c3.active && (c3.cancel(), o3(e4));
     }), c3.cancel) : c3.cancel;
   }, getHealth() {
-    if (l2 && !n2.isAlive(g2)) return z(p2);
+    if (l2 && !n2.isAlive(g2)) return R(p2);
     let t3 = _(e2);
-    return l2 && (p2 = z(t3)), t3;
+    return l2 && (p2 = R(t3)), t3;
   }, getCapabilities() {
     return n2.getCapabilities(g2);
   }, supports(e3) {
@@ -2552,15 +2753,15 @@ function vi(e2, t2, n2, r2 = null, i2 = null, a2 = null, o2 = null) {
   }, snapshot() {
     let r3 = n2.isAlive(g2);
     if (l2 && !r3) {
-      let e3 = h2 ? z(h2) : { id: u2.id, kind: c2, className: u2.className, codename: u2.codename, nodeName: u2.nodeName, numericId: u2.numericId, laneIndex: f2?.laneIndex ?? s2?.spawnAt?.laneIndex ?? null, columnIndex: f2?.columnIndex ?? s2?.spawnAt?.columnIndex ?? null, position: z(f2?.position ?? null), health: z(p2), team: m2.team, targetTeam: m2.targetTeam };
-      return e3.alive = false, e3.health = z(p2), e3.capabilities = n2.getCapabilities(g2), e3;
+      let e3 = h2 ? R(h2) : { id: u2.id, kind: c2, className: u2.className, codename: u2.codename, nodeName: u2.nodeName, numericId: u2.numericId, laneIndex: f2?.laneIndex ?? s2?.spawnAt?.laneIndex ?? null, columnIndex: f2?.columnIndex ?? s2?.spawnAt?.columnIndex ?? null, position: R(f2?.position ?? null), health: R(p2), team: m2.team, targetTeam: m2.targetTeam };
+      return e3.alive = false, e3.health = R(p2), e3.capabilities = n2.getCapabilities(g2), e3;
     }
     let i3 = d2(t2.describe(e2));
-    l2 && (f2 = z(i3));
+    l2 && (f2 = R(i3));
     let a3 = o2?.getState(e2, c2) ?? Object.freeze({ team: `unknown`, targetTeam: `unknown` });
     l2 && (m2 = a3);
     let _2 = { id: this.id, kind: this.kind, className: this.className, codename: this.codename, nodeName: u2.nodeName, numericId: u2.numericId, laneIndex: i3.laneIndex, columnIndex: i3.columnIndex, position: i3.position, alive: r3, health: this.getHealth(), team: a3.team, targetTeam: a3.targetTeam, capabilities: this.getCapabilities() };
-    return l2 && (h2 = z(_2)), _2;
+    return l2 && (h2 = R(_2)), _2;
   }, isAlive() {
     return n2.isAlive(g2);
   }, damage(e3, t3 = {}) {
@@ -2574,9 +2775,9 @@ function vi(e2, t2, n2, r2 = null, i2 = null, a2 = null, o2 = null) {
   }, moveToCell(e3, t3) {
     return n2.moveToCell(g2, e3, t3);
   } };
-  return Ln.set(g2, { target: e2, kind: c2, managedState: l2 }), Object.freeze(g2);
+  return Jn.set(g2, { target: e2, kind: c2, managedState: l2 }), Object.freeze(g2);
 }
-function yi(e2, t2 = {}) {
+function Oi(e2, t2 = {}) {
   let n2 = e2.snapshot();
   if (typeof t2.alive == `boolean` && n2.alive !== t2.alive) return false;
   let r2 = (e3, t3) => {
@@ -2593,22 +2794,22 @@ function yi(e2, t2 = {}) {
   let a2 = t2.capability ?? t2.capabilities;
   return !(a2 != null && !(Array.isArray(a2) ? a2 : [a2]).map((e3) => String(e3 || ``).trim()).filter(Boolean).every((e3) => n2.capabilities?.[e3] === true));
 }
-function bi(e2, t2) {
+function ki(e2, t2) {
   return JSON.stringify(e2 ?? null) === JSON.stringify(t2 ?? null);
 }
-function xi(e2, t2, n2) {
+function Ai(e2, t2, n2) {
   let r2 = [];
-  return n2.has(`identity`) && !bi([e2?.kind, e2?.className, e2?.codename, e2?.numericId], [t2?.kind, t2?.className, t2?.codename, t2?.numericId]) && r2.push(`identity`), n2.has(`grid`) && !bi([e2?.laneIndex, e2?.columnIndex], [t2?.laneIndex, t2?.columnIndex]) && r2.push(`grid`), n2.has(`position`) && !bi(e2?.position, t2?.position) && r2.push(`position`), n2.has(`health`) && !bi(e2?.health, t2?.health) && r2.push(`health`), n2.has(`alive`) && e2?.alive !== t2?.alive && r2.push(`alive`), n2.has(`team`) && !bi([e2?.team, e2?.targetTeam], [t2?.team, t2?.targetTeam]) && r2.push(`team`), n2.has(`capabilities`) && !bi(e2?.capabilities, t2?.capabilities) && r2.push(`capabilities`), r2;
+  return n2.has(`identity`) && !ki([e2?.kind, e2?.className, e2?.codename, e2?.numericId], [t2?.kind, t2?.className, t2?.codename, t2?.numericId]) && r2.push(`identity`), n2.has(`grid`) && !ki([e2?.laneIndex, e2?.columnIndex], [t2?.laneIndex, t2?.columnIndex]) && r2.push(`grid`), n2.has(`position`) && !ki(e2?.position, t2?.position) && r2.push(`position`), n2.has(`health`) && !ki(e2?.health, t2?.health) && r2.push(`health`), n2.has(`alive`) && e2?.alive !== t2?.alive && r2.push(`alive`), n2.has(`team`) && !ki([e2?.team, e2?.targetTeam], [t2?.team, t2?.targetTeam]) && r2.push(`team`), n2.has(`capabilities`) && !ki(e2?.capabilities, t2?.capabilities) && r2.push(`capabilities`), r2;
 }
-function Si() {
-  return s(`chunks:///_virtual/Square.ts`);
+function ji() {
+  return h(`chunks:///_virtual/Square.ts`);
 }
-function Ci(e2) {
-  let t2 = Si();
+function Mi(e2) {
+  let t2 = ji();
   return t2?.[e2] ?? t2?.Square?.[e2] ?? null;
 }
-function wi() {
-  let e2 = Ci(`getAllLane`);
+function Ni() {
+  let e2 = Mi(`getAllLane`);
   if (typeof e2 != `function`) return [];
   try {
     let t2 = e2();
@@ -2617,26 +2818,26 @@ function wi() {
     return [];
   }
 }
-function Ti(e2) {
-  let t2 = Ci(`getLane`);
+function Pi(e2) {
+  let t2 = Mi(`getLane`);
   if (typeof t2 == `function`) try {
     let n2 = t2(Number(e2));
     if (n2) return n2;
   } catch {
   }
-  return wi().find((t3) => Number(t3?.LaneIndex) === Number(e2)) ?? null;
+  return Ni().find((t3) => Number(t3?.LaneIndex) === Number(e2)) ?? null;
 }
-function Ei(e2, t2) {
-  let n2 = Ci(`getLnC`);
+function Fi(e2, t2) {
+  let n2 = Mi(`getLnC`);
   if (typeof n2 == `function`) try {
     return n2(Number(e2), Number(t2)) ?? null;
   } catch {
   }
-  let r2 = Ti(e2);
+  let r2 = Pi(e2);
   return (Array.isArray(r2?.laneLnCs) ? r2.laneLnCs : []).find((e3) => Number(e3?.cIndex) === Number(t2)) ?? null;
 }
-function Di(e2, t2, ...n2) {
-  let r2 = Ci(`getSquareWorldPosition`);
+function Ii(e2, t2, ...n2) {
+  let r2 = Mi(`getSquareWorldPosition`);
   if (typeof r2 != `function`) return null;
   try {
     return r2(Number(e2), Number(t2), ...n2) ?? null;
@@ -2644,17 +2845,17 @@ function Di(e2, t2, ...n2) {
     return null;
   }
 }
-function Oi() {
-  let e2 = Si();
+function Li() {
+  let e2 = ji();
   return { width: Number(e2?.SquareWidth || e2?.Square?.SquareWidth || 0), height: Number(e2?.SquareHeight || e2?.Square?.SquareHeight || 0) };
 }
-function ki(e2) {
+function Ri(e2) {
   if (!e2) return null;
   if (typeof e2.worldPositionX == `number` || typeof e2.worldPositionY == `number`) return { x: Number(e2.worldPositionX || 0), y: Number(e2.worldPositionY || 0) };
   let t2 = e2.worldPosition || e2.node?.worldPosition || e2.worldPositionVec3;
   return t2 && typeof t2 == `object` ? { x: Number(t2.x || 0), y: Number(t2.y || 0) } : null;
 }
-function X(e2 = []) {
+function Z(e2 = []) {
   let t2 = /* @__PURE__ */ new Set(), n2 = [];
   for (let r2 of e2) {
     if (!r2) continue;
@@ -2663,54 +2864,54 @@ function X(e2 = []) {
   }
   return n2;
 }
-function Ai(e2, t2) {
+function zi(e2, t2) {
   let n2 = Number(e2?.x || 0) - Number(t2?.x || 0), r2 = Number(e2?.y || 0) - Number(t2?.y || 0);
   return n2 * n2 + r2 * r2;
 }
-function Z(e2) {
-  return e2 ? typeof e2?.LaneIndex == `number` ? { laneIndex: Number(e2.LaneIndex), columnIndex: e2?.cIndex == null ? null : Number(e2.cIndex), lane: e2, cell: null, world: ki(e2) } : typeof e2?.lIndex == `number` || typeof e2?.cIndex == `number` ? { laneIndex: e2?.lIndex == null ? null : Number(e2.lIndex), columnIndex: e2?.cIndex == null ? null : Number(e2.cIndex), lane: e2?.inLane ?? (e2?.lIndex == null ? null : Ti(e2.lIndex)), cell: e2?.inLnC ?? (e2?.lIndex != null && e2?.cIndex != null ? Ei(e2.lIndex, e2.cIndex) : null), world: ki(e2), actor: e2 } : e2?.inLnC || e2?.inLane ? Z({ lIndex: e2?.inLnC?.lIndex ?? e2?.inLane?.LaneIndex, cIndex: e2?.inLnC?.cIndex ?? e2?.cIndex, inLnC: e2?.inLnC ?? null, inLane: e2?.inLane ?? null, worldPositionX: e2?.worldPositionX, worldPositionY: e2?.worldPositionY }) : typeof e2?.laneIndex == `number` || typeof e2?.columnIndex == `number` ? { laneIndex: e2?.laneIndex == null ? null : Number(e2.laneIndex), columnIndex: e2?.columnIndex == null ? null : Number(e2.columnIndex), lane: e2?.laneIndex == null ? null : Ti(e2.laneIndex), cell: e2?.laneIndex != null && e2?.columnIndex != null ? Ei(e2.laneIndex, e2.columnIndex) : null, world: e2?.world ?? ki(e2) } : { laneIndex: null, columnIndex: null, lane: null, cell: null, world: ki(e2) } : null;
+function Q(e2) {
+  return e2 ? typeof e2?.LaneIndex == `number` ? { laneIndex: Number(e2.LaneIndex), columnIndex: e2?.cIndex == null ? null : Number(e2.cIndex), lane: e2, cell: null, world: Ri(e2) } : typeof e2?.lIndex == `number` || typeof e2?.cIndex == `number` ? { laneIndex: e2?.lIndex == null ? null : Number(e2.lIndex), columnIndex: e2?.cIndex == null ? null : Number(e2.cIndex), lane: e2?.inLane ?? (e2?.lIndex == null ? null : Pi(e2.lIndex)), cell: e2?.inLnC ?? (e2?.lIndex != null && e2?.cIndex != null ? Fi(e2.lIndex, e2.cIndex) : null), world: Ri(e2), actor: e2 } : e2?.inLnC || e2?.inLane ? Q({ lIndex: e2?.inLnC?.lIndex ?? e2?.inLane?.LaneIndex, cIndex: e2?.inLnC?.cIndex ?? e2?.cIndex, inLnC: e2?.inLnC ?? null, inLane: e2?.inLane ?? null, worldPositionX: e2?.worldPositionX, worldPositionY: e2?.worldPositionY }) : typeof e2?.laneIndex == `number` || typeof e2?.columnIndex == `number` ? { laneIndex: e2?.laneIndex == null ? null : Number(e2.laneIndex), columnIndex: e2?.columnIndex == null ? null : Number(e2.columnIndex), lane: e2?.laneIndex == null ? null : Pi(e2.laneIndex), cell: e2?.laneIndex != null && e2?.columnIndex != null ? Fi(e2.laneIndex, e2.columnIndex) : null, world: e2?.world ?? Ri(e2) } : { laneIndex: null, columnIndex: null, lane: null, cell: null, world: Ri(e2) } : null;
 }
-function Q(e2, t2 = `all`) {
+function Bi(e2, t2 = `all`) {
   if (!e2) return [];
-  let n2 = () => X([e2?.tombPool?.(), e2?.tombPool?.(0), e2?.tombPool?.(1), e2?.tombPool?.(2)].flat().filter(Boolean));
+  let n2 = () => Z([e2?.tombPool?.(), e2?.tombPool?.(0), e2?.tombPool?.(1), e2?.tombPool?.(2)].flat().filter(Boolean));
   switch (String(t2 || `all`)) {
     case `plant`:
     case `plants`:
       return Array.isArray(e2?.plantPool?.()) ? e2.plantPool() : [];
     case `zombie`:
     case `zombies`:
-      return X([...Array.isArray(e2?.zombiePool?.()) ? e2.zombiePool() : [], ...Array.isArray(e2?.hypnoZombiePool?.()) ? e2.hypnoZombiePool() : []]);
+      return Z([...Array.isArray(e2?.zombiePool?.()) ? e2.zombiePool() : [], ...Array.isArray(e2?.hypnoZombiePool?.()) ? e2.hypnoZombiePool() : []]);
     case `projectile`:
     case `projectiles`:
-      return X([...Array.isArray(e2?.prjPool?.()) ? e2.prjPool() : [], ...Array.isArray(e2?.gumPool?.()) ? e2.gumPool() : [], ...Array.isArray(e2?.gumPool?.(1)) ? e2.gumPool(1) : [], ...Array.isArray(e2?.gumPool?.(-1)) ? e2.gumPool(-1) : []]);
+      return Z([...Array.isArray(e2?.prjPool?.()) ? e2.prjPool() : [], ...Array.isArray(e2?.gumPool?.()) ? e2.gumPool() : [], ...Array.isArray(e2?.gumPool?.(1)) ? e2.gumPool(1) : [], ...Array.isArray(e2?.gumPool?.(-1)) ? e2.gumPool(-1) : []]);
     case `tomb`:
     case `tombs`:
     case `tombstone`:
     case `tombstones`:
       return n2();
     default:
-      return X([...Q(e2, `plants`), ...Q(e2, `zombies`), ...Q(e2, `projectiles`), ...n2()]);
+      return Z([...Bi(e2, `plants`), ...Bi(e2, `zombies`), ...Bi(e2, `projectiles`), ...n2()]);
   }
 }
-function ji(e2 = {}) {
+function Vi(e2 = {}) {
   return { getSquareSize() {
-    return typeof e2.getSquareSize == `function` ? e2.getSquareSize() : Oi();
+    return typeof e2.getSquareSize == `function` ? e2.getSquareSize() : Li();
   }, getWorldPosition(t2, n2, ...r2) {
-    return typeof e2.getWorldPosition == `function` ? e2.getWorldPosition(t2, n2, ...r2) : Di(t2, n2, ...r2);
+    return typeof e2.getWorldPosition == `function` ? e2.getWorldPosition(t2, n2, ...r2) : Ii(t2, n2, ...r2);
   }, getLanes() {
     if (typeof e2.getLanes == `function`) {
       let t2 = e2.getLanes();
       return Array.isArray(t2) ? t2 : [];
     }
-    return wi();
+    return Ni();
   }, getLane(t2) {
-    return typeof e2.getLane == `function` ? e2.getLane(t2) ?? null : Ti(t2);
+    return typeof e2.getLane == `function` ? e2.getLane(t2) ?? null : Pi(t2);
   }, getCell(t2, n2) {
-    return typeof e2.getCell == `function` ? e2.getCell(t2, n2) ?? null : Ei(t2, n2);
+    return typeof e2.getCell == `function` ? e2.getCell(t2, n2) ?? null : Fi(t2, n2);
   }, getCells() {
     if (typeof e2.getCells == `function`) {
       let t3 = e2.getCells();
-      return X(Array.isArray(t3) ? t3 : []);
+      return Z(Array.isArray(t3) ? t3 : []);
     }
     let t2 = this.getLanes(), n2 = [];
     for (let e3 of t2) {
@@ -2723,74 +2924,74 @@ function ji(e2 = {}) {
         r2 && n2.push(r2);
       }
     }
-    return X(n2);
+    return Z(n2);
   }, describe(e3) {
-    return Z(e3);
+    return Q(e3);
   }, isSameCell(e3, t2) {
-    let n2 = Z(e3), r2 = Z(t2);
+    let n2 = Q(e3), r2 = Q(t2);
     return n2?.laneIndex != null && n2?.columnIndex != null && n2.laneIndex === r2?.laneIndex && n2.columnIndex === r2?.columnIndex;
   }, getNeighbors(e3, t2 = {}) {
-    let n2 = Z(e3);
+    let n2 = Q(e3);
     if (n2?.laneIndex == null || n2?.columnIndex == null) return [];
     let r2 = Math.max(1, Math.floor(Number(t2.distance || 1))), i2 = t2.diagonals !== false, a2 = t2.includeSelf === true, o2 = [];
     for (let e4 = -r2; e4 <= r2; e4++) for (let t3 = -r2; t3 <= r2; t3++) {
       if (!a2 && e4 === 0 && t3 === 0 || !i2 && e4 !== 0 && t3 !== 0) continue;
-      let r3 = Ei(n2.laneIndex + e4, n2.columnIndex + t3);
+      let r3 = Fi(n2.laneIndex + e4, n2.columnIndex + t3);
       r3 && o2.push(r3);
     }
-    return X(o2);
+    return Z(o2);
   }, getLaneEntities(e3, t2 = `all`) {
-    return Q(Ti(e3), t2);
+    return Bi(Pi(e3), t2);
   }, getCellEntities(e3, t2, n2 = {}) {
-    let r2 = Z(typeof e3 == `number` ? { laneIndex: e3, columnIndex: t2 } : e3);
+    let r2 = Q(typeof e3 == `number` ? { laneIndex: e3, columnIndex: t2 } : e3);
     if (!r2?.cell) return [];
-    let i2 = Array.isArray(n2.kind || n2.kinds) ? n2.kind || n2.kinds : [n2.kind || n2.kinds || `all`], a2 = typeof n2.filter == `function` ? n2.filter : null, o2 = X(Q(r2.lane, `all`).filter((e4) => e4?.inLnC === r2.cell)).filter((e4) => i2.includes(`all`) || i2.some((t3) => Q(r2.lane, t3).includes(e4)));
+    let i2 = Array.isArray(n2.kind || n2.kinds) ? n2.kind || n2.kinds : [n2.kind || n2.kinds || `all`], a2 = typeof n2.filter == `function` ? n2.filter : null, o2 = Z(Bi(r2.lane, `all`).filter((e4) => e4?.inLnC === r2.cell)).filter((e4) => i2.includes(`all`) || i2.some((t3) => Bi(r2.lane, t3).includes(e4)));
     return a2 ? o2.filter((e4) => a2(e4) !== false) : o2;
   }, listEntities(t2 = {}) {
     if (typeof e2.listEntities == `function`) {
       let n3 = e2.listEntities(t2);
-      return X(Array.isArray(n3) ? n3 : []);
+      return Z(Array.isArray(n3) ? n3 : []);
     }
-    let n2 = Z(t2.around || t2.center || t2.actor || t2.cell), r2 = Math.max(0, Math.floor(Number(t2.includeAdjacentLanes ?? t2.laneRadius ?? 0))), i2 = Number(t2.radius ?? t2.maxDistance ?? 0), a2 = typeof t2.filter == `function` ? t2.filter : null, o2 = [];
+    let n2 = Q(t2.around || t2.center || t2.actor || t2.cell), r2 = Math.max(0, Math.floor(Number(t2.includeAdjacentLanes ?? t2.laneRadius ?? 0))), i2 = Number(t2.radius ?? t2.maxDistance ?? 0), a2 = typeof t2.filter == `function` ? t2.filter : null, o2 = [];
     if (n2?.laneIndex != null) for (let e3 = n2.laneIndex - r2; e3 <= n2.laneIndex + r2; e3++) {
-      let t3 = Ti(e3);
+      let t3 = Pi(e3);
       t3 && o2.push(t3);
     }
     else if (t2.laneIndex != null) {
-      let e3 = Ti(t2.laneIndex);
+      let e3 = Pi(t2.laneIndex);
       e3 && (o2 = [e3]);
-    } else o2 = wi();
+    } else o2 = Ni();
     let s2 = t2.kind || t2.kinds || `all`, c2 = Array.isArray(s2) ? s2 : [s2];
-    return X(o2.flatMap((e3) => c2.flatMap((t3) => Q(e3, t3)))).filter((e3) => {
+    return Z(o2.flatMap((e3) => c2.flatMap((t3) => Bi(e3, t3)))).filter((e3) => {
       if (n2?.cell && t2.sameCell === true && e3?.inLnC !== n2.cell) return false;
       if (i2 > 0 && n2?.world) {
-        let t3 = ki(e3);
-        if (!t3 || Ai(n2.world, t3) > i2 * i2) return false;
+        let t3 = Ri(e3);
+        if (!t3 || zi(n2.world, t3) > i2 * i2) return false;
       }
       return a2 ? a2(e3) !== false : true;
     });
   }, findNearest(e3, t2 = {}) {
-    let n2 = Z(e3);
+    let n2 = Q(e3);
     if (!n2?.world) return null;
     let r2 = this.listEntities({ ...t2, around: e3 }), i2 = null, a2 = 1 / 0;
     for (let t3 of r2) {
       if (t3 === e3 || t3 === n2.actor) continue;
-      let r3 = ki(t3);
+      let r3 = Ri(t3);
       if (!r3) continue;
-      let o2 = Ai(n2.world, r3);
+      let o2 = zi(n2.world, r3);
       o2 < a2 && (a2 = o2, i2 = t3);
     }
     return i2;
   }, moveEntityToCell(e3, t2, n2) {
     return this.snapEntityToCell(e3, t2, n2);
   }, snapEntityToCell(e3, t2, n2) {
-    let r2 = Ei(t2, n2);
+    let r2 = Fi(t2, n2);
     if (!e3 || !r2) return false;
     try {
       if (typeof e3.setInLnC == `function`) return e3.setInLnC(r2), true;
     } catch {
     }
-    let i2 = Di(t2, n2);
+    let i2 = Ii(t2, n2);
     if (!i2) return false;
     try {
       return `worldPositionX` in e3 && (e3.worldPositionX = Number(i2.x || 0)), `worldPositionY` in e3 && (e3.worldPositionY = Number(i2.y || 0)), e3.judgeInLnC?.(), true;
@@ -2798,13 +2999,13 @@ function ji(e2 = {}) {
       return false;
     }
   }, swapEntities(e3, t2) {
-    let n2 = Z(e3), r2 = Z(t2);
+    let n2 = Q(e3), r2 = Q(t2);
     if (!n2?.actor || !r2?.actor || n2.laneIndex == null || n2.columnIndex == null || r2.laneIndex == null || r2.columnIndex == null) return false;
     let i2 = this.snapEntityToCell(n2.actor, r2.laneIndex, r2.columnIndex), a2 = this.snapEntityToCell(r2.actor, n2.laneIndex, n2.columnIndex);
     return i2 && a2;
   } };
 }
-function Mi(e2 = {}) {
+function Hi(e2 = {}) {
   let t2 = (t3) => {
     let n2 = typeof t3 == `string` ? t3 : t3?.domain || t3?.actorDomain || t3?.kind || `plants`, r2 = String(n2 || `plants`);
     return e2[r2] || e2[`${r2}s`] || null;
@@ -2841,14 +3042,14 @@ function Mi(e2 = {}) {
     return e2.actions?.isAlive?.(t3) === true;
   } };
 }
-function Ni(e2, t2) {
-  let n2 = G(e2.classCandidates), r2 = (r3 = {}) => {
-    let i3 = G(r3.classNames || r3.className || n2), a3 = tr(i3);
+function Ui(e2, t2) {
+  let n2 = W(e2.classCandidates), r2 = (r3 = {}) => {
+    let i3 = W(r3.classNames || r3.className || n2), a3 = fr(i3);
     if (!a3) {
       if (r3.optional === true) return null;
       throw Error(`[${e2.label}] target class not found: ${i3.join(`, `) || `(none)`}`);
     }
-    let o3 = r3.isStatic === true ? a3.cls : a3.cls?.prototype, s3 = G(r3.methodNames || r3.methodName), c3 = nr(o3, s3);
+    let o3 = r3.isStatic === true ? a3.cls : a3.cls?.prototype, s3 = W(r3.methodNames || r3.methodName), c3 = pr(o3, s3);
     if (!c3) {
       if (r3.optional === true) return null;
       throw Error(`[${e2.label}] target method not found on ${a3.name}: ${s3.join(`, `) || `(none)`}`);
@@ -2867,279 +3068,279 @@ function Ni(e2, t2) {
     } });
   }, a2 = i2(e2.spawnMethodCandidates || [`onEnable`, `characterOnEnable`], `after`), o2 = i2(e2.spawnMethodCandidates || [`onEnable`, `characterOnEnable`], `before`), s2 = i2(e2.deathMethodCandidates || [`playDie`, `die`], `after`), c2 = i2(e2.deathMethodCandidates || [`playDie`, `die`], `before`), l2 = i2(e2.hitMethodCandidates || [`dealDamage`, `onDamaged`, `judgeDeath`], `after`), u2 = i2(e2.hitMethodCandidates || [`dealDamage`, `onDamaged`, `judgeDeath`], `before`), d2 = i2(e2.actionMethodCandidates || [`attack`, `shoot`], `before`), f2 = i2(e2.actionMethodCandidates || [`attack`, `shoot`], `after`), p2 = (t3 = {}) => r2({ classNames: t3.classNames || t3.className || n2, methodNames: t3.methodNames || t3.methodName || e2.actionMethodCandidates, optional: t3.optional === true, isStatic: t3.isStatic === true, handler: t3.override });
   return { resolveClass(e3 = n2) {
-    return tr(e3);
+    return fr(e3);
   }, wrapClassMethod: r2, onSpawn: a2, onBeforeSpawn: o2, onDeath: s2, onBeforeDeath: c2, onHit: l2, onBeforeHit: u2, onBeforeAction: d2, onAfterAction: f2, actionOverride: p2, overrideAction: p2 };
 }
-function Pi(e2, t2) {
+function Wi(e2, t2) {
   let n2 = { listFeatureEntries(n3 = {}) {
-    return Gn(e2, t2.featureType, n3.useOriginal === true);
+    return nr(e2, t2.featureType, n3.useOriginal === true);
   }, getFeature(n3, r2 = {}) {
-    return Kn(e2, t2.featureType, n3, r2);
+    return rr(e2, t2.featureType, n3, r2);
   }, getFeatureData(n3 = {}) {
-    return B(e2, n3.useOriginal === true ? H(e2, t2.featureType) : V(e2, t2.featureType));
+    return z(e2, n3.useOriginal === true ? V(e2, t2.featureType) : B(e2, t2.featureType));
   }, mutateFeatures(n3) {
-    return U(e2, t2.featureType, n3);
+    return H(e2, t2.featureType, n3);
   } };
   for (let [r2, i2] of Object.entries(t2.objectTypes || {})) {
     let t3 = r2.charAt(0).toUpperCase() + r2.slice(1);
-    n2[`list${t3}Entries`] = (t4 = {}) => Gn(e2, i2, t4.useOriginal === true), n2[`get${t3}`] = (t4, n3 = {}) => Kn(e2, i2, t4, n3), n2[`get${t3}Data`] = (t4 = {}) => B(e2, t4.useOriginal === true ? H(e2, i2) : V(e2, i2)), n2[`mutate${t3}`] = (t4) => U(e2, i2, t4);
+    n2[`list${t3}Entries`] = (t4 = {}) => nr(e2, i2, t4.useOriginal === true), n2[`get${t3}`] = (t4, n3 = {}) => rr(e2, i2, t4, n3), n2[`get${t3}Data`] = (t4 = {}) => z(e2, t4.useOriginal === true ? V(e2, i2) : B(e2, i2)), n2[`mutate${t3}`] = (t4) => H(e2, i2, t4);
   }
   return n2.getBundle = (n3 = {}) => {
     let r2 = {};
-    t2.featureType && (r2.features = n3.useOriginal === true ? H(e2, t2.featureType) : V(e2, t2.featureType));
-    for (let [i2, a2] of Object.entries(t2.objectTypes || {})) r2[i2] = n3.useOriginal === true ? H(e2, a2) : V(e2, a2);
-    return B(e2, r2);
-  }, { api: n2, behavior: Ni(t2, e2.behaviorTools || {}) };
+    t2.featureType && (r2.features = n3.useOriginal === true ? V(e2, t2.featureType) : B(e2, t2.featureType));
+    for (let [i2, a2] of Object.entries(t2.objectTypes || {})) r2[i2] = n3.useOriginal === true ? V(e2, a2) : B(e2, a2);
+    return z(e2, r2);
+  }, { api: n2, behavior: Ui(t2, e2.behaviorTools || {}) };
 }
 function $(e2, t2, n2 = {}) {
   return { type: t2, getData(n3 = {}) {
-    return B(e2, n3.useOriginal === true ? H(e2, t2) : V(e2, t2));
+    return z(e2, n3.useOriginal === true ? V(e2, t2) : B(e2, t2));
   }, listEntries(n3 = {}) {
-    return Gn(e2, t2, n3.useOriginal === true);
+    return nr(e2, t2, n3.useOriginal === true);
   }, getEntry(n3, r2 = {}) {
-    return Kn(e2, t2, n3, r2);
+    return rr(e2, t2, n3, r2);
   }, mutate(n3) {
-    return U(e2, t2, n3);
+    return H(e2, t2, n3);
   }, export(n3 = {}) {
     return t2 === `lang` ? e2?.exportLang?.(n3.useOriginal === true, n3.autoDownload !== false) ?? null : e2?.exportJson?.(t2, n3.useOriginal === true, n3.autoDownload !== false) ?? null;
   }, ...n2 };
 }
-function Fi(e2 = {}) {
-  let t2 = (t3) => (n2) => {
+function Gi(e2 = {}) {
+  let t2 = (t3) => (n3) => {
     try {
-      e2.reportPersistentMutation?.(Object.freeze({ domain: `native-player-save`, operation: t3, status: n2 }));
+      e2.reportPersistentMutation?.(Object.freeze({ domain: `native-player-save`, operation: t3, status: n3 }));
     } catch {
       console.warn(`[GP Next:mod-api] Persistent mutation reporter failed`);
     }
-  }, s2 = on({ runtime: e2.runtime, subscribeGameTick: e2.subscribeGameTick, getGameClockState: e2.getGameClockState }), c2 = () => {
-    let t3 = e2.getSceneName?.() ?? u() ?? null, n2 = e2.getLevelController?.() ?? qn(), r2 = e2.getUiInGame?.() ?? Jn(), i2 = t3 === `inGameScene` && !!n2, a2 = false;
+  }, n2 = hn({ runtime: e2.runtime, subscribeGameTick: e2.subscribeGameTick, getGameClockState: e2.getGameClockState }), i2 = () => {
+    let t3 = e2.getSceneName?.() ?? s() ?? null, r2 = e2.getLevelController?.() ?? ir(), i3 = e2.getUiInGame?.() ?? ar(), a3 = t3 === `inGameScene` && !!r2, o3 = false;
     try {
-      a2 = n2?.gaming === true;
+      o3 = r2?.gaming === true;
     } catch {
     }
-    let o2 = i2 && n2?.gameStarted === true, c3 = i2 && n2?.gameWon === true, l2 = i2 && n2?.gameLost === true, d3 = i2 && (c3 || l2 || n2?.gameOver === true), f3 = s2.getState(), p3 = i2 && !d3 && (r2?.paused === true || f3.paused === true), m3 = i2 && o2 && a2 && !p3 && !d3, h2 = `outside`;
-    i2 && (h2 = c3 ? `won` : l2 ? `lost` : d3 ? `ended` : p3 ? `paused` : !o2 || n2?.lastStandPrepareStarted === true ? `preparing` : m3 ? `running` : `waiting`);
-    let g3 = i2 ? e2.getCurrentLevelName?.() ?? n2?.levelNameString ?? n2?.levelName ?? null : null;
-    return Object.freeze({ available: i2, sceneName: t3, levelName: g3, phase: h2, started: o2, running: m3, paused: p3, ended: d3, outcome: c3 ? `won` : l2 ? `lost` : null });
-  }, d2 = { listTypes() {
-    return [...h];
+    let c2 = a3 && r2?.gameStarted === true, l3 = a3 && r2?.gameWon === true, u2 = a3 && r2?.gameLost === true, d2 = a3 && (l3 || u2 || r2?.gameOver === true), f2 = n2.getState(), p2 = a3 && !d2 && (i3?.paused === true || f2.paused === true), m2 = a3 && c2 && o3 && !p2 && !d2, h3 = `outside`;
+    a3 && (h3 = l3 ? `won` : u2 ? `lost` : d2 ? `ended` : p2 ? `paused` : !c2 || r2?.lastStandPrepareStarted === true ? `preparing` : m2 ? `running` : `waiting`);
+    let g3 = a3 ? e2.getCurrentLevelName?.() ?? r2?.levelNameString ?? r2?.levelName ?? null : null;
+    return Object.freeze({ available: a3, sceneName: t3, levelName: g3, phase: h3, started: c2, running: m2, paused: p2, ended: d2, outcome: l3 ? `won` : u2 ? `lost` : null });
+  }, a2 = { listTypes() {
+    return [...r];
   }, listTypeInfos() {
-    return h.map((e3) => Un(e3));
+    return r.map((e3) => er(e3));
   }, getTypeInfo(e3) {
-    return Un(e3);
+    return er(e3);
   }, getCurrent(t3) {
-    return B(e2, V(e2, t3));
+    return z(e2, B(e2, t3));
   }, getOriginal(t3) {
-    return B(e2, H(e2, t3));
-  }, listEntries(t3, n2 = {}) {
-    return Gn(e2, t3, n2.useOriginal === true);
-  }, getEntry(t3, n2, r2 = {}) {
-    return Kn(e2, t3, n2, r2);
-  }, mutate(t3, n2) {
-    return U(e2, t3, n2);
+    return z(e2, V(e2, t3));
+  }, listEntries(t3, n3 = {}) {
+    return nr(e2, t3, n3.useOriginal === true);
+  }, getEntry(t3, n3, r2 = {}) {
+    return rr(e2, t3, n3, r2);
+  }, mutate(t3, n3) {
+    return H(e2, t3, n3);
   }, hasBackup(t3) {
-    return typeof e2?.hasBackup == `function` ? e2.hasBackup(t3) : H(e2, t3) != null;
+    return typeof e2?.hasBackup == `function` ? e2.hasBackup(t3) : V(e2, t3) != null;
   }, listBackups() {
     return typeof e2?.listBackups == `function` ? e2.listBackups() : [];
   }, restore(t3) {
-    let n2 = V(e2, t3);
-    return n2 && e2?.beforeDataMutation?.(t3, n2), typeof e2?.restoreData == `function` ? e2.restoreData(t3) : false;
-  }, export(t3, n2 = false, r2 = true) {
-    return t3 === `lang` ? e2?.exportLang?.(n2, r2) ?? null : e2?.exportJson?.(t3, n2, r2) ?? null;
-  }, setObjectsData(t3, n2, ...r2) {
-    let i2 = V(e2, t3);
-    return i2 && e2?.beforeDataMutation?.(t3, i2), e2?.setObjectsData?.(t3, n2, ...r2) ?? false;
-  } }, f2 = { getName() {
-    return u();
+    let n3 = B(e2, t3);
+    return n3 && e2?.beforeDataMutation?.(t3, n3), typeof e2?.restoreData == `function` ? e2.restoreData(t3) : false;
+  }, export(t3, n3 = false, r2 = true) {
+    return t3 === `lang` ? e2?.exportLang?.(n3, r2) ?? null : e2?.exportJson?.(t3, n3, r2) ?? null;
+  }, setObjectsData(t3, n3, ...r2) {
+    let i3 = B(e2, t3);
+    return i3 && e2?.beforeDataMutation?.(t3, i3), e2?.setObjectsData?.(t3, n3, ...r2) ?? false;
+  } }, o2 = { getName() {
+    return s();
   }, getCurrent() {
-    return o();
+    return c();
   }, is(e3) {
-    return u() === String(e3 || ``);
+    return s() === String(e3 || ``);
   }, getComponent(e3) {
-    return a(e3);
-  } }, p2 = { getController() {
-    return qn();
+    return f(e3);
+  } }, l2 = { getController() {
+    return ir();
   }, getCurrentLevelName() {
     if (typeof e2?.getCurrentLevelName == `function`) return e2.getCurrentLevelName() ?? null;
-    let t3 = qn();
+    let t3 = ir();
     return t3?.levelNameString || t3?.levelName || null;
   }, getDefinition(t3) {
-    let n2 = String(t3 || p2.getCurrentLevelName() || ``);
-    return n2 ? V(e2, n2) : null;
+    let n3 = String(t3 || l2.getCurrentLevelName() || ``);
+    return n3 ? B(e2, n3) : null;
   }, getOriginalDefinition(t3) {
-    let n2 = String(t3 || p2.getCurrentLevelName() || ``);
-    return n2 ? H(e2, n2) : null;
-  }, mutateDefinition(t3, n2) {
-    let r2 = typeof t3 == `function`, i2 = r2 ? t3 : n2, a2 = String((r2 ? null : t3) || p2.getCurrentLevelName() || ``);
-    return a2 ? U(e2, a2, i2) : null;
+    let n3 = String(t3 || l2.getCurrentLevelName() || ``);
+    return n3 ? V(e2, n3) : null;
+  }, mutateDefinition(t3, n3) {
+    let r2 = typeof t3 == `function`, i3 = r2 ? t3 : n3, a3 = String((r2 ? null : t3) || l2.getCurrentLevelName() || ``);
+    return a3 ? H(e2, a3, i3) : null;
   }, getModulesData(t3 = {}) {
-    return t3.useOriginal === true ? H(e2, `LevelModules`) : V(e2, `LevelModules`);
+    return t3.useOriginal === true ? V(e2, `LevelModules`) : B(e2, `LevelModules`);
   }, mutateModules(t3) {
-    return U(e2, `LevelModules`, t3);
+    return H(e2, `LevelModules`, t3);
   }, forceWin() {
-    return Yn()?.victory?.();
+    return or()?.victory?.();
   }, forceLose() {
-    return Jn()?.loseDarken?.();
+    return ar()?.loseDarken?.();
   }, restoreMowers() {
-    return qn()?.spawnMowers?.();
+    return ir()?.spawnMowers?.();
   }, onLevelLoaded(t3) {
     return typeof e2?.behaviorTools?.onEvent == `function` ? e2.behaviorTools.onEvent(`scene:after-launch`, (e3) => {
-      e3?.sceneName === `inGameScene` && t3({ sceneName: e3.sceneName, levelName: p2.getCurrentLevelName(), controller: p2.getController() });
+      e3?.sceneName === `inGameScene` && t3({ sceneName: e3.sceneName, levelName: l2.getCurrentLevelName(), controller: l2.getController() });
     }) : () => {
     };
-  } }, m2 = { getAll() {
-    let e3 = W();
+  } }, h2 = { getAll() {
+    let e3 = U();
     return e3?.currentPlayer && t2(`player.raw`)(`unknown`), e3?.currentPlayer ?? null;
   }, getRawController() {
-    let e3 = W();
+    let e3 = U();
     return e3 && t2(`player.raw`)(`unknown`), e3;
   }, save() {
-    let e3 = W();
+    let e3 = U();
     if (typeof e3?.savePP != `function`) return;
-    let n2 = t2(`player.save`);
-    n2(`unknown`);
+    let n3 = t2(`player.save`);
+    n3(`unknown`);
     let r2 = e3.savePP();
-    return n2(`changed`), r2;
-  }, getProperty(e3, n2) {
-    return Qn(e3, n2, t2(`player.raw`));
-  }, setProperty(e3, n2, r2) {
-    return $n(e3, n2, r2, t2(`player.setProperty`));
-  }, addProperty(e3, n2, r2) {
-    return er(e3, n2, r2, t2(`player.addProperty`));
+    return n3(`changed`), r2;
+  }, getProperty(e3, n3) {
+    return lr(e3, n3, t2(`player.raw`));
+  }, setProperty(e3, n3, r2) {
+    return ur(e3, n3, r2, t2(`player.setProperty`));
+  }, addProperty(e3, n3, r2) {
+    return dr(e3, n3, r2, t2(`player.addProperty`));
   }, getCurrency(e3) {
-    return Qn(e3, Rn[e3], t2(`player.raw`));
-  }, setCurrency(e3, n2) {
-    return $n(e3, n2, Rn[e3], t2(`player.setCurrency`));
-  }, addCurrency(e3, n2) {
-    return er(e3, n2, Rn[e3], t2(`player.addCurrency`));
+    return lr(e3, Yn[e3], t2(`player.raw`));
+  }, setCurrency(e3, n3) {
+    return ur(e3, n3, Yn[e3], t2(`player.setCurrency`));
+  }, addCurrency(e3, n3) {
+    return dr(e3, n3, Yn[e3], t2(`player.addCurrency`));
   }, getZenGardenState() {
-    let e3 = W()?.currentPlayer?.zengarden ?? null;
+    let e3 = U()?.currentPlayer?.zengarden ?? null;
     return e3 && t2(`player.raw`)(`unknown`), e3;
   }, mutateZenGarden(e3) {
-    let n2 = m2.getZenGardenState();
-    if (!n2 || typeof e3 != `function`) return null;
+    let n3 = h2.getZenGardenState();
+    if (!n3 || typeof e3 != `function`) return null;
     let r2 = t2(`player.mutateZenGarden`);
     r2(`unknown`);
-    let i2 = e3(n2, { player: m2.getAll() });
-    return m2.save(), typeof W()?.savePP == `function` && r2(`changed`), i2 === void 0 ? n2 : i2;
+    let i3 = e3(n3, { player: h2.getAll() });
+    return h2.save(), typeof U()?.savePP == `function` && r2(`changed`), i3 === void 0 ? n3 : i3;
   }, addSun(e3) {
-    return Xn()?.SunAdd?.(Number(e3 || 0));
+    return sr()?.SunAdd?.(Number(e3 || 0));
   }, setSun(e3) {
-    return Xn()?.setSunCount?.(Number(e3 || 0));
+    return sr()?.setSunCount?.(Number(e3 || 0));
   }, addPlantFood(e3 = 1) {
-    let n2 = Zn();
-    if (!n2) return null;
+    let n3 = cr();
+    if (!n3) return null;
     let r2 = Math.max(0, Number(e3 || 0));
-    for (let e4 = 0; e4 < r2; e4++) if (typeof n2.plantFoodAdd == `function`) {
+    for (let e4 = 0; e4 < r2; e4++) if (typeof n3.plantFoodAdd == `function`) {
       let e5 = t2(`player.addPlantFood`);
-      e5(`unknown`), n2.plantFoodAdd(), e5(`changed`);
+      e5(`unknown`), n3.plantFoodAdd(), e5(`changed`);
     }
-    return t2(`player.raw`)(`unknown`), n2;
+    return t2(`player.raw`)(`unknown`), n3;
   }, setPlantFood(e3) {
-    return Zn()?.setPlantFoodNum?.(Number(e3 || 0));
+    return cr()?.setPlantFoodNum?.(Number(e3 || 0));
   } }, g2 = { getUiInGame() {
-    return Jn();
+    return ar();
   }, getLevelPlay() {
-    return Yn();
+    return or();
   }, setSpeedUp(e3) {
-    return Jn()?.speedUp?.(e3 === true);
+    return ar()?.speedUp?.(e3 === true);
   }, getFrameRate() {
-    return l()?.game?._frameRate ?? null;
+    return d()?.game?._frameRate ?? null;
   }, setFrameRate(e3) {
-    return l()?.game?.setFrameRate?.(Number(e3 || 60));
+    return d()?.game?.setFrameRate?.(Number(e3 || 60));
   } }, _2 = { getLyrics() {
-    return typeof e2?.getLyrics == `function` ? e2.getLyrics() ?? null : n(`MultiLanguage`)?.lyrics ?? null;
+    return typeof e2?.getLyrics == `function` ? e2.getLyrics() ?? null : u(`MultiLanguage`)?.lyrics ?? null;
   }, getCurrentLanguage() {
-    return n(`MultiLanguage`)?.currentLanguage ?? 0;
+    return u(`MultiLanguage`)?.currentLanguage ?? 0;
   }, setCurrentLanguage(e3) {
-    let t3 = n(`MultiLanguage`);
+    let t3 = u(`MultiLanguage`);
     return t3 ? (t3.currentLanguage = Number(e3 || 0), t3.currentLanguage) : null;
-  }, export(t3 = false, n2 = true) {
-    return e2?.exportLang?.(t3, n2) ?? null;
-  } }, v2 = ji(e2), y2 = fi(v2, e2), b2 = new pn();
-  for (let t3 of _n({ getModuleExport: (t4, n2) => e2.getModuleExport?.(t4, n2) ?? r(t4, n2) })) b2.register(t3);
-  let x2 = mn({ registry: b2, unwrap: R, getKind: (e3) => zn(e3) || mi(R(e3)) }), S2 = { list(t3 = {}) {
-    if ([t3.around, t3.center, t3.actor, t3.cell].some(Bn)) return [];
-    let n2 = typeof t3.filter == `function` ? t3.filter : null, r2 = { ...t3, around: R(t3.around), center: R(t3.center), actor: R(t3.actor), cell: R(t3.cell), filter: null }, i2 = hi(Array.isArray(t3.kind || t3.kinds) ? null : t3.kind || t3.kinds), a2 = v2.listEntities(r2).map((t4) => vi(t4, v2, y2, i2, null, e2, x2)).filter(Boolean).filter((e3) => yi(e3, t3));
-    return n2 ? a2.filter((e3) => n2(e3) !== false) : a2;
+  }, export(t3 = false, n3 = true) {
+    return e2?.exportLang?.(t3, n3) ?? null;
+  } }, v2 = Vi(e2), y2 = Si(v2, e2), b2 = new Sn();
+  for (let t3 of En({ getModuleExport: (t4, n3) => e2.getModuleExport?.(t4, n3) ?? p(t4, n3) })) b2.register(t3);
+  let x2 = Cn({ registry: b2, unwrap: L, getKind: (e3) => Xn(e3) || wi(L(e3)) }), S2 = { list(t3 = {}) {
+    if ([t3.around, t3.center, t3.actor, t3.cell].some(Zn)) return [];
+    let n3 = typeof t3.filter == `function` ? t3.filter : null, r2 = { ...t3, around: L(t3.around), center: L(t3.center), actor: L(t3.actor), cell: L(t3.cell), filter: null }, i3 = Ti(Array.isArray(t3.kind || t3.kinds) ? null : t3.kind || t3.kinds), a3 = v2.listEntities(r2).map((t4) => X(t4, v2, y2, i3, null, e2, x2)).filter(Boolean).filter((e3) => Oi(e3, t3));
+    return n3 ? a3.filter((e3) => n3(e3) !== false) : a3;
   }, findNearest(e3, t3 = {}) {
-    if (Bn(e3)) return null;
-    let n2 = this.describe(e3)?.position;
-    if (!n2) return null;
-    let r2 = R(e3), i2 = null, a2 = 1 / 0;
-    for (let o2 of this.list({ ...t3, around: e3 })) {
-      if (R(o2) === r2) continue;
-      let e4 = o2.snapshot().position;
+    if (Zn(e3)) return null;
+    let n3 = this.describe(e3)?.position;
+    if (!n3) return null;
+    let r2 = L(e3), i3 = null, a3 = 1 / 0;
+    for (let o3 of this.list({ ...t3, around: e3 })) {
+      if (L(o3) === r2) continue;
+      let e4 = o3.snapshot().position;
       if (!e4) continue;
-      let t4 = e4.x - n2.x, s3 = e4.y - n2.y, c3 = t4 * t4 + s3 * s3;
-      c3 < a2 && (i2 = o2, a2 = c3);
+      let t4 = e4.x - n3.x, s2 = e4.y - n3.y, c2 = t4 * t4 + s2 * s2;
+      c2 < a3 && (i3 = o3, a3 = c2);
     }
-    return i2;
+    return i3;
   }, describe(t3) {
-    return L(t3) ? t3.snapshot?.() ?? null : vi(R(t3), v2, y2, zn(t3), null, e2, x2)?.snapshot() ?? null;
-  }, listInLane(t3, n2 = `all`) {
-    return v2.getLaneEntities(t3, n2).map((t4) => vi(t4, v2, y2, n2, null, e2, x2));
-  }, listInCell(t3, n2, r2 = {}) {
-    let i2 = n2;
-    if (typeof t3 != `number` && n2 && typeof n2 == `object` && !Array.isArray(n2) && (r2 = n2, i2 = void 0), typeof t3 != `number` && Bn(t3)) return [];
-    let a2 = R(t3);
-    return v2.getCellEntities(a2, i2, { ...r2, filter: null }).map((t4) => vi(t4, v2, y2, null, null, e2, x2)).filter((e3) => yi(e3, r2)).filter((e3) => typeof r2.filter != `function` || r2.filter(e3) !== false);
-  }, fromRaw(t3, n2 = null) {
-    return vi(t3, v2, y2, n2, null, e2, x2);
-  }, watch(t3 = {}, n2, r2 = {}) {
-    if (typeof n2 != `function`) throw Error(`entities.watch() requires a listener`);
-    let i2 = e2.runtime;
-    if (!i2?.setInterval || !i2?.track) throw Error(`entities.watch() requires a managed mod runtime`);
+    return I(t3) ? t3.snapshot?.() ?? null : X(L(t3), v2, y2, Xn(t3), null, e2, x2)?.snapshot() ?? null;
+  }, listInLane(t3, n3 = `all`) {
+    return v2.getLaneEntities(t3, n3).map((t4) => X(t4, v2, y2, n3, null, e2, x2));
+  }, listInCell(t3, n3, r2 = {}) {
+    let i3 = n3;
+    if (typeof t3 != `number` && n3 && typeof n3 == `object` && !Array.isArray(n3) && (r2 = n3, i3 = void 0), typeof t3 != `number` && Zn(t3)) return [];
+    let a3 = L(t3);
+    return v2.getCellEntities(a3, i3, { ...r2, filter: null }).map((t4) => X(t4, v2, y2, null, null, e2, x2)).filter((e3) => Oi(e3, r2)).filter((e3) => typeof r2.filter != `function` || r2.filter(e3) !== false);
+  }, fromRaw(t3, n3 = null) {
+    return X(t3, v2, y2, n3, null, e2, x2);
+  }, watch(t3 = {}, n3, r2 = {}) {
+    if (typeof n3 != `function`) throw Error(`entities.watch() requires a listener`);
+    let i3 = e2.runtime;
+    if (!i3?.setInterval || !i3?.track) throw Error(`entities.watch() requires a managed mod runtime`);
     r2 = r2 && typeof r2 == `object` ? r2 : {};
-    let a2 = Math.max(50, Math.min(1e4, Number(r2.intervalMs) || 250)), o2 = Array.isArray(r2.fields) && r2.fields.length > 0 ? r2.fields : [`identity`, `grid`, `health`, `alive`, `team`, `capabilities`], s3 = new Set(o2.map((e3) => String(e3 || ``).trim()).filter(Boolean)), c3 = () => {
+    let a3 = Math.max(50, Math.min(1e4, Number(r2.intervalMs) || 250)), o3 = Array.isArray(r2.fields) && r2.fields.length > 0 ? r2.fields : [`identity`, `grid`, `health`, `alive`, `team`, `capabilities`], c2 = new Set(o3.map((e3) => String(e3 || ``).trim()).filter(Boolean)), l3 = () => {
       try {
-        return typeof i2.isActive != `function` || i2.isActive() !== false;
+        return typeof i3.isActive != `function` || i3.isActive() !== false;
       } catch {
         return false;
       }
-    }, l2 = /* @__PURE__ */ new Map(), d3 = false, f3 = false, p3 = null, m3 = et({ runtime: i2, signal: r2.signal, label: r2.label || `entity watch`, onCancel() {
-      l2.clear(), p3?.();
+    }, u2 = /* @__PURE__ */ new Map(), d2 = false, f2 = false, p2 = null, m2 = D({ runtime: i3, signal: r2.signal, label: r2.label || `entity watch`, onCancel() {
+      u2.clear(), p2?.();
     } });
-    if (!m3.active) return m3.cancel;
-    let h2 = async (e3, t4) => {
-      !m3.active || !c3() || await n2(Object.freeze({ ...e3, changes: Object.freeze([...e3.changes]), previous: z(e3.previous), current: z(e3.current), sceneName: t4.sceneName, timestamp: t4.timestamp }));
+    if (!m2.active) return m2.cancel;
+    let h3 = async (e3, t4) => {
+      !m2.active || !l3() || await n3(Object.freeze({ ...e3, changes: Object.freeze([...e3.changes]), previous: R(e3.previous), current: R(e3.current), sceneName: t4.sceneName, timestamp: t4.timestamp }));
     }, g3 = async () => {
-      if (!(!m3.active || f3 || !c3())) {
-        f3 = true;
+      if (!(!m2.active || f2 || !l3())) {
+        f2 = true;
         try {
           let e3 = /* @__PURE__ */ new Map();
-          for (let n4 of S2.list(t3)) {
-            let t4 = Vn(n4);
-            e3.set(t4, { key: t4, id: n4.id, handle: n4, snapshot: n4.snapshot() });
+          for (let n5 of S2.list(t3)) {
+            let t4 = Qn(n5);
+            e3.set(t4, { key: t4, id: n5.id, handle: n5, snapshot: n5.snapshot() });
           }
-          let n3 = d3 ? [...l2.keys()].filter((t4) => !e3.has(t4)) : [], i3 = [...e3.keys()].filter((e4) => !l2.has(e4)), a3 = /* @__PURE__ */ new Map();
-          for (let e4 of n3) {
-            let t4 = l2.get(e4).id, n4 = a3.get(t4) || [];
-            n4.push(e4), a3.set(t4, n4);
+          let n4 = d2 ? [...u2.keys()].filter((t4) => !e3.has(t4)) : [], i4 = [...e3.keys()].filter((e4) => !u2.has(e4)), a4 = /* @__PURE__ */ new Map();
+          for (let e4 of n4) {
+            let t4 = u2.get(e4).id, n5 = a4.get(t4) || [];
+            n5.push(e4), a4.set(t4, n5);
           }
-          let o3 = /* @__PURE__ */ new Set(), c4 = /* @__PURE__ */ new Set();
-          for (let t4 of i3) {
-            let n4 = a3.get(e3.get(t4).id);
-            n4?.length && (o3.add(n4.shift()), c4.add(t4));
+          let o4 = /* @__PURE__ */ new Set(), l4 = /* @__PURE__ */ new Set();
+          for (let t4 of i4) {
+            let n5 = a4.get(e3.get(t4).id);
+            n5?.length && (o4.add(n5.shift()), l4.add(t4));
           }
-          let f4 = [];
-          if (d3 && r2.emitRemoved !== false) for (let e4 of n3) {
-            let t4 = l2.get(e4);
-            f4.push({ type: `removed`, changes: o3.has(e4) ? [`presence`, `generation`] : [`presence`], handle: t4.handle, previous: t4.snapshot, current: null });
+          let f3 = [];
+          if (d2 && r2.emitRemoved !== false) for (let e4 of n4) {
+            let t4 = u2.get(e4);
+            f3.push({ type: `removed`, changes: o4.has(e4) ? [`presence`, `generation`] : [`presence`], handle: t4.handle, previous: t4.snapshot, current: null });
           }
-          if (d3 || r2.emitInitial === true) for (let [t4, n4] of e3) {
-            let e4 = l2.get(t4);
+          if (d2 || r2.emitInitial === true) for (let [t4, n5] of e3) {
+            let e4 = u2.get(t4);
             if (!e4) {
-              f4.push({ type: `added`, changes: c4.has(t4) ? [`presence`, `generation`] : [`presence`], handle: n4.handle, previous: null, current: n4.snapshot });
+              f3.push({ type: `added`, changes: l4.has(t4) ? [`presence`, `generation`] : [`presence`], handle: n5.handle, previous: null, current: n5.snapshot });
               continue;
             }
-            let r3 = xi(e4.snapshot, n4.snapshot, s3);
-            r3.length > 0 && f4.push({ type: `changed`, changes: r3, handle: n4.handle, previous: e4.snapshot, current: n4.snapshot });
+            let r3 = Ai(e4.snapshot, n5.snapshot, c2);
+            r3.length > 0 && f3.push({ type: `changed`, changes: r3, handle: n5.handle, previous: e4.snapshot, current: n5.snapshot });
           }
-          if (l2 = e3, d3 = true, f4.length > 0) {
-            let e4 = Object.freeze({ sceneName: u(), timestamp: Date.now() }), t4 = [];
-            for (let n4 of f4) try {
-              await h2(n4, e4);
+          if (u2 = e3, d2 = true, f3.length > 0) {
+            let e4 = Object.freeze({ sceneName: s(), timestamp: Date.now() }), t4 = [];
+            for (let n5 of f3) try {
+              await h3(n5, e4);
             } catch (e5) {
               t4.push(e5);
             }
@@ -3149,62 +3350,65 @@ function Fi(e2 = {}) {
             }
           }
         } finally {
-          f3 = false;
+          f2 = false;
         }
       }
     };
-    return i2.track(g3(), { label: r2.label || `entity watch initial scan` }), p3 = i2.setInterval(g3, a2, { label: r2.label || `entity watch` }), m3.cancel;
-  }, watchHealth(e3 = {}, t3, n2 = {}) {
+    return i3.track(g3(), { label: r2.label || `entity watch initial scan` }), p2 = i3.setInterval(g3, a3, { label: r2.label || `entity watch` }), m2.cancel;
+  }, watchHealth(e3 = {}, t3, n3 = {}) {
     if (typeof t3 != `function`) throw Error(`entities.watchHealth() requires a listener`);
     return this.watch(e3, async (e4) => {
       if (e4.type !== `changed` || !e4.changes.includes(`health`)) return;
-      let n3 = ee(e4.previous, e4.current);
-      n3.change !== `unchanged` && await t3(Object.freeze({ type: `health-changed`, ...n3, handle: e4.handle, before: e4.previous.health, after: e4.current.health, previous: e4.previous, current: e4.current, sceneName: e4.sceneName, timestamp: e4.timestamp }));
-    }, { ...n2, emitInitial: false, emitRemoved: false, fields: [`health`] });
+      let n4 = ee(e4.previous, e4.current);
+      n4.change !== `unchanged` && await t3(Object.freeze({ type: `health-changed`, ...n4, handle: e4.handle, before: e4.previous.health, after: e4.current.health, previous: e4.previous, current: e4.current, sceneName: e4.sceneName, timestamp: e4.timestamp }));
+    }, { ...n3, emitInitial: false, emitRemoved: false, fields: [`health`] });
   }, getCapabilities(e3) {
     return y2.getCapabilities(e3);
   }, supports(e3, t3) {
     return y2.supports(e3, t3);
   }, isAlive(e3) {
     return y2.isAlive(e3);
-  } }, C2 = pi({ registry: e2.combatModifierRegistry, owner: e2.modNamespace, runtime: e2.runtime, actions: y2, teams: x2, services: e2 });
+  } }, C2 = Ci({ registry: e2.combatModifierRegistry, owner: e2.modNamespace, runtime: e2.runtime, actions: y2, teams: x2, services: e2 });
   y2 = C2.actions;
-  let te2 = new fe(), ne2 = { getSceneName: () => e2.getSceneName?.() ?? u(), getCell: (t3, n2) => e2.getCell?.(t3, n2) ?? v2.getCell(t3, n2), getWorldPosition: (t3, n2) => e2.getWorldPosition?.(t3, n2) ?? v2.getWorldPosition(t3, n2), getSquareSize: () => e2.getSquareSize?.() ?? v2.getSquareSize(), getCc: () => e2.getCc?.() ?? l(), getCurrentData: (t3) => V(e2, t3), getModuleExport: (t3, n2) => e2.getModuleExport?.(t3, n2) ?? r(t3, n2), hasType(t3, n2) {
-    if (typeof e2.hasEntityType == `function`) return e2.hasEntityType(t3, n2) === true;
+  let te2 = new pe(), ne2 = { getSceneName: () => e2.getSceneName?.() ?? s(), getCell: (t3, n3) => e2.getCell?.(t3, n3) ?? v2.getCell(t3, n3), getWorldPosition: (t3, n3) => e2.getWorldPosition?.(t3, n3) ?? v2.getWorldPosition(t3, n3), getSquareSize: () => e2.getSquareSize?.() ?? v2.getSquareSize(), getCc: () => e2.getCc?.() ?? d(), getCurrentData: (t3) => B(e2, t3), getModuleExport: (t3, n3) => e2.getModuleExport?.(t3, n3) ?? p(t3, n3), hasType(t3, n3) {
+    if (typeof e2.hasEntityType == `function`) return e2.hasEntityType(t3, n3) === true;
     let r2 = t3 === `plant` ? `PlantFeatures` : t3 === `zombie` ? `ZombieFeatures` : t3 === `projectile` ? `ProjectileFeatures` : t3 === `tomb` ? `TombstonesFeatures` : null;
-    return r2 ? Kn(e2, r2, n2) != null : false;
+    return r2 ? rr(e2, r2, n3) != null : false;
   } };
-  for (let e3 of Qe(ne2)) te2.register(e3);
-  let re2 = he({ registry: te2, runtime: e2.runtime, timeoutMs: 15e3, ...ne2, wrapEntity: (t3, n2, r2) => vi(t3, v2, y2, n2, r2, e2, x2), disposeRaw(e3, t3) {
+  for (let e3 of $e(ne2)) te2.register(e3);
+  let re2 = ge({ registry: te2, runtime: e2.runtime, timeoutMs: 15e3, ...ne2, wrapEntity: (t3, n3, r2) => X(t3, v2, y2, n3, r2, e2, x2), disposeRaw(e3, t3) {
     return y2.isAlive(e3) ? y2.eliminate(e3, { kind: t3 }) : { ok: true, methodName: null, value: void 0, reason: `already-inactive` };
   } }), ie2 = new it();
   for (let e3 of _t()) ie2.register(e3);
-  let ae2 = ut({ registry: ie2, unwrap: R, isActive: (e3) => y2.isAlive(e3), runtime: e2.runtime }), oe2 = new wt();
-  for (let t3 of Mt({ getModuleExport: (t4, n2) => e2.getModuleExport?.(t4, n2) ?? r(t4, n2) })) oe2.register(t3);
-  let se2 = Tt({ registry: oe2, unwrap: R, isActive: (e3) => y2.isAlive(e3), getGenerationState: (e3) => L(e3)?.managedState || null, runtime: e2.runtime }), ce2 = Object.freeze({ ...ae2, layers: se2 }), le2 = Qt({ getModuleExport: (t3, n2) => e2.getModuleExport?.(t3, n2) ?? r(t3, n2), listModuleEntries: () => e2.listModuleEntries?.() ?? i(), wrapMethod: typeof e2.behaviorTools?.wrapMethod == `function` ? (t3) => e2.behaviorTools.wrapMethod(t3) : null, wrapEntity: (t3, n2) => vi(t3, v2, y2, n2, null, e2, x2), getSceneName: () => e2.getSceneName?.() ?? u(), runtime: e2.runtime }), ue2 = Pi(e2, { label: `plants`, classCandidates: [`Plant`], spawnMethodCandidates: [`characterOnEnable`, `onEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], actionMethodCandidates: [`attack`, `shoot`], featureType: `PlantFeatures`, objectTypes: { props: `PlantProps`, type: `PlantTypes`, almanac: `PlantAlmanac` } }), w2 = Pi(e2, { label: `zombies`, classCandidates: [`Zombie`], spawnMethodCandidates: [`characterOnEnable`, `onEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`, `judgeDeath`], actionMethodCandidates: [`detectPlant`, `attack`], featureType: `ZombieFeatures`, objectTypes: { props: `ZombieProps`, type: `ZombieTypes`, almanac: `ZombieAlmanac` } }), de2 = Pi(e2, { label: `projectiles`, classCandidates: [`commonShot`], spawnMethodCandidates: [`onEnable`, `characterOnEnable`], deathMethodCandidates: [`judgeDeath`, `die`], hitMethodCandidates: [`judgeDeath`, `dealDamage`], actionMethodCandidates: [`shoot`, `move`], featureType: `ProjectileFeatures`, objectTypes: { props: `ProjectileProps`, type: `ProjectileTypes` } }), T2 = Pi(e2, { label: `armor`, classCandidates: [`Armor`], spawnMethodCandidates: [`onEnable`, `characterOnEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], featureType: `ArmorFeatures`, objectTypes: { props: `ArmorProps`, type: `ArmorTypes` } }), pe2 = Pi(e2, { label: `armors`, classCandidates: [`Armor`], spawnMethodCandidates: [`onEnable`, `characterOnEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], featureType: `ArmorFeatures`, objectTypes: { props: `ArmorProps`, type: `ArmorTypes` } }), me2 = Pi(e2, { label: `dinosaurs`, classCandidates: [`Dinosaur`], spawnMethodCandidates: [`characterOnEnable`, `onEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], featureType: `DinosaurFeatures`, objectTypes: { props: `DinosaurProps`, type: `DinosaurTypes` } }), ge2 = ue2.api, _e2 = w2.api, ve2 = de2.api;
-  T2.api;
-  let ye2 = pe2.api, be2 = me2.api, xe2 = { plants: ue2.behavior, zombies: w2.behavior, projectiles: de2.behavior, armor: T2.behavior, armors: pe2.behavior, dinosaurs: me2.behavior }, Se2 = Mi({ ...xe2, actions: y2 }), E2 = $(e2, `WorldmapFeatures`, { getWorlds(t3 = {}) {
-    return Er(e2, t3.useOriginal === true);
+  let ae2 = ut({ registry: ie2, unwrap: L, isActive: (e3) => y2.isAlive(e3), runtime: e2.runtime }), oe2 = new wt();
+  for (let t3 of Mt({ getModuleExport: (t4, n3) => e2.getModuleExport?.(t4, n3) ?? p(t4, n3) })) oe2.register(t3);
+  let se2 = Tt({ registry: oe2, unwrap: L, isActive: (e3) => y2.isAlive(e3), getGenerationState: (e3) => I(e3)?.managedState || null, runtime: e2.runtime }), ce2 = Object.freeze({ ...ae2, layers: se2 }), le2 = { getModuleExport: (t3, n3) => e2.getModuleExport?.(t3, n3) ?? p(t3, n3), listModuleEntries: () => e2.listModuleEntries?.() ?? m(), wrapMethod: typeof e2.behaviorTools?.wrapMethod == `function` ? (t3) => e2.behaviorTools.wrapMethod(t3) : null, wrapEntity: (t3, n3) => X(t3, v2, y2, n3, null, e2, x2), runtime: e2.runtime, reportError: (e3) => qn.error(e3), getController: () => (e2.getSceneName?.() ?? s()) === `inGameScene` ? e2.getLevelController?.() ?? ir() : null, isGameplayActive: () => {
+    let t3 = i2(), n3 = e2.getUiInGame?.() ?? ar();
+    return t3.available && t3.started && !t3.ended && !n3?.exitNextTick && !n3?.restartNextTick;
+  } }, ue2 = on(le2), de2 = cn(le2), fe2 = Qt({ getModuleExport: (t3, n3) => e2.getModuleExport?.(t3, n3) ?? p(t3, n3), listModuleEntries: () => e2.listModuleEntries?.() ?? m(), wrapMethod: typeof e2.behaviorTools?.wrapMethod == `function` ? (t3) => e2.behaviorTools.wrapMethod(t3) : null, wrapEntity: (t3, n3) => X(t3, v2, y2, n3, null, e2, x2), getSceneName: () => e2.getSceneName?.() ?? s(), runtime: e2.runtime }), w2 = Wi(e2, { label: `plants`, classCandidates: [`Plant`], spawnMethodCandidates: [`characterOnEnable`, `onEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], actionMethodCandidates: [`attack`, `shoot`], featureType: `PlantFeatures`, objectTypes: { props: `PlantProps`, type: `PlantTypes`, almanac: `PlantAlmanac` } }), me2 = Wi(e2, { label: `zombies`, classCandidates: [`Zombie`], spawnMethodCandidates: [`characterOnEnable`, `onEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`, `judgeDeath`], actionMethodCandidates: [`detectPlant`, `attack`], featureType: `ZombieFeatures`, objectTypes: { props: `ZombieProps`, type: `ZombieTypes`, almanac: `ZombieAlmanac` } }), he2 = Wi(e2, { label: `projectiles`, classCandidates: [`commonShot`], spawnMethodCandidates: [`onEnable`, `characterOnEnable`], deathMethodCandidates: [`judgeDeath`, `die`], hitMethodCandidates: [`judgeDeath`, `dealDamage`], actionMethodCandidates: [`shoot`, `move`], featureType: `ProjectileFeatures`, objectTypes: { props: `ProjectileProps`, type: `ProjectileTypes` } }), _e2 = Wi(e2, { label: `armor`, classCandidates: [`Armor`], spawnMethodCandidates: [`onEnable`, `characterOnEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], featureType: `ArmorFeatures`, objectTypes: { props: `ArmorProps`, type: `ArmorTypes` } }), ve2 = Wi(e2, { label: `armors`, classCandidates: [`Armor`], spawnMethodCandidates: [`onEnable`, `characterOnEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], featureType: `ArmorFeatures`, objectTypes: { props: `ArmorProps`, type: `ArmorTypes` } }), ye2 = Wi(e2, { label: `dinosaurs`, classCandidates: [`Dinosaur`], spawnMethodCandidates: [`characterOnEnable`, `onEnable`], deathMethodCandidates: [`playDie`, `die`], hitMethodCandidates: [`dealDamage`, `onDamaged`], featureType: `DinosaurFeatures`, objectTypes: { props: `DinosaurProps`, type: `DinosaurTypes` } }), be2 = w2.api, xe2 = me2.api, Se2 = he2.api;
+  _e2.api;
+  let Ce2 = ve2.api, we2 = ye2.api, Te2 = { plants: w2.behavior, zombies: me2.behavior, projectiles: he2.behavior, armor: _e2.behavior, armors: ve2.behavior, dinosaurs: ye2.behavior }, Ee2 = Hi({ ...Te2, actions: y2 }), T2 = $(e2, `WorldmapFeatures`, { getWorlds(t3 = {}) {
+    return Lr(e2, t3.useOriginal === true);
   }, getWorld(e3, t3 = {}) {
-    return Or(this.getWorlds(t3), e3);
+    return zr(this.getWorlds(t3), e3);
   }, getCurrentWorldScene() {
-    return pr();
+    return wr();
   }, getCurrentRuntimeMap() {
-    return hr();
+    return Er();
   }, getCurrentWorld(t3 = {}) {
-    return kr(e2, hr(), t3.useOriginal === true);
+    return Br(e2, Er(), t3.useOriginal === true);
   }, getCurrentDisplayEnum() {
-    return hr()?.displayEnum ?? pr()?.currentWM?.displayEnum ?? null;
-  }, mutateWorlds(t3, n2 = {}) {
-    return this.mutate((r2, i2) => {
-      let a2 = Array.isArray(r2?.WORLDMAPS) ? r2.WORLDMAPS : [], o2 = t3(a2, { ...i2, currentWorld: kr(e2, hr(), n2.useOriginal === true) });
-      return o2 === void 0 ? a2 : o2;
+    return Er()?.displayEnum ?? wr()?.currentWM?.displayEnum ?? null;
+  }, mutateWorlds(t3, n3 = {}) {
+    return this.mutate((r2, i3) => {
+      let a3 = Array.isArray(r2?.WORLDMAPS) ? r2.WORLDMAPS : [], o3 = t3(a3, { ...i3, currentWorld: Br(e2, Er(), n3.useOriginal === true) });
+      return o3 === void 0 ? a3 : o3;
     });
-  }, patchWorld(e3, t3, n2 = {}) {
+  }, patchWorld(e3, t3, n3 = {}) {
     return this.mutateWorlds((r2) => {
-      let i2 = Or(r2, e3);
-      return !i2 || typeof t3 != `function` ? i2 : t3(i2, { world: i2, worlds: r2, options: n2 }) ?? i2;
-    }, n2);
+      let i3 = zr(r2, e3);
+      return !i3 || typeof t3 != `function` ? i3 : t3(i3, { world: i3, worlds: r2, options: n3 }) ?? i3;
+    }, n3);
   }, replaceWorldLevels(e3, t3 = []) {
     return this.patchWorld(e3, (e4) => {
       e4.LEVELS = Array.isArray(t3) ? [...t3] : [];
@@ -3214,259 +3418,261 @@ function Fi(e2 = {}) {
       e4.PLANTS = Array.isArray(t3) ? [...t3] : [];
     });
   }, getIslands(e3 = {}) {
-    return Pr(e3.runtimeMap || this.getCurrentRuntimeMap());
+    return Gr(e3.runtimeMap || this.getCurrentRuntimeMap());
   }, findIsland(e3, t3 = {}) {
-    return q(t3.runtimeMap || this.getCurrentRuntimeMap(), e3);
+    return K(t3.runtimeMap || this.getCurrentRuntimeMap(), e3);
   }, getIsland(e3, t3 = {}) {
     return this.findIsland(e3, t3);
   }, getIslandOrder(e3 = {}) {
     return this.getIslands(e3).map((e4) => e4.id);
   }, patchIslands(e3, t3 = {}) {
-    let n2 = t3.runtimeMap || this.getCurrentRuntimeMap();
-    if (!n2 || typeof e3 != `function`) return null;
-    let r2 = Pr(n2);
-    return e3(r2, { runtimeMap: n2, find: (e4) => q(n2, e4) }) ?? r2;
+    let n3 = t3.runtimeMap || this.getCurrentRuntimeMap();
+    if (!n3 || typeof e3 != `function`) return null;
+    let r2 = Gr(n3);
+    return e3(r2, { runtimeMap: n3, find: (e4) => K(n3, e4) }) ?? r2;
   }, createNode(e3 = {}, t3 = {}) {
-    let n2 = t3.runtimeMap || this.getCurrentRuntimeMap(), r2 = String(e3?.type || ``).trim();
-    if (!n2 || !r2) return null;
-    let i2 = r2 === `giftBox` || r2 === `epicPortal`, a2 = Kr(n2, e3);
-    if (!a2) return null;
-    let o2 = oi(r2);
-    if (o2 != null && (a2.islandDisplay = o2), r2 === `level`) {
-      let t4 = si(e3?.appearance);
-      t4 != null && (a2.levelNodeAppearance = t4);
+    let n3 = t3.runtimeMap || this.getCurrentRuntimeMap(), r2 = String(e3?.type || ``).trim();
+    if (!n3 || !r2) return null;
+    let i3 = r2 === `giftBox` || r2 === `epicPortal`, a3 = ni(n3, e3);
+    if (!a3) return null;
+    let o3 = gi(r2);
+    if (o3 != null && (a3.islandDisplay = o3), r2 === `level`) {
+      let t4 = _i(e3?.appearance);
+      t4 != null && (a3.levelNodeAppearance = t4);
     }
-    return qr(a2, r2, e3?.appearance), i2 && Xr(n2, a2), Array.isArray(e3.levels) && r2 === `level` && (a2.levelJsonsID = [...e3.levels]), Array.isArray(e3.portalLevels) && r2 === `epicPortal` && (a2.epicLevelJsonsID = [...e3.portalLevels]), e3.title != null && this.setNodeTitle(a2.__gpnCustomId || jr(a2), e3.title, { runtimeMap: n2 }), e3.plantReward != null && r2 === `plant` && ai(a2, e3.plantReward), e3.upgradeReward != null && r2 === `upgrade` && ci(a2, e3.upgradeReward), e3.position && typeof e3.position == `object` && Br(a2, e3.position), i2 && Yr(n2, a2, r2), Zr(a2), Jr(a2, r2) ? (zr(t3) && (Rr(n2), J(n2)), { id: a2.__gpnCustomId || jr(a2), customId: a2.__gpnCustomId ? String(a2.__gpnCustomId) : null, type: Ar(a2), raw: a2, islandNode: a2?.islandNode ?? null }) : (n2.levelIslands = (n2.levelIslands || []).filter((e4) => e4 !== a2), Qr(a2), null);
+    return ri(a3, r2, e3?.appearance), i3 && oi(n3, a3), Array.isArray(e3.levels) && r2 === `level` && (a3.levelJsonsID = [...e3.levels]), Array.isArray(e3.portalLevels) && r2 === `epicPortal` && (a3.epicLevelJsonsID = [...e3.portalLevels]), e3.title != null && this.setNodeTitle(a3.__gpnCustomId || Hr(a3), e3.title, { runtimeMap: n3 }), e3.plantReward != null && r2 === `plant` && hi(a3, e3.plantReward), e3.upgradeReward != null && r2 === `upgrade` && vi(a3, e3.upgradeReward), e3.position && typeof e3.position == `object` && Xr(a3, e3.position), i3 && ai(n3, a3, r2), si(a3), ii(a3, r2) ? (q(t3) && (Yr(n3), J(n3)), { id: a3.__gpnCustomId || Hr(a3), customId: a3.__gpnCustomId ? String(a3.__gpnCustomId) : null, type: Vr(a3), raw: a3, islandNode: a3?.islandNode ?? null }) : (n3.levelIslands = (n3.levelIslands || []).filter((e4) => e4 !== a3), ci(a3), null);
   }, removeNode(e3, t3 = {}) {
-    let n2 = t3.runtimeMap || this.getCurrentRuntimeMap(), r2 = q(n2, e3)?.raw;
-    if (!n2 || !r2) return false;
-    for (let e4 of n2.levelIslands || []) if (!(!e4 || e4 === r2)) if (e4.nextIsland === r2.islandNode) {
+    let n3 = t3.runtimeMap || this.getCurrentRuntimeMap(), r2 = K(n3, e3)?.raw;
+    if (!n3 || !r2) return false;
+    for (let e4 of n3.levelIslands || []) if (!(!e4 || e4 === r2)) if (e4.nextIsland === r2.islandNode) {
       let t4 = Array.isArray(e4.otherNextIslands) ? [...e4.otherNextIslands] : [];
       e4.nextIsland = t4.shift() ?? null, e4.otherNextIslands = t4.filter((e5) => e5 !== r2.islandNode);
     } else e4.otherNextIslands = (e4.otherNextIslands || []).filter((e5) => e5 !== r2.islandNode);
-    return n2.levelIslands = (n2.levelIslands || []).filter((e4) => e4 !== r2), Qr(r2), ti(n2), zr(t3) && (Rr(n2), J(n2), ti(n2)), true;
+    return n3.levelIslands = (n3.levelIslands || []).filter((e4) => e4 !== r2), ci(r2), di(n3), q(t3) && (Yr(n3), J(n3), di(n3)), true;
   }, cleanupOrphanNodes(e3 = {}) {
     let t3 = e3.runtimeMap || this.getCurrentRuntimeMap();
-    return t3 ? ti(t3) : false;
-  }, setNodeTitle(e3, t3, n2 = {}) {
-    let r2 = q(n2.runtimeMap || this.getCurrentRuntimeMap(), e3)?.raw;
+    return t3 ? di(t3) : false;
+  }, setNodeTitle(e3, t3, n3 = {}) {
+    let r2 = K(n3.runtimeMap || this.getCurrentRuntimeMap(), e3)?.raw;
     if (!r2) return null;
     r2.levelNodeName = String(t3 ?? ``);
-    let i2 = l()?.Label, a2 = r2?._levelNode?.getChildByName?.(`title`), o2 = typeof i2 == `function` ? a2?.getComponent?.(i2) : null;
-    return o2 && (o2.string = r2.levelNodeName), r2.levelNodeName;
-  }, setChildren(e3, t3 = [], n2 = {}) {
-    let r2 = n2.runtimeMap || this.getCurrentRuntimeMap(), i2 = q(r2, e3)?.raw;
-    if (!r2 || !i2) return false;
-    let a2 = (Array.isArray(t3) ? t3 : [t3]).map((e4) => q(r2, e4)?.raw?.islandNode).filter(Boolean);
-    return i2.nextIsland = a2[0] ?? null, i2.otherNextIslands = a2.slice(1), zr(n2) && J(r2), true;
+    let i3 = d()?.Label, a3 = r2?._levelNode?.getChildByName?.(`title`), o3 = typeof i3 == `function` ? a3?.getComponent?.(i3) : null;
+    return o3 && (o3.string = r2.levelNodeName), r2.levelNodeName;
+  }, setChildren(e3, t3 = [], n3 = {}) {
+    let r2 = n3.runtimeMap || this.getCurrentRuntimeMap(), i3 = K(r2, e3)?.raw;
+    if (!r2 || !i3) return false;
+    let a3 = (Array.isArray(t3) ? t3 : [t3]).map((e4) => K(r2, e4)?.raw?.islandNode).filter(Boolean);
+    return i3.nextIsland = a3[0] ?? null, i3.otherNextIslands = a3.slice(1), q(n3) && J(r2), true;
   }, refreshPaths(e3 = {}) {
     let t3 = e3.runtimeMap || this.getCurrentRuntimeMap();
-    return t3 ? (Rr(t3), J(t3), true) : false;
-  }, relayout(e3, t3 = {}, n2 = {}) {
-    let r2 = n2.runtimeMap || this.getCurrentRuntimeMap(), i2 = q(r2, e3);
-    if (!r2 || !i2) return null;
-    let a2 = Br(i2.raw, t3);
-    return zr(n2) && (Rr(r2), J(r2)), a2;
+    return t3 ? (Yr(t3), J(t3), true) : false;
+  }, relayout(e3, t3 = {}, n3 = {}) {
+    let r2 = n3.runtimeMap || this.getCurrentRuntimeMap(), i3 = K(r2, e3);
+    if (!r2 || !i3) return null;
+    let a3 = Xr(i3.raw, t3);
+    return q(n3) && (Yr(r2), J(r2)), a3;
   }, checkOverlap(e3, t3 = {}) {
-    let n2 = t3.runtimeMap || this.getCurrentRuntimeMap(), r2 = q(n2, e3)?.raw;
-    return ni(n2, r2, Number(t3.threshold || 100));
-  }, setIslandPosition(e3, t3 = {}, n2 = {}) {
-    return this.relayout(e3, t3, n2);
-  }, link(e3, t3, n2 = {}) {
-    let r2 = n2.runtimeMap || this.getCurrentRuntimeMap(), i2 = q(r2, e3), a2 = q(r2, t3);
-    if (!r2 || !i2?.raw || !a2?.raw?.islandNode) return false;
-    let o2 = i2.raw, s3 = a2.raw.islandNode;
-    return n2.exclusive === true ? (o2.nextIsland = s3, o2.otherNextIslands = []) : !o2.nextIsland || n2.replacePrimary === true ? (o2.nextIsland && o2.nextIsland !== s3 && (o2.otherNextIslands = [o2.nextIsland, ...o2.otherNextIslands || []].filter((e4, t4, n3) => e4 && n3.indexOf(e4) === t4 && e4 !== s3)), o2.nextIsland = s3) : [o2.nextIsland, ...o2.otherNextIslands || []].includes(s3) || (o2.otherNextIslands = [...o2.otherNextIslands || [], s3]), zr(n2) && J(r2), true;
-  }, unlink(e3, t3, n2 = {}) {
-    let r2 = n2.runtimeMap || this.getCurrentRuntimeMap(), i2 = q(r2, e3), a2 = q(r2, t3);
-    if (!r2 || !i2?.raw || !a2?.raw?.islandNode) return false;
-    let o2 = a2.raw.islandNode;
-    if (i2.raw.nextIsland === o2) {
-      let e4 = Array.isArray(i2.raw.otherNextIslands) ? [...i2.raw.otherNextIslands] : [];
-      i2.raw.nextIsland = e4.shift() ?? null, i2.raw.otherNextIslands = e4;
-    } else i2.raw.otherNextIslands = (i2.raw.otherNextIslands || []).filter((e4) => e4 !== o2);
-    return zr(n2) && J(r2), true;
+    let n3 = t3.runtimeMap || this.getCurrentRuntimeMap(), r2 = K(n3, e3)?.raw;
+    return fi(n3, r2, Number(t3.threshold || 100));
+  }, setIslandPosition(e3, t3 = {}, n3 = {}) {
+    return this.relayout(e3, t3, n3);
+  }, link(e3, t3, n3 = {}) {
+    let r2 = n3.runtimeMap || this.getCurrentRuntimeMap(), i3 = K(r2, e3), a3 = K(r2, t3);
+    if (!r2 || !i3?.raw || !a3?.raw?.islandNode) return false;
+    let o3 = i3.raw, s2 = a3.raw.islandNode;
+    return n3.exclusive === true ? (o3.nextIsland = s2, o3.otherNextIslands = []) : !o3.nextIsland || n3.replacePrimary === true ? (o3.nextIsland && o3.nextIsland !== s2 && (o3.otherNextIslands = [o3.nextIsland, ...o3.otherNextIslands || []].filter((e4, t4, n4) => e4 && n4.indexOf(e4) === t4 && e4 !== s2)), o3.nextIsland = s2) : [o3.nextIsland, ...o3.otherNextIslands || []].includes(s2) || (o3.otherNextIslands = [...o3.otherNextIslands || [], s2]), q(n3) && J(r2), true;
+  }, unlink(e3, t3, n3 = {}) {
+    let r2 = n3.runtimeMap || this.getCurrentRuntimeMap(), i3 = K(r2, e3), a3 = K(r2, t3);
+    if (!r2 || !i3?.raw || !a3?.raw?.islandNode) return false;
+    let o3 = a3.raw.islandNode;
+    if (i3.raw.nextIsland === o3) {
+      let e4 = Array.isArray(i3.raw.otherNextIslands) ? [...i3.raw.otherNextIslands] : [];
+      i3.raw.nextIsland = e4.shift() ?? null, i3.raw.otherNextIslands = e4;
+    } else i3.raw.otherNextIslands = (i3.raw.otherNextIslands || []).filter((e4) => e4 !== o3);
+    return q(n3) && J(r2), true;
   }, setPathSequence(e3 = [], t3 = {}) {
-    let n2 = t3.runtimeMap || this.getCurrentRuntimeMap();
-    if (!n2 || !Array.isArray(e3) || e3.length < 2) return false;
-    let r2 = e3.map((e4) => q(n2, e4)).filter(Boolean);
+    let n3 = t3.runtimeMap || this.getCurrentRuntimeMap();
+    if (!n3 || !Array.isArray(e3) || e3.length < 2) return false;
+    let r2 = e3.map((e4) => K(n3, e4)).filter(Boolean);
     if (r2.length < 2) return false;
     for (let e4 = 0; e4 < r2.length - 1; e4++) {
-      let t4 = r2[e4]?.raw, n3 = r2[e4 + 1]?.raw?.islandNode;
-      !t4 || !n3 || (t4.nextIsland = n3, t4.otherNextIslands = []);
+      let t4 = r2[e4]?.raw, n4 = r2[e4 + 1]?.raw?.islandNode;
+      !t4 || !n4 || (t4.nextIsland = n4, t4.otherNextIslands = []);
     }
     if (t3.keepTail !== true) {
       let e4 = r2[r2.length - 1]?.raw;
       e4 && (e4.nextIsland = null, e4.otherNextIslands = []);
     }
-    return zr(t3) && J(n2), true;
-  }, setPlantReward(e3, t3, n2 = {}) {
-    let r2 = q(n2.runtimeMap || this.getCurrentRuntimeMap(), e3)?.raw;
-    return ai(r2, t3);
-  }, setUpgradeReward(e3, t3, n2 = {}) {
-    let r2 = q(n2.runtimeMap || this.getCurrentRuntimeMap(), e3)?.raw;
-    return ci(r2, t3);
-  }, onWorldLoaded(t3, n2 = {}) {
-    let r2 = mr();
+    return q(t3) && J(n3), true;
+  }, setPlantReward(e3, t3, n3 = {}) {
+    let r2 = K(n3.runtimeMap || this.getCurrentRuntimeMap(), e3)?.raw;
+    return hi(r2, t3);
+  }, setUpgradeReward(e3, t3, n3 = {}) {
+    let r2 = K(n3.runtimeMap || this.getCurrentRuntimeMap(), e3)?.raw;
+    return vi(r2, t3);
+  }, onWorldLoaded(t3, n3 = {}) {
+    let r2 = Tr();
     return !r2?.prototype?.init || typeof e2?.behaviorTools?.wrapMethod != `function` ? () => {
-    } : e2.behaviorTools.wrapMethod({ target: r2.prototype, methodName: `init`, handler: ({ thisArg: r3, args: i2, callNext: a2 }) => {
-      let o2 = () => {
-        let i3 = kr(e2, r3), a3 = { runtimeMap: r3, world: i3, worldId: i3?.CODENAME ?? wr(vr(), r3?.displayEnum) ?? null, displayEnum: r3?.displayEnum ?? null, islands: Pr(r3), api: this };
-        typeof n2.filter == `function` && n2.filter(a3) !== true || t3(a3);
-      }, s3 = a2(...i2);
-      return s3?.then && typeof s3.then == `function` ? s3.then((e3) => (o2(), e3)) : (o2(), s3);
+    } : e2.behaviorTools.wrapMethod({ target: r2.prototype, methodName: `init`, handler: ({ thisArg: r3, args: i3, callNext: a3 }) => {
+      let o3 = () => {
+        let i4 = Br(e2, r3), a4 = { runtimeMap: r3, world: i4, worldId: i4?.CODENAME ?? Fr(kr(), r3?.displayEnum) ?? null, displayEnum: r3?.displayEnum ?? null, islands: Gr(r3), api: this };
+        typeof n3.filter == `function` && n3.filter(a4) !== true || t3(a4);
+      }, s2 = a3(...i3);
+      return s2?.then && typeof s2.then == `function` ? s2.then((e3) => (o3(), e3)) : (o3(), s2);
     } });
-  } }), Ce2 = { getName: () => f2.getName(), is: (e3) => f2.is(e3) }, we2 = { setSpeedUp: (e3) => g2.setSpeedUp(e3), getFrameRate: () => g2.getFrameRate(), setFrameRate: (e3) => g2.setFrameRate(e3), getState: () => c2(), watchState(t3, n2 = {}) {
+  } }), De2 = { getName: () => o2.getName(), is: (e3) => o2.is(e3) }, Oe2 = { sessions: de2, setSpeedUp: (e3) => g2.setSpeedUp(e3), getFrameRate: () => g2.getFrameRate(), setFrameRate: (e3) => g2.setFrameRate(e3), getState: () => i2(), watchState(t3, n3 = {}) {
     if (typeof t3 != `function`) throw Error(`game.watchState() requires a listener`);
     let r2 = e2.runtime;
     if (!r2?.setInterval || !r2?.track) throw Error(`game.watchState() requires a managed mod runtime`);
-    n2 = n2 && typeof n2 == `object` ? n2 : {};
-    let i2 = Math.max(50, Math.min(1e4, Number(n2.intervalMs) || 100)), a2 = [`available`, `sceneName`, `levelName`, `phase`, `started`, `running`, `paused`, `ended`, `outcome`], o2 = true, s3 = false, l2 = null, u2 = null, d3 = et({ runtime: r2, signal: n2.signal, label: n2.label || `game state watch`, onCancel() {
-      o2 = false, l2 = null, u2?.();
+    n3 = n3 && typeof n3 == `object` ? n3 : {};
+    let a3 = Math.max(50, Math.min(1e4, Number(n3.intervalMs) || 100)), o3 = [`available`, `sceneName`, `levelName`, `phase`, `started`, `running`, `paused`, `ended`, `outcome`], s2 = true, c2 = false, l3 = null, u2 = null, d2 = D({ runtime: r2, signal: n3.signal, label: n3.label || `game state watch`, onCancel() {
+      s2 = false, l3 = null, u2?.();
     } });
-    if (!d3.active) return d3.cancel;
-    let f3 = () => {
+    if (!d2.active) return d2.cancel;
+    let f2 = () => {
       try {
         return typeof r2.isActive != `function` || r2.isActive() !== false;
       } catch {
         return false;
       }
-    }, p3 = async () => {
-      if (!(!o2 || s3 || !f3())) {
-        s3 = true;
+    }, p2 = async () => {
+      if (!(!s2 || c2 || !f2())) {
+        c2 = true;
         try {
-          let e3 = c2(), r3 = l2 ? a2.filter((t4) => l2[t4] !== e3[t4]) : a2, i3 = l2;
-          if (l2 = e3, !i3 && n2.emitInitial === false || i3 && r3.length === 0) return;
-          await t3(Object.freeze({ type: i3 ? `changed` : `initial`, changes: Object.freeze(r3), previous: i3, current: e3, timestamp: Date.now() }));
+          let e3 = i2(), r3 = l3 ? o3.filter((t4) => l3[t4] !== e3[t4]) : o3, a4 = l3;
+          if (l3 = e3, !a4 && n3.emitInitial === false || a4 && r3.length === 0) return;
+          await t3(Object.freeze({ type: a4 ? `changed` : `initial`, changes: Object.freeze(r3), previous: a4, current: e3, timestamp: Date.now() }));
         } finally {
-          s3 = false;
+          c2 = false;
         }
       }
     };
-    return r2.track(p3(), { label: n2.label || `game state initial scan` }), u2 = r2.setInterval(p3, i2, { label: n2.label || `game state watch` }), d3.cancel;
-  } }, Te2 = { getProperty: (...e3) => m2.getProperty(...e3), setProperty: (...e3) => m2.setProperty(...e3), addProperty: (...e3) => m2.addProperty(...e3), getCurrency: (...e3) => m2.getCurrency(...e3), setCurrency: (...e3) => m2.setCurrency(...e3), addCurrency: (...e3) => m2.addCurrency(...e3), addSun: (...e3) => m2.addSun(...e3), setSun: (...e3) => m2.setSun(...e3), addPlantFood: (...e3) => m2.addPlantFood(...e3), setPlantFood: (...e3) => m2.setPlantFood(...e3) }, Ee2 = { getCurrentLevelName: () => p2.getCurrentLevelName(), getDefinition: (...t3) => B(e2, p2.getDefinition(...t3)), getOriginalDefinition: (...t3) => B(e2, p2.getOriginalDefinition(...t3)), mutateDefinition: (...e3) => p2.mutateDefinition(...e3), getModulesData: (...t3) => B(e2, p2.getModulesData(...t3)), mutateModules: (...e3) => p2.mutateModules(...e3), onLevelLoaded(e3) {
+    return r2.track(p2(), { label: n3.label || `game state initial scan` }), u2 = r2.setInterval(p2, a3, { label: n3.label || `game state watch` }), d2.cancel;
+  } }, ke2 = { getProperty: (...e3) => h2.getProperty(...e3), setProperty: (...e3) => h2.setProperty(...e3), addProperty: (...e3) => h2.addProperty(...e3), getCurrency: (...e3) => h2.getCurrency(...e3), setCurrency: (...e3) => h2.setCurrency(...e3), addCurrency: (...e3) => h2.addCurrency(...e3), addSun: (...e3) => h2.addSun(...e3), setSun: (...e3) => h2.setSun(...e3), addPlantFood: (...e3) => h2.addPlantFood(...e3), setPlantFood: (...e3) => h2.setPlantFood(...e3) }, Ae2 = { getCurrentLevelName: () => l2.getCurrentLevelName(), getDefinition: (...t3) => z(e2, l2.getDefinition(...t3)), getOriginalDefinition: (...t3) => z(e2, l2.getOriginalDefinition(...t3)), mutateDefinition: (...e3) => l2.mutateDefinition(...e3), getModulesData: (...t3) => z(e2, l2.getModulesData(...t3)), mutateModules: (...e3) => l2.mutateModules(...e3), onLevelLoaded(e3) {
     if (typeof e3 != `function`) throw Error(`levels.onLevelLoaded() requires a listener`);
-    return p2.onLevelLoaded((t3) => e3(Object.freeze({ sceneName: t3?.sceneName ?? null, levelName: t3?.levelName ?? null })));
-  } }, De2 = { getLyrics: () => B(e2, _2.getLyrics()), getCurrentLanguage: () => _2.getCurrentLanguage(), setCurrentLanguage: (e3) => _2.setCurrentLanguage(e3), export: (...e3) => _2.export(...e3) }, Oe2 = { getData: (...t3) => B(e2, E2.getData(...t3)), listEntries: (...t3) => B(e2, E2.listEntries(...t3)), getEntry: (...t3) => B(e2, E2.getEntry(...t3)), mutate: (...e3) => E2.mutate(...e3), export: (...e3) => E2.export(...e3), getWorlds: (...t3) => B(e2, E2.getWorlds(...t3)), getWorld: (...t3) => B(e2, E2.getWorld(...t3)), mutateWorlds: (...e3) => E2.mutateWorlds(...e3), patchWorld: (...e3) => E2.patchWorld(...e3), replaceWorldLevels: (...e3) => E2.replaceWorldLevels(...e3), replaceWorldPlants: (...e3) => E2.replaceWorldPlants(...e3) }, ke2 = { list: (...e3) => S2.list(...e3), findNearest: (...e3) => S2.findNearest(...e3), describe: (...e3) => S2.describe(...e3), listInLane: (...e3) => S2.listInLane(...e3), listInCell: (...e3) => S2.listInCell(...e3), watch: (...e3) => S2.watch(...e3), watchHealth: (...e3) => S2.watchHealth(...e3), getCapabilities: (...e3) => S2.getCapabilities(...e3), supports: (...e3) => S2.supports(...e3), isAlive: (...e3) => S2.isAlive(...e3) }, Ae2 = (e3) => Object.freeze({ available: false, adapters: Object.freeze([]), teams: Object.freeze([]), reason: e3 }), je2 = { getState(e3) {
-    if (!L(e3)) return Object.freeze({ team: `unknown`, targetTeam: `unknown` });
-    if (Bn(e3)) {
+    return l2.onLevelLoaded((t3) => e3(Object.freeze({ sceneName: t3?.sceneName ?? null, levelName: t3?.levelName ?? null })));
+  } }, je2 = { getLyrics: () => z(e2, _2.getLyrics()), getCurrentLanguage: () => _2.getCurrentLanguage(), setCurrentLanguage: (e3) => _2.setCurrentLanguage(e3), export: (...e3) => _2.export(...e3) }, Me2 = { getData: (...t3) => z(e2, T2.getData(...t3)), listEntries: (...t3) => z(e2, T2.listEntries(...t3)), getEntry: (...t3) => z(e2, T2.getEntry(...t3)), mutate: (...e3) => T2.mutate(...e3), export: (...e3) => T2.export(...e3), getWorlds: (...t3) => z(e2, T2.getWorlds(...t3)), getWorld: (...t3) => z(e2, T2.getWorld(...t3)), mutateWorlds: (...e3) => T2.mutateWorlds(...e3), patchWorld: (...e3) => T2.patchWorld(...e3), replaceWorldLevels: (...e3) => T2.replaceWorldLevels(...e3), replaceWorldPlants: (...e3) => T2.replaceWorldPlants(...e3) }, Ne2 = { list: (...e3) => S2.list(...e3), findNearest: (...e3) => S2.findNearest(...e3), describe: (...e3) => S2.describe(...e3), listInLane: (...e3) => S2.listInLane(...e3), listInCell: (...e3) => S2.listInCell(...e3), watch: (...e3) => S2.watch(...e3), watchHealth: (...e3) => S2.watchHealth(...e3), getCapabilities: (...e3) => S2.getCapabilities(...e3), supports: (...e3) => S2.supports(...e3), isAlive: (...e3) => S2.isAlive(...e3) }, Pe2 = (e3) => Object.freeze({ available: false, adapters: Object.freeze([]), teams: Object.freeze([]), reason: e3 }), Fe2 = { getState(e3) {
+    if (!I(e3)) return Object.freeze({ team: `unknown`, targetTeam: `unknown` });
+    if (Zn(e3)) {
       let t3 = e3.snapshot();
       return Object.freeze({ team: P(t3?.team) || `unknown`, targetTeam: P(t3?.targetTeam) || `unknown` });
     }
     return x2.getState(e3);
   }, getCapabilities(e3) {
-    let t3 = L(e3);
-    if (!t3 || Bn(e3)) {
+    let t3 = I(e3);
+    if (!t3 || Zn(e3)) {
       let e4 = t3 ? `entity-inactive` : `entity-handle-required`;
-      return Object.freeze({ identity: Ae2(e4), targeting: Ae2(e4) });
+      return Object.freeze({ identity: Pe2(e4), targeting: Pe2(e4) });
     }
     return x2.getCapabilities(e3);
   }, supports(e3, t3) {
-    let n2 = String(t3 || ``).trim().toLowerCase();
-    return n2 !== `identity` && n2 !== `targeting` ? false : je2.getCapabilities(e3)[n2].available;
-  } }, Me2 = (e3, t3) => {
+    let n3 = String(t3 || ``).trim().toLowerCase();
+    return n3 !== `identity` && n3 !== `targeting` ? false : Fe2.getCapabilities(e3)[n3].available;
+  } }, Ie2 = (e3, t3) => {
     if (e3 == null || t3 == null) return null;
-    let n2 = Number(e3), r2 = Number(t3);
-    return !Number.isInteger(n2) || !Number.isInteger(r2) ? null : Object.freeze({ laneIndex: n2, columnIndex: r2 });
-  }, D2 = (e3) => {
+    let n3 = Number(e3), r2 = Number(t3);
+    return !Number.isInteger(n3) || !Number.isInteger(r2) ? null : Object.freeze({ laneIndex: n3, columnIndex: r2 });
+  }, E2 = (e3) => {
     if (!e3) return null;
-    if (L(e3) && typeof e3.snapshot == `function`) {
+    if (I(e3) && typeof e3.snapshot == `function`) {
       let t4 = e3.snapshot();
-      return Me2(t4?.laneIndex, t4?.columnIndex);
+      return Ie2(t4?.laneIndex, t4?.columnIndex);
     }
-    let t3 = v2.describe(R(e3));
-    return Me2(t3?.laneIndex, t3?.columnIndex);
-  }, Ne2 = { getCell(e3, t3) {
-    let n2 = Me2(e3, t3);
-    if (!n2) return null;
-    let r2 = v2.getCell(n2.laneIndex, n2.columnIndex);
-    return r2 ? D2(r2) || n2 : null;
+    let t3 = v2.describe(L(e3));
+    return Ie2(t3?.laneIndex, t3?.columnIndex);
+  }, Le2 = { getCell(e3, t3) {
+    let n3 = Ie2(e3, t3);
+    if (!n3) return null;
+    let r2 = v2.getCell(n3.laneIndex, n3.columnIndex);
+    return r2 ? E2(r2) || n3 : null;
   }, resolveCell(e3) {
-    return D2(e3);
+    return E2(e3);
   }, listCells(e3 = {}) {
     e3 = e3 && typeof e3 == `object` ? e3 : {};
-    let t3 = new Set((Array.isArray(e3.laneIndexes) ? e3.laneIndexes : e3.laneIndex == null ? [] : [e3.laneIndex]).map(Number).filter(Number.isInteger)), n2 = new Set((Array.isArray(e3.columnIndexes) ? e3.columnIndexes : e3.columnIndex == null ? [] : [e3.columnIndex]).map(Number).filter(Number.isInteger)), r2 = typeof e3.filter == `function` ? e3.filter : null, i2 = /* @__PURE__ */ new Set(), a2 = [];
+    let t3 = new Set((Array.isArray(e3.laneIndexes) ? e3.laneIndexes : e3.laneIndex == null ? [] : [e3.laneIndex]).map(Number).filter(Number.isInteger)), n3 = new Set((Array.isArray(e3.columnIndexes) ? e3.columnIndexes : e3.columnIndex == null ? [] : [e3.columnIndex]).map(Number).filter(Number.isInteger)), r2 = typeof e3.filter == `function` ? e3.filter : null, i3 = /* @__PURE__ */ new Set(), a3 = [];
     for (let e4 of v2.getCells()) {
-      let o2 = D2(e4);
-      if (!o2) continue;
-      let s3 = `${o2.laneIndex}:${o2.columnIndex}`;
-      i2.has(s3) || t3.size > 0 && !t3.has(o2.laneIndex) || n2.size > 0 && !n2.has(o2.columnIndex) || r2 && r2(o2) === false || (i2.add(s3), a2.push(o2));
+      let o3 = E2(e4);
+      if (!o3) continue;
+      let s2 = `${o3.laneIndex}:${o3.columnIndex}`;
+      i3.has(s2) || t3.size > 0 && !t3.has(o3.laneIndex) || n3.size > 0 && !n3.has(o3.columnIndex) || r2 && r2(o3) === false || (i3.add(s2), a3.push(o3));
     }
-    return Object.freeze(a2);
+    return Object.freeze(a3);
   }, getNeighbors(e3, t3 = {}) {
     t3 = t3 && typeof t3 == `object` ? t3 : {};
-    let n2 = D2(e3);
-    if (!n2) return Object.freeze([]);
-    let r2 = Number(t3.distance ?? 1), i2 = Number.isFinite(r2) ? Math.max(1, Math.min(64, Math.floor(r2))) : 1, a2 = t3.diagonals !== false, o2 = t3.includeSelf === true, s3 = [];
-    for (let e4 = -i2; e4 <= i2; e4++) for (let t4 = -i2; t4 <= i2; t4++) {
-      if (!o2 && e4 === 0 && t4 === 0 || !a2 && e4 !== 0 && t4 !== 0) continue;
-      let r3 = this.getCell(n2.laneIndex + e4, n2.columnIndex + t4);
-      r3 && s3.push(r3);
+    let n3 = E2(e3);
+    if (!n3) return Object.freeze([]);
+    let r2 = Number(t3.distance ?? 1), i3 = Number.isFinite(r2) ? Math.max(1, Math.min(64, Math.floor(r2))) : 1, a3 = t3.diagonals !== false, o3 = t3.includeSelf === true, s2 = [];
+    for (let e4 = -i3; e4 <= i3; e4++) for (let t4 = -i3; t4 <= i3; t4++) {
+      if (!o3 && e4 === 0 && t4 === 0 || !a3 && e4 !== 0 && t4 !== 0) continue;
+      let r3 = this.getCell(n3.laneIndex + e4, n3.columnIndex + t4);
+      r3 && s2.push(r3);
     }
-    return Object.freeze(s3);
+    return Object.freeze(s2);
   }, isSameCell(e3, t3) {
-    let n2 = D2(e3), r2 = D2(t3);
-    return !!n2 && !!r2 && n2.laneIndex === r2.laneIndex && n2.columnIndex === r2.columnIndex;
-  }, distance(e3, t3, n2 = `euclidean`) {
-    let r2 = D2(e3), i2 = D2(t3);
-    if (!r2 || !i2) return null;
-    let a2 = Math.abs(r2.laneIndex - i2.laneIndex), o2 = Math.abs(r2.columnIndex - i2.columnIndex);
-    switch (String(n2 || `euclidean`)) {
+    let n3 = E2(e3), r2 = E2(t3);
+    return !!n3 && !!r2 && n3.laneIndex === r2.laneIndex && n3.columnIndex === r2.columnIndex;
+  }, distance(e3, t3, n3 = `euclidean`) {
+    let r2 = E2(e3), i3 = E2(t3);
+    if (!r2 || !i3) return null;
+    let a3 = Math.abs(r2.laneIndex - i3.laneIndex), o3 = Math.abs(r2.columnIndex - i3.columnIndex);
+    switch (String(n3 || `euclidean`)) {
       case `manhattan`:
-        return a2 + o2;
+        return a3 + o3;
       case `chebyshev`:
-        return Math.max(a2, o2);
+        return Math.max(a3, o3);
       case `euclidean`:
-        return Math.sqrt(a2 ** 2 + o2 ** 2);
+        return Math.sqrt(a3 ** 2 + o3 ** 2);
       default:
         return null;
     }
-  } }, Pe2 = { getCapabilities: (...e3) => y2.getCapabilities(...e3), supports: (...e3) => y2.supports(...e3), damage: (...e3) => y2.damage(...e3), heal: (...e3) => y2.heal(...e3), eliminate: (...e3) => y2.eliminate(...e3), collect: (...e3) => y2.collect(...e3), moveToCell: (...e3) => y2.moveToCell(...e3), isAlive: (...e3) => y2.isAlive(...e3) }, Fe2 = { board: v2, combat: Se2, behaviors: xe2, entities: S2, actions: y2, scenes: f2, game: g2, player: m2, levels: p2, worldMap: E2, localization: _2, debug: { snapshot(t3) {
-    return z(V(e2, t3));
+  } }, Re2 = { getCapabilities: (...e3) => y2.getCapabilities(...e3), supports: (...e3) => y2.supports(...e3), damage: (...e3) => y2.damage(...e3), heal: (...e3) => y2.heal(...e3), eliminate: (...e3) => y2.eliminate(...e3), collect: (...e3) => y2.collect(...e3), moveToCell: (...e3) => y2.moveToCell(...e3), isAlive: (...e3) => y2.isAlive(...e3) }, ze2 = { board: v2, combat: Ee2, behaviors: Te2, entities: S2, actions: y2, scenes: o2, game: g2, player: h2, levels: l2, worldMap: T2, localization: _2, debug: { snapshot(t3) {
+    return R(B(e2, t3));
   } } };
-  return { content: d2, clock: s2, scenes: Ce2, game: we2, localization: De2, board: Ne2, entities: ke2, teams: je2, combat: C2.api, actions: Pe2, spawns: re2, status: ce2, impacts: le2, player: Te2, plants: ge2, zombies: _e2, projectiles: ve2, armors: ye2, dinosaurs: be2, tiles: $(e2, `TilesFeatures`, { getPropsData(t3 = {}) {
-    return B(e2, t3.useOriginal === true ? H(e2, `TileProps`) : V(e2, `TileProps`));
+  return { content: a2, clock: n2, scenes: De2, game: Oe2, localization: je2, board: Le2, entities: { ...Ne2, watchDeath: ue2.watchDeath }, teams: Fe2, combat: { ...C2.api, getNativeCapabilities: ue2.getCapabilities, watchDamage(e3, t3 = {}) {
+    return t3?.origin === `native` ? ue2.watchDamage(e3, t3) : C2.api.watchDamage(e3, t3);
+  } }, actions: Re2, spawns: re2, status: ce2, impacts: fe2, player: ke2, plants: be2, zombies: xe2, projectiles: Se2, armors: Ce2, dinosaurs: we2, tiles: $(e2, `TilesFeatures`, { getPropsData(t3 = {}) {
+    return z(e2, t3.useOriginal === true ? V(e2, `TileProps`) : B(e2, `TileProps`));
   }, mutateProps(t3) {
-    return U(e2, `TileProps`, t3);
+    return H(e2, `TileProps`, t3);
   } }), tileLiquids: $(e2, `TileLiquidsFeatures`, { getPropsData(t3 = {}) {
-    return B(e2, t3.useOriginal === true ? H(e2, `TileLiquidProps`) : V(e2, `TileLiquidProps`));
+    return z(e2, t3.useOriginal === true ? V(e2, `TileLiquidProps`) : B(e2, `TileLiquidProps`));
   }, mutateProps(t3) {
-    return U(e2, `TileLiquidProps`, t3);
+    return H(e2, `TileLiquidProps`, t3);
   } }), tombs: $(e2, `TombstonesFeatures`, { getPropsData(t3 = {}) {
-    return B(e2, t3.useOriginal === true ? H(e2, `TombstoneProps`) : V(e2, `TombstoneProps`));
+    return z(e2, t3.useOriginal === true ? V(e2, `TombstoneProps`) : B(e2, `TombstoneProps`));
   }, mutateProps(t3) {
-    return U(e2, `TombstoneProps`, t3);
+    return H(e2, `TombstoneProps`, t3);
   } }), lawns: $(e2, `LawnFeatures`, { getPropsData(t3 = {}) {
-    return B(e2, t3.useOriginal === true ? H(e2, `LawnProps`) : V(e2, `LawnProps`));
+    return z(e2, t3.useOriginal === true ? V(e2, `LawnProps`) : B(e2, `LawnProps`));
   }, getBoardGridMaps(t3 = {}) {
-    return B(e2, t3.useOriginal === true ? H(e2, `BoardGridMaps`) : V(e2, `BoardGridMaps`));
+    return z(e2, t3.useOriginal === true ? V(e2, `BoardGridMaps`) : B(e2, `BoardGridMaps`));
   }, mutateProps(t3) {
-    return U(e2, `LawnProps`, t3);
+    return H(e2, `LawnProps`, t3);
   }, mutateBoardGridMaps(t3) {
-    return U(e2, `BoardGridMaps`, t3);
-  } }), levels: Ee2, levelModules: $(e2, `LevelModules`), worldMap: Oe2, shop: $(e2, `StoreCommodityFeatures`, { getCommodities(t3, n2 = {}) {
-    let r2 = n2.useOriginal === true ? H(e2, `StoreCommodityFeatures`) : V(e2, `StoreCommodityFeatures`);
-    return B(e2, Array.isArray(r2?.[t3]) ? r2[t3] : []);
-  }, getCommodity(e3, t3, n2 = {}) {
-    return this.getCommodities(e3, n2).find((e4) => String(e4?.CommodityName) === String(t3 || ``)) ?? null;
+    return H(e2, `BoardGridMaps`, t3);
+  } }), levels: Ae2, levelModules: $(e2, `LevelModules`), worldMap: Me2, shop: $(e2, `StoreCommodityFeatures`, { getCommodities(t3, n3 = {}) {
+    let r2 = n3.useOriginal === true ? V(e2, `StoreCommodityFeatures`) : B(e2, `StoreCommodityFeatures`);
+    return z(e2, Array.isArray(r2?.[t3]) ? r2[t3] : []);
+  }, getCommodity(e3, t3, n3 = {}) {
+    return this.getCommodities(e3, n3).find((e4) => String(e4?.CommodityName) === String(t3 || ``)) ?? null;
   } }), upgrades: $(e2, `UpgradeFeatures`, { getRoutes(t3 = {}) {
-    return B(e2, t3.useOriginal === true ? H(e2, `MintObtainRoute`) : V(e2, `MintObtainRoute`));
+    return z(e2, t3.useOriginal === true ? V(e2, `MintObtainRoute`) : B(e2, `MintObtainRoute`));
   }, mutateRoutes(t3) {
-    return U(e2, `MintObtainRoute`, t3);
+    return H(e2, `MintObtainRoute`, t3);
   } }), trophies: $(e2, `TrophyFeatures`), garden: { getState() {
-    return B(e2, m2.getZenGardenState());
+    return z(e2, h2.getZenGardenState());
   }, mutateState(e3) {
-    return m2.mutateZenGarden(e3);
+    return h2.mutateZenGarden(e3);
   }, finishAllGrowth() {
-    return m2.mutateZenGarden((e3) => {
+    return h2.mutateZenGarden((e3) => {
       let t3 = 1e9;
-      for (let n2 of [`plantsInMain`, `plantsInMushroom`, `plantsInBeach`, `plantsInNight`]) for (let r2 of Array.isArray(e3?.[n2]) ? e3[n2] : []) !r2 || typeof r2 != `object` || (r2.grownTime = t3, r2.stuck = false, r2.waterCD = t3);
+      for (let n3 of [`plantsInMain`, `plantsInMushroom`, `plantsInBeach`, `plantsInNight`]) for (let r2 of Array.isArray(e3?.[n3]) ? e3[n3] : []) !r2 || typeof r2 != `object` || (r2.grownTime = t3, r2.stuck = false, r2.waterCD = t3);
       e3?.plantInCart && (e3.plantInCart.grownTime = t3, e3.plantInCart.stuck = false);
     });
-  } }, gameMetadata: { propertySheets: $(e2, `PropertySheets`), narrative: $(e2, `NarrativeList`) }, advanced: Fe2 };
+  } }, gameMetadata: { propertySheets: $(e2, `PropertySheets`), narrative: $(e2, `NarrativeList`) }, advanced: ze2 };
 }
 export {
-  Nn as n,
-  et as r,
-  Fi as t
+  Un as n,
+  D as r,
+  Gi as t
 };

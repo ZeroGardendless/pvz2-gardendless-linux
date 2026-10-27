@@ -1,6 +1,6 @@
 import { r as e } from "../vendor/ModuleHelpers.js";
 import { t } from "../core/Logger.js";
-import { O as n, w as r } from "../mods/FileLoader.js";
+import { h as n, u as r } from "../mods/FileLoader.js";
 import { t as i } from "../mods/ModApi.js";
 var a = e(n(), 1), o = new t(`worldmap-json`), s = [`jsons/worldmap/gpn-worldmap.json5`, `jsons/worldmap/gpn-worldmap.json`], c = 1;
 function l(e2) {

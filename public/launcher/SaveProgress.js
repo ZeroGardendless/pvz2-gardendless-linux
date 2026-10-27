@@ -1,3 +1,4 @@
+import { GAME_VERSION } from "./GameMetadata.js";
 import { escapeHtml as esc } from './Store.js';
 import { PLANTS, UPGRADES } from './SaveCatalog.js';
 export { PLANTS, UPGRADES } from './SaveCatalog.js';
@@ -44,7 +45,7 @@ export function unlockAllPlants(player) {
 export const newEndless = () => ({ level: 1, plants: [], plants_choice: null, plantfood: 0, mower: [true, true, true, true, true], plantChosen: false });
 export function newPlayer() {
     return {
-        name: 'New Player', version: '0.14.4', forceLevel: 'tutorial1', coin: 0, gem: 0, ticket: 0, sprout: 0, worldkey: 0,
+        name: 'New Player', version: GAME_VERSION, forceLevel: 'tutorial1', coin: 0, gem: 0, ticket: 0, sprout: 0, worldkey: 0,
         time: 0, difficulty: 3, date: { date: 1, month: 1, year: 1, hour: 0, minute: 0, second: 0, plantCostumeToday: [] },
         plantProps: {}, zombieProps: {}, player_trophies: {}, levelProps: {}, cardDecks: [], memoryPlantChoose: [],
         zengarden: { sprout: 0, plantsInMain: [], plantsInMushroom: [], plantsInBeach: [], plantsInNight: [], plantInCart: null },

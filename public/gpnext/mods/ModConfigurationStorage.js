@@ -1,20 +1,20 @@
-import { c as e, d, o as n, r, s as i, t, u as o } from "../platform/FileSystem.js";
-var s = `gp-next`, c = `${s}/configuration-state.json`, l = `${c}.pending`, u = { baseDir: d.AppData };
-function createConfigurationStorage(d2 = { exists: t, mkdir: r, readTextFile: n, writeTextFile: o, rename: e, remove: i }) {
-  let f = Promise.resolve(), p = (e2, n2) => {
+import { c as e, d, f as n, o, r, s as a, t } from "../platform/FileSystem.js";
+var s = `gp-next`, c = `${s}/configuration-state.json`, l = `${c}.pending`, u = { baseDir: n.AppData };
+function createConfigurationStorage(d2 = { exists: t, mkdir: r, readTextFile: o, writeTextFile: d, rename: e, remove: a }) {
+  let f = Promise.resolve(), p = (e2, t2) => {
     let r2 = JSON.stringify(e2);
     if (r2 === void 0) throw TypeError(`Configuration record must be JSON`);
     let i2 = f.then(async () => {
-      if (n2 && await d2.exists(c, u)) throw Error(`Platform configuration already exists`);
+      if (t2 && await d2.exists(c, u)) throw Error(`Platform configuration already exists`);
       await d2.mkdir(s, { ...u, recursive: true });
       try {
-        if (await d2.writeTextFile(l, r2, u), n2 && (await n2(), await d2.exists(c, u))) throw Error(`Platform configuration already exists`);
-        await d2.rename(l, c, { oldPathBaseDir: d.AppData, newPathBaseDir: d.AppData });
+        if (await d2.writeTextFile(l, r2, u), t2 && (await t2(), await d2.exists(c, u))) throw Error(`Platform configuration already exists`);
+        await d2.rename(l, c, { oldPathBaseDir: n.AppData, newPathBaseDir: n.AppData });
       } catch (e3) {
         try {
           await d2.exists(l, u) && await d2.remove(l, u);
-        } catch (t2) {
-          throw AggregateError([e3, t2], `Configuration write and temporary-file cleanup failed`);
+        } catch (t3) {
+          throw AggregateError([e3, t3], `Configuration write and temporary-file cleanup failed`);
         }
         throw e3;
       }

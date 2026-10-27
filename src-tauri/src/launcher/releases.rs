@@ -89,7 +89,10 @@ fn valid_digest(value: Option<&str>) -> bool {
         .and_then(|v| v.strip_prefix("sha256:"))
         .is_some_and(|v| v.len() == 64 && v.bytes().all(|c| c.is_ascii_hexdigit()))
 }
-fn binary_for_platform(name: &str) -> bool {
+fn binary_for_distribution(name: &str, flatpak: bool) -> bool {
+    if flatpak {
+        return name == "gardendless-linux-x64.flatpak";
+    }
     if cfg!(target_os = "linux") {
         name == "gardendless-linux-x64"
     } else if cfg!(target_os = "windows") {
@@ -132,9 +135,9 @@ fn fetch_releases() -> Result<Vec<Release>, String> {
                     let name = a["name"].as_str()?.to_owned();
                     let size = a["size"].as_u64()?;
                     let digest = a["digest"].as_str().map(str::to_owned);
-                    let reason = if !binary_for_platform(&name) {
+                    let reason = if !binary_for_distribution(&name, super::is_flatpak()) {
                         Some("Different platform or supporting file")
-                    } else if needs_sidecar {
+                    } else if needs_sidecar && !super::is_flatpak() {
                         Some("Legacy build needs separate assets; install manually")
                     } else if !valid_digest(digest.as_deref()) {
                         Some("No published SHA-256; install manually")
@@ -313,6 +316,31 @@ fn extract_windows(
     }
     executable.ok_or("No executable found in archive.".into())
 }
+// Only verified bundles from this project's GitHub release metadata reach here.
+// No shell, caller-supplied command, or arbitrary URL is executed on the host.
+fn apply_flatpak(bundle: &Path) -> Result<(), String> {
+    let result = std::process::Command::new("flatpak-spawn")
+        .args([
+            "--host",
+            "flatpak",
+            "install",
+            "--user",
+            "--noninteractive",
+            "--reinstall",
+            "--bundle",
+        ])
+        .arg(bundle)
+        .output()
+        .map_err(|e| format!("Could not start Flatpak updater: {e}"))?;
+    if !result.status.success() {
+        let detail = String::from_utf8_lossy(&result.stderr);
+        return Err(format!(
+            "Flatpak update failed: {}",
+            detail.chars().take(2000).collect::<String>()
+        ));
+    }
+    Ok(())
+}
 fn install(app: &tauri::AppHandle, asset_id: u64) -> Result<LauncherState, String> {
     let downloads = app.state::<Downloads>();
     // Re-read trusted GitHub metadata instead of accepting a caller-supplied URL.
@@ -346,6 +374,7 @@ fn install(app: &tauri::AppHandle, asset_id: u64) -> Result<LauncherState, Strin
         let mut file = File::create(&archive).map_err(|e| e.to_string())?;
         let mut response = client()?
             .get(url)
+            .timeout(Duration::from_secs(600))
             .send()
             .and_then(|r| r.error_for_status())
             .map_err(|e| e.to_string())?;
@@ -394,6 +423,34 @@ fn install(app: &tauri::AppHandle, asset_id: u64) -> Result<LauncherState, Strin
             fs::rename(&archive, &p).map_err(|e| e.to_string())?;
             p
         };
+        if super::is_flatpak() {
+            if app.state::<super::LauncherStore>().running()?.is_some() {
+                return Err("Close the game before updating the Flatpak.".into());
+            }
+            progress(
+                &downloads,
+                asset_id,
+                received,
+                asset.size,
+                "applying-update",
+            );
+            // Hold the launch mutex until the atomic package replacement ends.
+            let store = app.state::<super::LauncherStore>();
+            let session = store.session.lock().map_err(|e| e.to_string())?;
+            if session.is_some() {
+                return Err("Close the game before updating.".into());
+            }
+            apply_flatpak(&executable)?;
+            drop(session);
+            progress(
+                &downloads,
+                asset_id,
+                received,
+                asset.size,
+                "restart-required",
+            );
+            return super::snapshot(app);
+        }
         verify_executable(&executable)?;
         #[cfg(unix)]
         {
@@ -441,9 +498,7 @@ pub async fn launcher_install_release(
     asset_id: u64,
 ) -> Result<LauncherState, String> {
     require_launcher(&window)?;
-    if super::is_flatpak() {
-        return Err("Update the Flatpak package to install a new game version.".into());
-    }
+
     let downloads = app.state::<Downloads>();
     if downloads.active.swap(true, Ordering::SeqCst) {
         return Err("Another download is in progress.".into());
@@ -468,10 +523,19 @@ mod tests {
     }
     #[test]
     fn archive_is_not_a_linux_binary() {
+        assert!(binary_for_distribution(
+            "gardendless-linux-x64.flatpak",
+            true
+        ));
+        assert!(!binary_for_distribution("gardendless-linux-x64", true));
+        assert!(!binary_for_distribution(
+            "../gardendless-linux-x64.flatpak",
+            true
+        ));
         if cfg!(target_os = "linux") {
-            assert!(binary_for_platform("gardendless-linux-x64"));
-            assert!(!binary_for_platform("public-assets.zip"));
-            assert!(!binary_for_platform("../gardendless-linux-x64"));
+            assert!(binary_for_distribution("gardendless-linux-x64", false));
+            assert!(!binary_for_distribution("public-assets.zip", false));
+            assert!(!binary_for_distribution("../gardendless-linux-x64", false));
         }
     }
 }

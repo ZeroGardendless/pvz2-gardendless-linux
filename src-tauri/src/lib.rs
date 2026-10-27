@@ -1,3 +1,6 @@
+#[cfg(target_os = "linux")]
+mod audio;
+mod gpnext;
 mod launcher;
 mod platform;
 use tauri::Manager;
@@ -44,11 +47,32 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
+            gpnext::cloud_journal_read,
+            gpnext::cloud_open,
+            gpnext::ui_log,
+            launcher::nest::launcher_nest_catalog,
+            launcher::nest::download_nest_import,
+            launcher::nest::launcher_gpnext_fs,
+            gpnext::open_devtools,
+            gpnext::close_devtools,
+            gpnext::toggle_devtools,
+            #[cfg(target_os = "linux")]
+            audio::native_audio_ready,
+            #[cfg(target_os = "linux")]
+            audio::native_audio_prepare,
+            #[cfg(target_os = "linux")]
+            audio::native_audio_update,
             launcher::launcher_state,
             launcher::launcher_running,
             launcher::launcher_diagnostics,
             launcher::launcher_caelestia_scheme,
-            launcher::launcher_gpnext_packages,
+            launcher::packages::launcher_gpnext_packages,
+            launcher::packages::launcher_import_packages,
+            launcher::packages::launcher_pending_packages,
+            launcher::packages::launcher_pick_packages,
+            launcher::gardenest::launcher_gardenest,
+            launcher::logs::launcher_logs,
+            launcher::logs::launcher_log_read,
             launcher::launcher_pick_game,
             launcher::launcher_export_json,
             launcher::saves::launcher_save_sources,
@@ -79,6 +103,18 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
                 app.manage(launcher::releases::Downloads::default());
                 builder =
                     builder.data_directory(launcher::data_root(app.handle())?.join("webview"));
+            }
+            #[cfg(target_os = "linux")]
+            if game_mode {
+                match audio::NativeAudio::start(app.handle().clone()) {
+                    Ok(audio) => {
+                        eprintln!(
+                            "[Audio] Native PulseAudio/PipeWire mixer ready (one output stream)"
+                        );
+                        app.manage(audio);
+                    }
+                    Err(error) => eprintln!("[Audio] Native mixer unavailable: {error}"),
+                }
             }
             let _window = builder.build()?;
             #[cfg(target_os = "linux")]

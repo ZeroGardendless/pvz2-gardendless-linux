@@ -1,5 +1,5 @@
 import { n as getLogs, r } from "../../core/Logger.js";
-import { a } from "../Translations.js";
+import { o } from "../Translations.js";
 import { n as toast } from "../Toast.js";
 import { n as saveDialog } from "../../platform/Dialog.js";
 import { u } from "../../platform/FileSystem.js";
@@ -64,17 +64,17 @@ function refreshView() {
   if (!activeContainer || !activeList) return;
   const entries = getLogs();
   const matches = visibleEntries(entries);
-  countLabel.textContent = a("log.showing", matches.length, entries.length);
+  countLabel.textContent = o("log.showing", matches.length, entries.length);
   activeList.replaceChildren();
   if (!entries.length) {
     const empty = document.createElement("p");
     empty.className = "gp-log-empty gp-text-muted";
-    empty.textContent = a("log.empty");
+    empty.textContent = o("log.empty");
     activeList.appendChild(empty);
   } else if (!matches.length) {
     const empty = document.createElement("p");
     empty.className = "gp-log-empty gp-text-muted";
-    empty.textContent = a("log.noMatches");
+    empty.textContent = o("log.noMatches");
     activeList.appendChild(empty);
   } else {
     for (let index = matches.length - 1; index >= 0; index--) {
@@ -85,9 +85,9 @@ function refreshView() {
 async function copyEntries(entries, successKey) {
   try {
     await navigator.clipboard.writeText(entries.map(formatEntry).join("\n"));
-    toast(a(successKey), "success");
+    toast(o(successKey), "success");
   } catch {
-    toast(a("settings.modSettingsClipboard"), "error");
+    toast(o("settings.modSettingsClipboard"), "error");
   }
 }
 function render(container) {
@@ -100,14 +100,14 @@ function render(container) {
   titleGroup.className = "gp-log-title-group";
   const heading = document.createElement("h2");
   heading.className = "gp-log-title";
-  heading.textContent = a("log.title");
+  heading.textContent = o("log.title");
   countLabel = document.createElement("span");
   countLabel.className = "gp-log-count gp-text-muted";
   const search = document.createElement("input");
   search.type = "search";
   search.className = "gp-input gp-log-search";
-  search.placeholder = a("log.search");
-  search.setAttribute("aria-label", a("log.search"));
+  search.placeholder = o("log.search");
+  search.setAttribute("aria-label", o("log.search"));
   search.value = query;
   search.addEventListener("input", () => {
     query = search.value;
@@ -115,9 +115,9 @@ function render(container) {
   });
   const filter = document.createElement("select");
   filter.className = "gp-select gp-log-filter";
-  filter.setAttribute("aria-label", a("log.filterAll"));
+  filter.setAttribute("aria-label", o("log.filterAll"));
   for (const optionData of [
-    ["all", a("log.filterAll")],
+    ["all", o("log.filterAll")],
     ["info", "INFO"],
     ["warn", "WARN"],
     ["error", "ERROR"],
@@ -136,26 +136,26 @@ function render(container) {
   titleGroup.append(heading, countLabel, filter);
   const actions = document.createElement("div");
   actions.className = "gp-inline-actions gp-log-actions";
-  pauseButton = makeButton(a(paused ? "log.resume" : "log.pause"), () => {
+  pauseButton = makeButton(o(paused ? "log.resume" : "log.pause"), () => {
     paused = !paused;
-    pauseButton.textContent = a(paused ? "log.resume" : "log.pause");
+    pauseButton.textContent = o(paused ? "log.resume" : "log.pause");
     pauseButton.setAttribute("aria-pressed", String(paused));
     refreshView();
   }, { small: true });
   pauseButton.setAttribute("aria-pressed", String(paused));
-  const copyVisibleButton = makeButton(a("log.copyVisible"), () => {
+  const copyVisibleButton = makeButton(o("log.copyVisible"), () => {
     copyEntries(visibleEntries(), "common.success");
   }, { small: true });
-  const copyAllButton = makeButton(a("log.copyAll"), () => {
+  const copyAllButton = makeButton(o("log.copyAll"), () => {
     copyEntries(getLogs(), "common.success");
   }, { small: true });
-  const clearButton = makeButton(a("log.clear"), () => {
+  const clearButton = makeButton(o("log.clear"), () => {
     getLogs().splice(0, getLogs().length);
     refreshView();
   }, { small: true, variant: "danger" });
   actions.append(pauseButton, copyVisibleButton, copyAllButton, clearButton);
   if (diagnosticsProvider) {
-    const exportButton = makeButton(a("log.exportDiagnostics"), async () => {
+    const exportButton = makeButton(o("log.exportDiagnostics"), async () => {
       exportButton.disabled = true;
       const fileName = "gp-next-diagnostics.json";
       try {
@@ -166,10 +166,10 @@ function render(container) {
         });
         if (filePath) {
           await u(filePath, report);
-          toast(a("toast.saved", fileName), "success");
+          toast(o("toast.saved", fileName), "success");
         }
       } catch {
-        toast(a("toast.saveFailed", fileName), "error");
+        toast(o("toast.saveFailed", fileName), "error");
       } finally {
         exportButton.disabled = false;
       }

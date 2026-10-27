@@ -5,6 +5,7 @@ import {AudioEngine} from '../../public/gpnext/audio/AudioEngine.js';
 import {mp3Duration, deadline} from '../../public/gpnext/audio/AudioAssets.js';
 import {usesLinuxAudio} from '../../public/gpnext/audio/Bootstrap.js';
 import {patchCocosSource} from '../assets/PatchCocos.mjs';
+import {advanceCooldowns, advancePauseFade, patchGameAudioSource} from '../assets/PatchGameAudio.mjs';
 
 function mp3(frames) {
   const bytes = new Uint8Array(417 * frames);
@@ -20,6 +21,8 @@ await assert.rejects(deadline(new Promise(() => {}), 5, 'test operation'), /time
 
 class Media extends EventTarget {
   constructor() { super(); this.readyState = 0; this.duration = 30; this.currentTime = 0; this.paused = true; this.volume = 1; }
+  get currentTime() { this.positionReads = (this.positionReads || 0) + 1; return this.position; }
+  set currentTime(value) { this.position = value; }
   set src(value) { this.url = value; this.readyState = 0; queueMicrotask(() => { this.readyState = 1; this.dispatchEvent(new Event('loadedmetadata')); }); }
   play() { this.paused = false; return Promise.resolve(); }
   pause() { this.paused = true; }
@@ -45,8 +48,10 @@ class Context {
   }
 }
 let fetches = 0, failFetch = false;
+let mediaTime = 0;
 const events = new Map(), blobs = new Set();
 const host = {
+  performance: {now: () => mediaTime * 1000},
   location: {href: 'tauri://localhost/'}, Audio: Media, AudioContext: Context, Blob,
   URL: {createObjectURL() { const url = 'blob:test/' + Math.random(); blobs.add(url); return url; }, revokeObjectURL(url) { blobs.delete(url); }},
   console: {warn() {}}, addEventListener(name, callback) { events.set(name, callback); },
@@ -104,6 +109,22 @@ assert.equal(blobs.size, 1);
 music.volume = 0.3;
 assert.equal(music.media.audio.volume, 0.3);
 music.media.audio.currentTime = 4;
+music.media.audio.dispatchEvent(new Event('timeupdate'));
+const positionReads = music.media.audio.positionReads;
+mediaTime += 0.25;
+for (let frame = 0; frame < 120; frame++) assert.equal(music.currentTime, 4.25);
+assert.equal(music.media.audio.positionReads, positionReads, 'per-frame position reads do not query the media backend');
+music.media.audio.currentTime = 4.25;
+music.media.audio.dispatchEvent(new Event('waiting'));
+mediaTime += 2;
+assert.equal(music.currentTime, 4.25, 'buffering freezes the local music clock');
+music.media.audio.currentTime = 4;
+music.media.audio.dispatchEvent(new Event('playing'));
+for (const volume of [0.8, 0.4, 0.1, 0, 0.1, 0.4, 0.8]) {
+  music.volume = volume;
+  assert.equal(music.media.audio.volume, volume, 'fade volume preserves direction, including mute/unmute');
+  assert.equal(music.media.audio.muted, volume === 0, 'zero gain hard-mutes the media output');
+}
 const pausedMusicPipeline = music.media;
 await music.pause();
 assert.equal(music.offset, 4);
@@ -118,6 +139,18 @@ assert.equal(music.media, activeMusicPipeline, 'seeking music does not tear down
 assert.equal(music.media.audio.currentTime, 7, 'media seek applies immediately');
 music.destroy();
 assert.equal(blobs.size, 0);
+
+const mediaEngine = new AudioEngine({...host, addEventListener() {}}, {preferMedia: true});
+const beforeUnifiedFetch = fetches;
+const beforeUnifiedDecode = context.decodes;
+const clips = await Promise.all([mediaEngine.load('shared-effect.mp3'),
+  mediaEngine.load('shared-effect.mp3', {audioLoadMode: 1}),
+  mediaEngine.load('shared-effect.mp3', {audioLoadMode: 0})]);
+assert.equal(fetches - beforeUnifiedFetch, 1, 'Linux load modes share one fetch');
+assert.equal(mediaEngine.audioContext, null, 'Linux clip preload does not create a Web Audio pipeline');
+assert.equal(context.decodes, beforeUnifiedDecode, 'Linux media effects avoid unused PCM decoding');
+assert.ok(clips.every(clip => clip.asset === clips[0].asset && clip.asset.kind === 'stream'));
+clips.forEach(clip => clip.destroy());
 
 const domMode = await engine.load('short-dom.mp3', {audioLoadMode: 0});
 assert.equal(domMode.asset.kind, 'stream', 'Cocos DOM_AUDIO mode overrides the short-clip heuristic');
@@ -227,7 +260,8 @@ assert.equal(engine.assets.cache.size, 1);
 one.destroy(); two.destroy();
 
 // Execute the actual patched Cocos factory, rather than only checking strings.
-const source = await readFile('public/cocos-js/_virtual_cc-9deb4621.js', 'utf8');
+const {findEngineFile} = await import('../assets/PatchCocos.mjs');
+const source = await readFile(await findEngineFile(), 'utf8');
 assert.equal(patchCocosSource(source), source, 'the patcher is idempotent');
 const start = source.indexOf('N9=function(){');
 const factory = source.slice(start, source.indexOf('N9.maxAudioChannel', start));
@@ -249,6 +283,9 @@ const api = runInNewContext('var N9;' + factory + ';N9', {
   n: descriptors, L9: OneShotFacade,
   O9: fallback, b9: fallback, R9: {support:true}, u9: {DOM_AUDIO:0}, tt() {}
 });
+const {installCocosAudio} = await import('../../public/gpnext/audio/CocosAudio.js');
+const cc = {game, Game: {EVENT_PAUSE:'pause',EVENT_RESUME:'resume'}, AudioClip: {AudioType:{DOM_AUDIO:0}}, assetManager:{downloader:{_downloaders:{'.wav':(_url,_options,done)=>done(null,{player:new api({destroy(){}})})}}}};
+await installCocosAudio(cc, {__gdAudio:engine});
 const cocosPlayer = await api.load('factory.mp3');
 await cocosPlayer.play();
 assert.equal(cocosPlayer.state, 1);
@@ -303,3 +340,67 @@ afterRecovery.stop();
 events.get('pagehide')();
 assert.equal(engine.assets.bytes, 0);
 console.log('Passed: actual Cocos factories, SFX overlap/replay/volume/rate/seek, cancellation, music without PCM decoding, blob cleanup, cache eviction, retries and Windows fallback.');
+
+// Native player contract and coalesced commands (the real mixer is tested in Rust).
+const {NativeAudioEngine} = await import('../../public/gpnext/audio/NativeAudio.js');
+const commands = [], nativeEvents = new Map();
+let clipId = 0;
+const native = new NativeAudioEngine({...host, performance: {now: () => mediaTime * 1000}}, async (command, args) => {
+  if (command === 'native_audio_prepare') return {clip: ++clipId, duration: 2, sampleRate: 48000};
+  commands.push({command, args});
+}, async (name, callback) => { nativeEvents.set(name, callback); return () => {}; });
+await native.ready;
+const nativePlayer = await native.load('/assets/sound.mp3');
+nativePlayer.volume = .8;
+await nativePlayer.play();
+await nativePlayer.seek(.25);
+for (let i = 0; i < 100; i++) nativePlayer.volume = 1 - i / 100;
+await native.flush();
+assert.equal(commands.length, 1, 'Volume writes are coalesced instead of flooding IPC');
+assert.equal(commands[0].args.updates[0].position, .25);
+assert.ok(Math.abs(commands[0].args.updates[0].volume - .01) < 1e-6);
+assert.equal(nativePlayer.getPCMData(0), undefined);
+native.setPauseFade(true);
+const frozenTime = nativePlayer.currentTime;
+mediaTime += 1;
+assert.equal(nativePlayer.currentTime, frozenTime);
+await native.flush();
+assert.equal(commands.at(-1).args.updates[0].playing, false);
+native.setPauseFade(false);
+mediaTime += .1;
+assert.ok(nativePlayer.currentTime > frozenTime);
+await native.flush();
+assert.equal(commands.at(-1).args.updates[0].playing, true);
+let nativeEnded = 0;
+nativePlayer.onEnded(() => nativeEnded++);
+nativeEvents.get('native-audio-ended')({payload: [nativePlayer.id]});
+assert.equal(nativeEnded, 1);
+await nativePlayer.play();
+await nativePlayer.stop();
+await native.flush();
+assert.equal(commands.at(-1).args.updates[0].remove, true);
+nativePlayer.destroy();
+await native.flush();
+assert.deepEqual(commands.at(-1).args.release, [nativePlayer.asset.clip]);
+assert.equal(native.players.size, 0);
+console.log('Passed: native player events, seeks, stop/replay, clip release and coalesced gain updates.');
+
+// Out-of-order preparation must not stop a newer play after a quick pause/resume.
+const racingPlayer = await native.load('/assets/race.mp3');
+const prepare = native.prepare.bind(native), pending = [];
+native.prepare = () => new Promise(resolve => pending.push(resolve));
+const oldPlay = racingPlayer.play();
+await racingPlayer.pause();
+const newPlay = racingPlayer.play();
+pending[1]({clip: 9002, duration: 2, sampleRate: 48000});
+await newPlay;
+pending[0]({clip: 9001, duration: 2, sampleRate: 48000});
+await oldPlay;
+assert.equal(racingPlayer.asset.clip, 9002, 'cancelled preparation does not overwrite newer playback');
+await native.flush();
+assert.equal(commands.at(-1).args.updates.at(-1).playing, true, 'late preparation does not stop newer playback');
+assert.ok(commands.at(-1).args.release.includes(9001));
+native.prepare = prepare;
+racingPlayer.destroy();
+await native.flush();
+console.log('Passed: overlapping prepare cancellation preserves the latest playback.');

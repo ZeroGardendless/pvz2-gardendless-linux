@@ -23,8 +23,14 @@ checks/build tools live in `scripts/`. See [the GPNext development guide](docs/g
 
 Run `npm run check` (also `npm run build`) to validate the ready-to-serve frontend.
 `npm run dev` serves `public/` for browser previews; native features require Tauri.
-Run `npm run build:binary` to validate and build one embedded executable.
-Linux output: `src-tauri/target/release/gardendless-linux-x64` and its SHA-256 file.
+After replacing game assets, run `python build.py` from the project directory.
+It restores compatibility patches, regenerates the save-editor catalog, losslessly
+optimizes PNGs with oxipng, verifies their pixels, runs checks, and builds only the Flatpak.
+PNG originals and reports are kept under `src-tauri/target/png-optimization/`.
+Requires Python with Pillow, oxipng, Node/npm and Rust; missing JavaScript dependencies
+are installed with `npm ci`. Use `python build.py --skip-png` to skip image
+optimization, or `--dry-run` to preview the steps. Flatpak builds also require the SDKs in the Flatpak guide.
+The GP-Next icon is `public/gpnicon.png`, outside the replaceable game assets.
 The build reapplies Gardendless's Cocos audio and frame-rate compatibility hooks
 if `public/cocos-js/` has been replaced with an upstream copy.
 
@@ -41,5 +47,5 @@ from GP-Next while playing. They trade simultaneous effects against resource use
 The launcher also
 includes Linux save editing, automatic edit backups, and a keybind editor.
 For graphics troubleshooting, try `--safe-graphics` (optionally with `--game`).
-An experimental Flatpak build is available via `npm run build:flatpak`; see the
-[Flatpak build and storage guide](docs/platforms/Flatpak.md).
+See the [Flatpak build and storage guide](docs/platforms/Flatpak.md) for SDK requirements
+and packaging details.
