@@ -155,23 +155,25 @@ function B(e2, t2, i2) {
   }
   return o2.appendChild(y2), o2;
 }
-function render(e2) {
+function render(e2, { includePacks = true } = {}) {
   let t2 = f?.getStatus();
   if (t2 || e2.appendChild(k(n(`patcher.engineState`), false)), t2) {
-    g = (t2.packs || []).filter((e3) => !e3.isSingle), _ = t2.disabledPacks || [], v = false, C = document.createElement(`div`), C.style.cssText = `display:flex;flex-direction:column;gap:4px;`, b = document.createElement(`div`), b.style.cssText = `display:flex;flex-direction:column;gap:12px;`, R();
-    let l3 = r(n(`patcher.loadOrderHint`));
-    l3.style.cssText = `margin-top:4px;`;
-    let u3;
-    u3 = a(n(`patcher.saveAndReload`), async () => {
-      u3.disabled = true, u3.textContent = n(`patcher.saveAndReloading`);
-      try {
-        await O(`patcher-save-and-reload`, j()), v = false, e2.innerHTML = ``, render(e2);
-      } catch (e3) {
-        c(String(e3.message || e3), `error`);
-      } finally {
-        u3.textContent = n(`patcher.saveAndReload`), u3.disabled = false;
-      }
-    }, { small: true }), e2.appendChild(i(n(`patcher.packs`), [C, b, l3, o(u3)])), x = document.createElement(`div`), x.style.cssText = `display:flex;flex-direction:column;gap:12px;`, S = i(n(`patcher.disabledPacks`), [x]), z(), e2.appendChild(S);
+    if (includePacks) {
+      g = (t2.packs || []).filter((e3) => !e3.isSingle), _ = t2.disabledPacks || [], v = false, C = document.createElement(`div`), C.style.cssText = `display:flex;flex-direction:column;gap:4px;`, b = document.createElement(`div`), b.style.cssText = `display:flex;flex-direction:column;gap:12px;`, R();
+      let l3 = r(n(`patcher.loadOrderHint`));
+      l3.style.cssText = `margin-top:4px;`;
+      let u3;
+      u3 = a(n(`patcher.saveAndReload`), async () => {
+        u3.disabled = true, u3.textContent = n(`patcher.saveAndReloading`);
+        try {
+          await O(`patcher-save-and-reload`, j()), v = false, e2.innerHTML = ``, render(e2, { includePacks });
+        } catch (e3) {
+          c(String(e3.message || e3), `error`);
+        } finally {
+          u3.textContent = n(`patcher.saveAndReload`), u3.disabled = false;
+        }
+      }, { small: true }), e2.appendChild(i(n(`patcher.packs`), [C, b, l3, o(u3)])), x = document.createElement(`div`), x.style.cssText = `display:flex;flex-direction:column;gap:12px;`, S = i(n(`patcher.disabledPacks`), [x]), z(), e2.appendChild(S);
+    }
     let d3 = t2.singleFile, f2 = d3?.registered?.length ?? d3?.loaded?.length ?? 0;
     if (d3 && (f2 > 0 || d3.errors.length > 0)) {
       let t3 = document.createElement(`div`);
@@ -202,7 +204,7 @@ function render(e2) {
   let l2 = a(n(`patcher.reloadAll`), async () => {
     l2.textContent = n(`patcher.reloading`), l2.disabled = true;
     try {
-      await O(`patcher-reload-all`), e2.innerHTML = ``, render(e2);
+      await O(`patcher-reload-all`), e2.innerHTML = ``, render(e2, { includePacks });
     } catch (e3) {
       c(String(e3.message || e3), `error`);
     } finally {
@@ -210,7 +212,7 @@ function render(e2) {
     }
   }), u2 = a(n(`patcher.restoreAll`), () => {
     p && (u2.textContent = n(`patcher.restored`, p.restoreAll().success), setTimeout(() => {
-      e2.innerHTML = ``, render(e2);
+      e2.innerHTML = ``, render(e2, { includePacks });
     }, 1500));
   }, { variant: `danger` }), d2 = i(n(`patcher.actions`), [o(l2, u2)]);
   if (e2.appendChild(d2), m && m !== `(unknown)`) {
@@ -218,9 +220,13 @@ function render(e2) {
     e2.appendChild(o2);
   }
 }
+function renderPatcherControls(container) {
+  render(container, { includePacks: false });
+}
 export {
   bindPatcher,
   createOpenFolderButton,
   hasPendingPackChanges,
-  render
+  render,
+  renderPatcherControls
 };

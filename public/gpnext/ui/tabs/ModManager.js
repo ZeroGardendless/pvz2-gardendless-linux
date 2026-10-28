@@ -7,7 +7,7 @@ import { n as o } from "../Toast.js";
 import { n as s } from "../../mods/ModSettingsRegistry.js";
 import { n as c } from "../../platform/Opener.js";
 import { t as l } from "./Pages.js";
-import { createOpenFolderButton, hasPendingPackChanges, render as f } from "./Patcher.js";
+import { createOpenFolderButton, renderPatcherControls, hasPendingPackChanges, render as f } from "./Patcher.js";
 import { render as p, renderRuntimeControls } from "./Mods.js";
 import { renderModSettings } from "./Settings.js";
 function g(e2) {
@@ -317,7 +317,8 @@ function v(e2, i2 = null, o2 = null, s2 = null) {
       c2.append(section);
       packGroups.set(enabled, section._body);
     }
-    if (l2.length || c2.appendChild(E(t(`selection.empty`))), l2.forEach((i3, o4) => {
+    if (!l2.length) c2.appendChild(E(t(`selection.empty`)));
+    l2.forEach((i3, o4) => {
       let u3 = document.createElement(`div`);
       u3.className = `gp-pack-card gp-mod-selection-row`;
       const artwork = document.createElement("div");
@@ -363,12 +364,22 @@ function v(e2, i2 = null, o2 = null, s2 = null) {
       controls.append(d3);
       u3.append(controls);
       packGroups.get(Boolean(i3.enabled || i3.suspendedByJsModding)).append(u3);
-    }), w() || d2) {
-      let n2 = r(t(d2 ? `migration.committing` : `migration.confirm`), async () => {
+    });
+    {
+      let n2 = r(t(d2 ? `patcher.saveAndReloading` : `patcher.saveAndReload`), async () => {
         if (!d2) {
           d2 = true, m2 = null, F();
           try {
-            await e2.save(l2.map(({ id: e3, enabled: t2 }) => ({ id: e3, enabled: t2 })), u2.desired.revision), T();
+            await e2.save(l2.map(({ id: e3, enabled: t2 }) => ({ id: e3, enabled: t2 })), u2.desired.revision);
+            T();
+            if (e2.prepareApplication) {
+              const application = await e2.prepareApplication();
+              if (application.mode === "immediate") {
+                await application.apply();
+                T();
+                _2 = application.effect;
+              } else h2 = application;
+            }
           } catch (e3) {
             m2 = e3;
           } finally {
@@ -378,7 +389,7 @@ function v(e2, i2 = null, o2 = null, s2 = null) {
       }), i3 = r(t(`selection.discard`), () => {
         T(), F();
       });
-      n2.disabled = i3.disabled = s3, c2.appendChild(a(n2, i3));
+      n2.disabled = i3.disabled = s3 || !w(), c2.appendChild(a(n2, i3));
     }
     o3 && [...c2.querySelectorAll(`[data-mod-focus]`)].find((e3) => e3.dataset.modFocus === o3)?.focus({ preventScroll: true });
   }
@@ -401,10 +412,13 @@ function createModManager(g2 = { getRegisteredModSettings: s }, y2 = null, b = n
     }, { small: true });
     d2.appendChild(n(`M14 4h6v6M20 4 10 14M10 4H4v16h16v-6`));
     let f2 = [d2], p2 = T && createOpenFolderButton();
-    p2 && f2.unshift(p2), isJsModdingRuntimeEnabled() && f2.unshift(i(t(`sections.modRuntime`), () => l2(`runtime`))), !T && g2.getRegisteredModSettings().length && f2.unshift(i(t(`settings.modSettings`), () => l2(`settings`))), f2.length && s2.appendChild(a(...f2));
+    p2 && f2.unshift(p2), isJsModdingRuntimeEnabled() && f2.unshift(i(t(`sections.modRuntime`), () => l2(`runtime`))), g2.getRegisteredModSettings().length && f2.unshift(i(t(`settings.modSettings`), () => l2(`settings`))), f2.length && s2.appendChild(a(...f2));
   }, render(e2) {
     if (T) {
-      T.render(e2);
+      const packages = document.createElement("div"), controls = document.createElement("div");
+      e2.append(packages, controls);
+      T.render(packages);
+      renderPatcherControls(controls);
       return;
     }
     if (!w) {

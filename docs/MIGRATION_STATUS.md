@@ -61,3 +61,23 @@ has no temporary transform containing block. Background page refresh waits for
 an open menu to close. Browser preview verified completion in a fresh test draft;
 no real save was edited. Physical desktop file drops and full gameplay remain
 user acceptance checks.
+
+## Follow-up after user acceptance feedback
+
+The initial restore omitted the original Mods action panel and kept Tools too
+crowded. Restored Reload All Patches, Restore All Originals, folder/status details,
+mod-settings navigation, and always-visible Save & Reload / Discard controls.
+Save uses the canonical configuration and application review rather than bypassing
+1.5.5 journaling. Tools now has one UUID field; preference backups and diagnostics
+are secondary pages. About imports the version constant instead of the data-type
+list. The Levels layout uses explicit spacing and versioned launcher stylesheets.
+
+The user's existing enabled JS mods exposed a missing feature-state dependency
+in PackPreparation: launcher inspection options were discarded before final
+preflight. The option is now passed through every preparation layer, with runtime
+defaults preserved elsewhere. Reinstall/update also preserves an existing mod's
+enabled state, so updating Luxis Lib cannot implicitly disable a dependency of
+Luxis Roguelike. Brand-new mods remain disabled. Regression tests cover enabled
+script mods with runtime opt-in off, and inspection of a read-only in-memory copy
+of the user's actual installed profile with the real Luxis Lib archive. This
+inspection neither wrote user files nor executed mod scripts.

@@ -53,7 +53,7 @@ const profile = () => state.profiles.find(p => p.id === selectedProfile) || stat
 const button = (action, text, glyph, classes = '', attributes = '') => `<button type="button" class="button ${classes}" data-action="${action}" ${attributes}>${glyph ? icon(glyph) : ''}${text}</button>`;
 const hint = text => `<p class="muted">${text}</p>`;
 function notify(message, error = false) {
-    if (error) console.error("[Launcher]", message);
+    if (error) console.error("[Launcher]", String(message?.message || message), message?.stack || "");
     const toast = document.createElement('div');
     toast.className = `notification ${error ? 'error' : ''}`;
     toast.setAttribute('role', error ? 'alert' : 'status');

@@ -82,3 +82,13 @@
 .plant-detail .toggle-row { margin-bottom: 16px; }
 .plant-detail > .button { margin-top: 12px; }
 @media (max-width: 850px) { .plant-workspace { grid-template-columns: 1fr; } .plant-list { max-height: 340px; } }
+
+/* Level controls share a deliberate rhythm; labels cannot offset adjacent counts. */
+.level-editor { display: grid; gap: 16px; min-width: 0; }
+.level-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; }
+.level-toolbar .field { flex: 1 1 260px; max-width: 420px; margin: 0; }
+.level-toolbar .badge { min-height: 44px; display: inline-flex; align-items: center; padding: 10px 16px; margin-bottom: 4px; }
+.level-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.level-editor > .muted { margin: 0; line-height: 1.6; max-width: 80ch; }
+.level-editor > .field { margin: 0; }
+@media (max-width: 500px) { .level-actions .button { flex: 1 1 auto; } }

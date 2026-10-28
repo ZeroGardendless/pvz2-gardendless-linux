@@ -11,15 +11,7 @@ function renderUuidGenerator(container) {
   value.style.cssText = "width:100%;box-sizing:border-box;min-width:0;";
   const status = i("Use this UUID in your datapack\u2019s pack.json.");
   status.setAttribute("role", "status");
-  const list = document.createElement("select");
-  list.className = "gp-select";
-  list.setAttribute("aria-label", "Recent UUIDs in this session");
   const showHistory = () => {
-    list.replaceChildren(...history.map((uuid) => {
-      const option = document.createElement("option");
-      option.value = option.textContent = uuid;
-      return option;
-    }));
     value.value = history[0] || "";
   };
   const generate = () => {
@@ -27,7 +19,7 @@ function renderUuidGenerator(container) {
       history.unshift(createUuid());
       history.splice(10);
       showHistory();
-      status.textContent = "Generated a new UUID. Previous IDs remain in the session history.";
+      status.textContent = "Generated a new UUID. Use it in your datapack\u2019s pack.json.";
     } catch (error) {
       status.textContent = error.message;
     }
@@ -50,12 +42,9 @@ function renderUuidGenerator(container) {
       status.textContent = error.message;
     }
   }));
-  list.addEventListener("change", () => {
-    value.value = list.value;
-  });
   if (!history.length) generate();
   else showHistory();
-  container.append(l(o("guide.uuidSectionTitle"), [value, actions, list, status]));
+  container.append(l(o("guide.uuidSectionTitle"), [value, actions, status]));
 }
 export {
   renderUuidGenerator

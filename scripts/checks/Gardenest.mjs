@@ -1,4 +1,5 @@
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
+import pathModule from 'node:path';
 import {unpackFixture} from './PackageWorker.mjs';
 import assert from 'node:assert/strict';
 const files=new Map(),dirs=new Set();
@@ -16,7 +17,7 @@ const invoke=async(cmd,args)=>{
   case'mkdir':{const segments=path.split('/');for(let i=1;i<=segments.length;i++)dirs.add(segments.slice(0,i).join('/'));return;}
   case'stat':if(!files.has(path)&&!dirs.has(path))throw Error('missing');return {isFile:files.has(path),isDirectory:dirs.has(path),isSymlink:false};
   case'writeText':files.set(path,data);return;
-  case'readText':if(!files.has(path))throw Error('missing');return files.get(path);
+  case'readText':if(!files.has(path))throw Error('missing');return typeof files.get(path)==='string'?files.get(path):new TextDecoder().decode(files.get(path));
   case'write':files.set(path,Buffer.from(data,'base64'));return;
   case'read':if(!files.has(path))throw Error('missing');return Buffer.from(files.get(path)).toString('base64');
   case'rename':if(files.has(path)){files.set(target,files.get(path));files.delete(path);}else{for(const[k,v]of [...files])if(k.startsWith(path+'/')){files.set(target+k.slice(path.length),v);files.delete(k);}for(const d of [...dirs])if(d===path||d.startsWith(path+'/')){dirs.add(target+d.slice(path.length));dirs.delete(d);}}return;
@@ -40,7 +41,7 @@ assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).active.co
 files.set('gp-next/packs/local.zip',payload);
 const local=await prepareLocalInstall(profile,'local.zip');
 assert.equal(local.preview.name,'Fixture');await local.commit();
-assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods[0].enabled,false);
+assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods[0].enabled,true,'Reinstalling an enabled dependency preserves its enabled state.');
 files.set('gp-next/packs/scripts.zip', readFileSync(new URL('./ScriptPackageFixture.zip',import.meta.url)));
 const script = await prepareLocalInstall(profile,'scripts.zip');
 assert.equal(script.preview.containsScripts,true);
@@ -48,6 +49,14 @@ await script.commit();
 assert.equal(globalThis.__mustNeverExecute,undefined,'inspection must never execute package scripts');
 assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id==='fixture.script').enabled,false);
 await assert.rejects(setPackageEnabled(profile,'fixture.script',true),/Enable JavaScript/);
+// Existing enabled script mods must not prevent storing another disabled package.
+const withScripts = JSON.parse(files.get('gp-next/configuration-state.json'));
+withScripts.desired.mods.find(mod => mod.id === 'fixture.script').enabled = true;
+files.set('gp-next/configuration-state.json', JSON.stringify(withScripts));
+const alongsideScripts = await prepareGardenestInstall(profile, descriptor.versionId);
+await alongsideScripts.commit();
+assert.equal(globalThis.__mustNeverExecute, undefined, 'Full profile inspection never evaluates existing scripts');
+console.log('Passed: disabled imports alongside existing enabled JS mods with runtime JS opt-in off.');
 const wrapped = unpackFixture(new Uint8Array(readFileSync(new URL('./WrappedPackageFixture.zip',import.meta.url))));
 assert.ok(wrapped.some(([name])=>name==='pack.json'),'single enclosing folder is normalized');
 const tampered=envelope.slice();tampered[tampered.length-1]^=1;await assert.rejects(decodeImport(tampered.buffer,descriptor.versionId),/checksum/);
@@ -58,4 +67,26 @@ if (process.env.GARDENDLESS_TEST_ZIP) {
  const imported = await prepareLocalInstall(profile,'public-test.zip');
  await imported.commit();
  console.log('Verified real archive inspection/install into isolated fixture storage:', imported.preview.name);
+}
+
+if (process.env.GARDENDLESS_TEST_PROFILE) {
+ const root = process.env.GARDENDLESS_TEST_PROFILE;
+ files.clear(); dirs.clear(); dirs.add('gp-next');
+ files.set('gp-next/configuration-state.json',readFileSync(pathModule.join(root,'gp-next/configuration-state.json'),'utf8'));
+ function copyInstalled(relative) {
+  dirs.add(relative);
+  for(const entry of readdirSync(pathModule.join(root,relative),{withFileTypes:true})) {
+   const name=relative+'/'+entry.name;
+   if(entry.isDirectory())copyInstalled(name);
+   else if(entry.isFile())files.set(name,readFileSync(pathModule.join(root,name)));
+  }
+ }
+ copyInstalled('gp-next/installed');
+ files.set('gp-next/packs/readonly-public-test.zip',readFileSync(process.env.GARDENDLESS_TEST_ZIP));
+ const result=await prepareLocalInstall(profile,'readonly-public-test.zip');
+ assert.ok(result.preview.name);
+ const existing=JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id===result.preview.id);
+ if(existing)assert.equal(result.preview.enabled,existing.enabled,'Updating a dependency retains its enabled state.');
+ assert.equal(globalThis.__mustNeverExecute,undefined);
+ console.log('Passed real-profile copy inspection, without writing user files or executing mods:',result.preview.name);
 }

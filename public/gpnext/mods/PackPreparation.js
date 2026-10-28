@@ -57,7 +57,7 @@ function _() {
   return e2.length > 0 || a2 > 0 || o2 > 0 || r2.length > 0 ? { meta: { name: `__builtin_translations`, priority: -1e3, version: `1.0.0`, description: `Built-in GP-Next translations`, author: `GP-Next` }, lyrics: e2, features: t2, objects: n2, extraLanguages: r2, build: h || null } : null;
 }
 var v = /* @__PURE__ */ new WeakMap(), y = /* @__PURE__ */ new WeakMap();
-async function b({ configuration: n2, installStore: i2, signal: a2 }) {
+async function b({ configuration: n2, installStore: i2, signal: a2, hasFeature: featureState = getGpNextFeatureState }) {
   let o2 = r(n2);
   t(o2);
   let s2 = { patches: e.SINGLE_PATCHES, edits: e.GPN_EDITS };
@@ -76,7 +76,7 @@ async function b({ configuration: n2, installStore: i2, signal: a2 }) {
   }
   let u2 = [];
   for (let e2 of o2.overrides) u2.push([s2[e2.kind], await c2(e2.contentDigest)]);
-  let d2 = await w({ settings: { packOrder: o2.mods.map((e2) => e2.id), disabledPacks: o2.mods.filter((e2) => !e2.enabled).map((e2) => e2.id) }, packages: l2, overrides: u2 });
+  let d2 = await w({ settings: { packOrder: o2.mods.map((e2) => e2.id), disabledPacks: o2.mods.filter((e2) => !e2.enabled).map((e2) => e2.id) }, packages: l2, overrides: u2, hasFeature: featureState });
   return a2?.throwIfAborted(), E(d2), y.set(d2, o2), d2;
 }
 function x(e2, t2) {
@@ -92,7 +92,7 @@ function C(e2) {
   let t2 = c();
   return T(e2, t2, (e3) => o(e3.packOrder, e3.disabledPacks, t2));
 }
-function w({ settings: t2, packages: n2, overrides: r2, attempt: i2 = false }) {
+function w({ settings: t2, packages: n2, overrides: r2, attempt: i2 = false, hasFeature: featureState = getGpNextFeatureState }) {
   if (!t2 || !Array.isArray(n2)) throw Error(`Installed selection and settings are required`);
   n2 = n2.map((e2) => ({ ...e2 }));
   let a2 = /* @__PURE__ */ new Map(), o2 = new Set([e.SINGLE_PATCHES, e.GPN_EDITS].map((e2) => e2.replaceAll(`\\`, `/`)));
@@ -124,9 +124,9 @@ function w({ settings: t2, packages: n2, overrides: r2, attempt: i2 = false }) {
       e2.push({ dir: l2(t3), enabled: false, contentDigest: t3.contentDigest, installationId: t3.id, meta: { uuid: t3.runtimeNamespace || t3.id, name: t3.fallbackName || t3.id, version: t3.version, depends: [], optionalDepends: [], requiredGpNextFeatures: [] }, preflightErrors: [String(n3.message || n3)], unavailable: true });
     }
     return e2;
-  }, { attempt: i2 });
+  }, { attempt: i2, hasFeature: featureState });
 }
-async function T(t2, i2, o2, { attempt: c2 = false } = {}) {
+async function T(t2, i2, o2, { attempt: c2 = false, hasFeature: featureState = getGpNextFeatureState } = {}) {
   let p2 = structuredClone(t2 ?? await loadSettings()), m2 = [], h2 = [];
   try {
     h2 = await o2(p2);
@@ -134,7 +134,7 @@ async function T(t2, i2, o2, { attempt: c2 = false } = {}) {
     m2.push({ dir: e.PACKS_ROOT, stage: `discovery`, message: String(t3.message || t3) });
   }
   for (let e2 of h2) if (!(e2.enabled === false || e2.preflightErrors?.length)) try {
-    e2.preflightWarnings = (e2.meta.js ? u : d)(e2, { hasFeature: getGpNextFeatureState, attempt: c2 }).warnings;
+    e2.preflightWarnings = (e2.meta.js ? u : d)(e2, { hasFeature: featureState, attempt: c2 }).warnings;
   } catch (t3) {
     e2.preflightErrors = [String(t3.message || t3)];
   }
@@ -142,7 +142,7 @@ async function T(t2, i2, o2, { attempt: c2 = false } = {}) {
   for (let e2 of n(h2, { attempt: c2 }).ordered) try {
     let t3 = await i2.capture(e2);
     if (g2.set(e2.dir, t3), e2.contentDigest = t3.digest, e2.meta.js) {
-      let t4 = await f(e2, { fileLoader: i2, hasFeature: getGpNextFeatureState, attempt: c2 });
+      let t4 = await f(e2, { fileLoader: i2, hasFeature: featureState, attempt: c2 });
       e2.preflightErrors = t4.errors, e2.preflightWarnings = t4.warnings;
     }
   } catch (t3) {

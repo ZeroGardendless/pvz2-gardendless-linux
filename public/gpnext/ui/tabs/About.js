@@ -1,7 +1,7 @@
 import { getLauncherContext } from "../../platform/Launcher.js";
 import { o, n as documentationUrl } from "../Translations.js";
 import { n as toast } from "../Toast.js";
-import { F } from "../../mods/FileLoader.js";
+import { c } from "../../mods/GameConfiguration.js";
 import { t } from "../../core/ClientEdition.js";
 import { n as openUrl } from "../../platform/Opener.js";
 const styles = `
@@ -63,7 +63,7 @@ async function render(container) {
   const meta = document.createElement("div");
   meta.className = "gp-about-meta";
   meta.append(
-    makeCard("gp-about-meta-card", o("about.patcherVersion"), `v${F}`),
+    makeCard("gp-about-meta-card", o("about.patcherVersion"), `v${c}`),
     makeCard("gp-about-meta-card", o("about.clientEdition"), o(`about.clientEdition.${t}`))
   );
   page.appendChild(meta);

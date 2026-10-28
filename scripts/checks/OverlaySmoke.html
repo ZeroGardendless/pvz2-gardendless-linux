@@ -4,6 +4,7 @@
 import {n as createOverlay} from '/gpnext/ui/Overlay.js';
 import {createModManager} from '/gpnext/ui/tabs/ModManager.js';
 import {createPreferencesTab} from '/gpnext/ui/tabs/Preferences.js';
+import {createToolsTab} from '/gpnext/ui/tabs/Tools.js';
 import {render as renderAbout} from '/gpnext/ui/tabs/About.js';
 try {
  const image = new Uint8Array(await (await fetch('/gpnicon.png')).arrayBuffer());
@@ -12,14 +13,20 @@ try {
  const configuration={revision:0,mods,overrides:[],modSettings:{version:1,mods:{}}};
  const record={desired:configuration,active:{configuration},journal:null,recovery:null};
  const manager=createModManager({getRegisteredModSettings:()=>[]},null,{getState:()=>record,describe:async id=>({name:mods.find(m=>m.id===id).fallbackName,version:'1.0.0',author:'Example author',description:'A sample package with its own logo.',thumbnailUrl:logo,capabilities:['json','asset'],requirements:[],files:[],depends:[],optionalDepends:[],warnings:[]}),save:async()=>{}});
+ const toolsProof=document.createElement('div');
+ createToolsTab().render(toolsProof);
+ if(toolsProof.querySelectorAll('input[aria-label="Generated UUID"]').length!==1 || toolsProof.querySelector('[aria-label="Recent UUIDs in this session"]')) throw Error('UUID tools duplicated');
+ const aboutProof=document.createElement('div');await renderAbout(aboutProof);
+ if(![...aboutProof.querySelectorAll('.gp-about-meta-card strong')].some(node=>node.textContent==='v1.5.5'))throw Error('Incorrect patcher version');
  const settings=createPreferencesTab(),overlay=createOverlay();
- for(const [id,key,tab] of [['patcher','tab.mods',manager],['data','tab.data',{render(){}}],['tools','sections.tools',{render(){}}],['settings','tab.settings',settings],['performance','tab.performance',{render(){}}],['log','tab.log',{render(){}}],['about','tab.about',{render:renderAbout}]]) overlay.registerTab({id,labelKey:key,...tab});
+ for(const [id,key,tab] of [['patcher','tab.mods',manager],['data','tab.data',{render(){}}],['tools','sections.tools',createToolsTab()],['settings','tab.settings',settings],['performance','tab.performance',{render(){}}],['log','tab.log',{render(){}}],['about','tab.about',{render:renderAbout}]]) overlay.registerTab({id,labelKey:key,...tab});
  overlay.setVersion('1.5.5');overlay.show();
  window.addEventListener('error',event=>{document.title='RESULT: FAIL '+event.message;});
  setTimeout(()=>{
   if(document.querySelectorAll('.gp-tab').length!==7) throw Error('Unexpected navigation');
   if(document.querySelectorAll('.gp-pack-thumb img').length!==2) throw Error('Missing mod artwork');
-  document.title='RESULT: PASS GP-Next cards and original navigation';
+  if(!document.body.textContent.includes('Reload All Patches') || !document.body.textContent.includes('Restore All Originals')) throw Error('Missing original mod actions');
+  document.title='RESULT: PASS GP-Next cards, actions, UUID tool and version';
  },500);
 } catch(error){document.title='RESULT: FAIL '+error.message;}
 </script>

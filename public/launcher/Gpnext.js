@@ -103,9 +103,9 @@ async function prepareInstall(profile, entries, descriptor = null) {
     "experimental.worldMapJson": true, "runtime.worldMapJson": true, "experimental.plantLevelSystem": true, "runtime.plantLevelSystem": true,
     "runtime.dynamicPlantRegistry": true, "runtime.shopExtensions": true, "runtime.scrollSensitivity": true})[feature] ?? null;
   const installation = await preparePackageInstall({snapshot, configurationState, installStore, canEdit: () => true,
-    hasFeature: features, forceDisabled: true, assertCandidateAllowed() {}});
+    hasFeature: features, assertCandidateAllowed() {}});
   const preview = {...installation.preview, warnings: [...installation.preview.warnings]};
-  if (preview.containsScripts && !profile.jsModding) preview.warnings.push("JavaScript modding is off. This package stays disabled until you enable JavaScript modding and the mod itself.");
+  if (preview.containsScripts && !preview.enabled) preview.warnings.push("This package includes JavaScript. Enable JS modding in GP-Next before enabling the mod. Installing it does not execute its scripts.");
   return {descriptor, preview, async commit() {
     // Re-read durable state immediately before commit; the installer then checks
     // identity/revision again and writes immutable bytes before desired selection.

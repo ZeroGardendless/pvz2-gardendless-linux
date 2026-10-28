@@ -157,7 +157,7 @@ async function preparePackageInstall({ snapshot: e2, configurationState: t2, ins
     }
     let r3 = await f(`incoming`, C2);
     if (r3.errors.length) throw Error(r3.errors.join(`; `));
-    let c3 = g2 ? l2.desired.mods.map((e4) => e4.id === b2.id ? b2 : e4) : [...l2.desired.mods, b2], d2 = i(o({ ...l2.desired, revision: l2.desired.revision + 1, mods: c3 }, l2.desired.modSettings)), m2 = await y({ configuration: d2, installStore: { read: (e4) => e4 === p2.digest ? Promise.resolve(p2) : n2.read(e4) } });
+    let c3 = g2 ? l2.desired.mods.map((e4) => e4.id === b2.id ? b2 : e4) : [...l2.desired.mods, b2], d2 = i(o({ ...l2.desired, revision: l2.desired.revision + 1, mods: c3 }, l2.desired.modSettings)), m2 = await y({ configuration: d2, installStore: { read: (e4) => e4 === p2.digest ? Promise.resolve(p2) : n2.read(e4) }, hasFeature: a2 });
     s2(m2), u2();
     let h3 = !!g2 && g2.contentDigest !== p2.digest && !!w2.meta.js, S2 = false, T3 = false;
     return Object.freeze({ preview: i({ id: b2.id, name: w2.meta.name, version: w2.meta.version, previousVersion: g2?.version ?? null, update: !!g2, enabled: b2.enabled, containsScripts: !!w2.meta.js, requirements: E2, unchanged: x2, requiresTrust: h3, contentDigest: p2.digest, warnings: e3 }), async commit({ trustedContentDigest: e4 } = {}) {

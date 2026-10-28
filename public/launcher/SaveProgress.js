@@ -223,12 +223,12 @@ export function renderProgress(player, state, disabled) {
         const choices = inGroup.filter(id => id.toLowerCase().includes(query));
         const finished = inGroup.filter(id => levelProperties(player, id).progress === 4).length;
         const shown = choices.slice(0, 100);
-        body = `<div class="editor-toolbar"><label class="field">World / category<select data-progress-level-group>${LEVEL_GROUPS.filter(([id]) => levelsInGroup(catalog, id).length).map(([id, name]) => `<option value="${id}" ${id === state.levelGroup ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></label><span class="badge green">${finished} / ${inGroup.length} completed</span></div>
-        <div class="editor-toolbar">${action('complete-world', 'Complete this category')}${action('complete-all-levels', 'Complete all levels')}</div>
+        body = `<div class="level-editor"><div class="level-toolbar"><label class="field">World / category<select data-progress-level-group>${LEVEL_GROUPS.filter(([id]) => levelsInGroup(catalog, id).length).map(([id, name]) => `<option value="${id}" ${id === state.levelGroup ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></label><span class="badge green">${finished} / ${inGroup.length} completed</span></div>
+        <div class="level-actions">${action('complete-world', 'Complete this category')}${action('complete-all-levels', 'Complete all levels')}</div>
         <p class="muted">World lists come from the bundled world maps, including unvisited levels. Changes only level status for this player; rewards, world unlocks, and ongoing endless runs stay unchanged. Review and Apply to save.</p>
         <label class="field">Search level IDs<input type="search" data-progress-search value="${esc(state.progressQuery)}" placeholder="For example, modern16"></label>
         <div class="progress-grid">${shown.map(id => `<article class="progress-card"><h3>${esc(id)}</h3>${status(['levelProps', id, 'progress'], levelProperties(player, id).progress, ['Locked / unvisited', 'Unlocked', 'Played', 'Awaiting completion', 'Completed'])}</article>`).join('')}</div>
-        ${choices.length > shown.length ? `<p class="muted">Showing ${shown.length} of ${choices.length}. Narrow the search to see more. Category completion includes all ${inGroup.length} levels.</p>` : ''}`;
+        ${choices.length > shown.length ? `<p class="muted">Showing ${shown.length} of ${choices.length}. Narrow the search to see more. Category completion includes all ${inGroup.length} levels.</p>` : ''}</div>`;
     } else if (state.progressPage === 'worlds') {
         body = `<p class="muted">Endless progress uses the format found in this save. Other run details stay unchanged.</p><div class="progress-grid">${WORLDS.map(([, name], index) => `<article class="progress-card">${toggle(name, ['worldProps', String(index), 'unlocked'], worldProperties(player, index).unlocked)}${number('Endless level', endlessPath(player, index), progressValue(player, endlessPath(player, index)) ?? worldProperties(player, index).endlessProps?.level ?? 1, 1)}</article>`).join('')}</div>`;
     } else if (state.progressPage === 'upgrades') {
