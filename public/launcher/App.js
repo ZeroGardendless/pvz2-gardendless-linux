@@ -1,7 +1,8 @@
+import { readDroppedPackages } from "./DropImports.js";
 import { installDiagnostics } from "./Diagnostics.js";
 installDiagnostics();
 import { catalog, gardenestMarkup, refreshCatalog, versionFor } from "./Gardenest.js";
-import { prepareGardenestInstall, prepareLocalInstall, ensureModConfiguration, setPackageEnabled } from "./Gpnext.js";
+import { prepareGardenestInstall, prepareLocalInstall, prepareDroppedInstall, ensureModConfiguration, setPackageEnabled } from "./Gpnext.js";
 import {packageCards, packageDetails, filterPackages} from './Packages.js';
 import {logsMarkup, filteredLog} from './Logs.js';
 import { installControls } from './Controls.js';
@@ -52,6 +53,7 @@ const profile = () => state.profiles.find(p => p.id === selectedProfile) || stat
 const button = (action, text, glyph, classes = '', attributes = '') => `<button type="button" class="button ${classes}" data-action="${action}" ${attributes}>${glyph ? icon(glyph) : ''}${text}</button>`;
 const hint = text => `<p class="muted">${text}</p>`;
 function notify(message, error = false) {
+    if (error) console.error("[Launcher]", message);
     const toast = document.createElement('div');
     toast.className = `notification ${error ? 'error' : ''}`;
     toast.setAttribute('role', error ? 'alert' : 'status');
@@ -175,7 +177,7 @@ function reviewInstallation(installation) {
 }
 async function nextLocalImport() {
     const next = localImportQueue.shift();
-    if (next) reviewInstallation(await prepareLocalInstall(next.profile, next.name));
+    if (next) reviewInstallation(next.dropped ? await prepareDroppedInstall(next.profile, next.dropped) : await prepareLocalInstall(next.profile, next.name));
 }
 async function importPackages(paths) {
     if (state.running) throw new Error('Close the game before importing datapacks.');
@@ -188,6 +190,34 @@ async function importPackages(paths) {
     if (page === 'gpnext') await refreshPackages();
     await nextLocalImport();
 }
+
+// Capture the File handles while the drop event is live. Native host paths
+// are intentionally avoided: they may be inaccessible inside Flatpak.
+document.addEventListener("dragover", event => {
+    if (event.dataTransfer?.types?.includes("Files")) event.preventDefault();
+    if (page !== "gpnext" || dialog.open) return;
+    event.preventDefault();
+    document.querySelector("#datapack-drop")?.classList.add("drag-active");
+});
+document.addEventListener("dragleave", event => {
+    if (!event.relatedTarget) document.querySelector("#datapack-drop")?.classList.remove("drag-active");
+});
+document.addEventListener("drop", event => {
+    if (event.dataTransfer?.types?.includes("Files")) event.preventDefault();
+    if (page !== "gpnext") return;
+    event.preventDefault();
+    document.querySelector("#datapack-drop")?.classList.remove("drag-active");
+    if (dialog.open || busy) return;
+    if (!isDesktop) { notify("Open the installed launcher to import datapacks.", true); return; }
+    if (state.running) { notify("Close the game before importing datapacks.", true); return; }
+    const selected = {...profile()};
+    const reading = readDroppedPackages(event.dataTransfer);
+    action(async () => {
+        const dropped = await reading;
+        localImportQueue.push(...dropped.map(dropped => ({profile: selected, dropped})));
+        await nextLocalImport();
+    });
+});
 
 async function refreshLogs() {
     if (logLoading) return;
@@ -275,8 +305,16 @@ function navigation() {
     }).join('')}</div>`).join('');
 }
 let renderedPage = null;
+let pendingMenuRender = false;
+document.addEventListener('launcher:menuclose', () => {
+    if (!pendingMenuRender) return;
+    queueMicrotask(() => { if (pendingMenuRender) render(); });
+});
 function render() {
     const samePage = renderedPage === page;
+    // Background refreshes should not tear a listbox out from under the pointer.
+    if (samePage && document.querySelector('.select-menu')) { pendingMenuRender = true; return; }
+    pendingMenuRender = false;
     const scroll = samePage ? window.scrollY : 0;
     const active = document.activeElement;
     const focusId = active?.id;

@@ -300,8 +300,10 @@ button:focus-visible { outline-offset: 3px; }
 @keyframes press-ripple { from { transform: scale(.05); opacity: .18; } to { transform: scale(1); opacity: 0; } }
 .page-enter { animation: page-enter 240ms var(--motion) both; }
 @keyframes page-enter { from { opacity: .35; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-dialog[open], .select-menu, .mobile-menu[open] nav { animation: menu-enter 180ms var(--motion); }
-@keyframes menu-enter { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
+/* Fixed dropdowns must not inherit an animated transform from a modal:
+   that creates a temporary containing block and makes them jump at animation end. */
+dialog[open], .select-menu, .mobile-menu[open] nav { animation: menu-enter 140ms var(--motion); }
+@keyframes menu-enter { from { opacity: 0; } to { opacity: 1; } }
 .notification { animation: page-enter 200ms var(--motion) both; }
 .hero .badge.green { background: transparent; color: inherit; padding: 0; gap: 8px; }
 .hero .badge.green::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }

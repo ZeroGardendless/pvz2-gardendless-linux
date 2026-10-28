@@ -539,13 +539,13 @@ function _t() {
     K.debug(`macOS menu listener skipped: ` + e2);
   }));
 }
-var Z = [{ id: `patcher`, labelKey: `tab.mods` }, { id: `about`, labelKey: `tab.about` }, { id: `log`, labelKey: `tab.log` }, { id: `tools`, labelKey: `sections.tools` }, { id: `cheats`, labelKey: `tab.cheats` }, { id: `data`, labelKey: `tab.data` }, { id: `performance`, labelKey: `tab.performance` }, { id: `diagnostics`, labelKey: `tab.diagnostics` }, { id: `settings`, labelKey: `tab.settings` }, { id: `experimental`, labelKey: `tab.experimental` }];
+var Z = [{ id: `patcher`, labelKey: `tab.mods` }, { id: `data`, labelKey: `tab.data` }, { id: `tools`, labelKey: `sections.tools` }, { id: `settings`, labelKey: `tab.settings` }, { id: `performance`, labelKey: `tab.performance` }, { id: `log`, labelKey: `tab.log` }, { id: `about`, labelKey: `tab.about` }];
 const tabSearch = {
   patcher: ["mods datapacks install update dependencies load order permissions"],
-  tools: ["guide.uuidSectionTitle", "settings.hpOverlay", "settings.transfer", "tools.troubleshooting"],
+  tools: ["guide.uuidSectionTitle", "settings.hpOverlay", "settings.transfer", "tools.troubleshooting", "trainer sun zombies diagnostics reports"],
   cheats: ["trainer sun coins gems tickets world keys fusion plants zombies"],
   data: ["plant zombie projectile features properties JSON edit"],
-  settings: ["settings.appearance", "settings.frameRate", "settings.widescreen", "settings.scrollSensitivity", "settings.overlayHotkey", "settings.trainerHotkeys", "render resolution graphics audio volume theme accent opacity blur radius"],
+  settings: ["settings.appearance", "settings.frameRate", "settings.widescreen", "settings.scrollSensitivity", "settings.overlayHotkey", "settings.trainerHotkeys", "render resolution graphics audio volume theme accent opacity blur radius experiments JS Modding Worldmap Modding Plant Level System"],
   experimental: ["Worldmap Modding Plant Level System JS Modding scripts scheduler"],
   diagnostics: ["logs errors report privacy troubleshooting recovery"]
 };
@@ -568,7 +568,7 @@ function bt(e2) {
 }
 Q(Z.find((tab) => tab.id === "about"), async () => ({ render: (await import("./ui/tabs/About.js")).render }));
 Q(Z.find((tab) => tab.id === "log"), async () => await import("./ui/tabs/Log.js"));
-var xt = Q(Z.find((e2) => e2.id === `diagnostics`), async () => (await n(() => import("./ui/tabs/Diagnostics.js"), __vite__mapDeps([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 14, 15, 16, 17, 18, 19]))).createDiagnosticsTab());
+var xt = Promise.resolve();
 window.gpNext = { version: s, clientEdition: re, debug: ut.debug === true, toggle: J.toggle, show: J.show, hide: J.hide, nestImport: { openFromUrl: Ke, status: qe }, dailyLevel: { openFromUrl: V, status: Ne } }, _t(), K.info(`Phase 1 complete \u2014 overlay mounted. Press ${ot()} to toggle.`);
 var $ = `phase-2:engine-import`;
 (async () => {
@@ -584,10 +584,7 @@ var $ = `phase-2:engine-import`;
     return;
   }
   installRendering(t2);
-  $ = `phase-2:runtime-setup`, J.updateStatus(o(`header.status.engineReady`)), ee(), X(), Me(), await A(`Frame scheduler initialization`, () => ne(t2.game, ut), { logger: K }), await A(`Scroll sensitivity initialization`, async () => (await n(() => import("./runtime/ScrollSensitivity.js").then((e3) => e3.n), __vite__mapDeps([20, 5, 4, 6, 7, 8, 9]))).install(), { logger: K }), $ = `phase-2:independent-tabs`, await xt, await Promise.all([Q(Z.find((e3) => e3.id === `tools`), async () => (await n(() => import("./ui/tabs/Tools.js"), __vite__mapDeps([21, 4, 5, 6, 7, 8, 9, 22, 1, 13, 14, 23, 24, 25, 16, 20, 10, 26, 27, 28, 29, 18]))).createToolsTab()), Q(Z.find((e3) => e3.id === `cheats`), async () => (await n(() => import("./ui/tabs/Cheats.js"), __vite__mapDeps([30, 4, 5, 6, 7, 8, 9, 10, 18]))).createCheatsTab()), Q(Z.find((e3) => e3.id === `settings`), async () => (await n(() => import("./ui/tabs/Preferences.js"), __vite__mapDeps([31, 32, 1, 15, 16, 13, 4, 5, 6, 7, 8, 9, 22, 14, 23, 24, 25, 20, 10, 26, 27, 28, 29, 18, 11]))).createPreferencesTab()), Q(Z.find((e3) => e3.id === `experimental`), async () => {
-    let e3 = await n(() => import("./ui/tabs/Experimental.js"), __vite__mapDeps([33, 4, 5, 6, 7, 8, 9, 34, 10, 18]));
-    return { render: e3.render, onDeactivate: e3.onDeactivate };
-  }), Q(Z.find((e3) => e3.id === `performance`), async () => (await n(() => import("./ui/tabs/PerformanceSection.js"), __vite__mapDeps([35, 1, 13, 14, 16, 4, 5, 6, 7, 8, 9, 23, 24, 10, 26, 27, 28, 29, 18]))).createPerformanceTab())]), $ = `phase-3:core-imports`;
+  $ = `phase-2:runtime-setup`, J.updateStatus(o(`header.status.engineReady`)), ee(), X(), Me(), await A(`Frame scheduler initialization`, () => ne(t2.game, ut), { logger: K }), await A(`Scroll sensitivity initialization`, async () => (await n(() => import("./runtime/ScrollSensitivity.js").then((e3) => e3.n), __vite__mapDeps([20, 5, 4, 6, 7, 8, 9]))).install(), { logger: K }), $ = `phase-2:independent-tabs`, await xt, await Promise.all([Q(Z.find((e3) => e3.id === `tools`), async () => (await n(() => import("./ui/tabs/Tools.js"), __vite__mapDeps([21, 4, 5, 6, 7, 8, 9, 22, 1, 13, 14, 23, 24, 25, 16, 20, 10, 26, 27, 28, 29, 18]))).createToolsTab()), Q(Z.find((e3) => e3.id === `settings`), async () => (await n(() => import("./ui/tabs/Preferences.js"), __vite__mapDeps([31, 32, 1, 15, 16, 13, 4, 5, 6, 7, 8, 9, 22, 14, 23, 24, 25, 20, 10, 26, 27, 28, 29, 18, 11]))).createPreferencesTab()), Q(Z.find((e3) => e3.id === `performance`), async () => (await n(() => import("./ui/tabs/PerformanceSection.js"), __vite__mapDeps([35, 1, 13, 14, 16, 4, 5, 6, 7, 8, 9, 23, 24, 10, 26, 27, 28, 29, 18]))).createPerformanceTab())]), $ = `phase-3:core-imports`;
   let { CorePatcher: i2 } = await n(async () => {
     let { CorePatcher: e3 } = await import("./mods/Patcher.js");
     return { CorePatcher: e3 };
@@ -703,7 +700,7 @@ var $ = `phase-2:engine-import`;
       let { pickModPackage: e5 } = await import("./mods/ModPackagePicker.js");
       return { pickModPackage: e5 };
     }, __vite__mapDeps([62, 13, 1, 14, 29]))).pickModPackage(e4), prepare: l2.prepareInstall } : null, a3 = l2 && { ...l2.modSelection, async openRequirementSettings(e4) {
-      J.switchTab(e4), e4 === `settings` && (await n(async () => {
+      J.switchTab(e4 === `experimental` ? `settings` : e4), e4 === `settings` && (await n(async () => {
         let { openPreferencesRoot: e5 } = await import("./ui/tabs/Preferences.js");
         return { openPreferencesRoot: e5 };
       }, __vite__mapDeps([31, 32, 1, 15, 16, 13, 4, 5, 6, 7, 8, 9, 22, 14, 23, 24, 25, 20, 10, 26, 27, 28, 29, 18, 11]))).openPreferencesRoot();

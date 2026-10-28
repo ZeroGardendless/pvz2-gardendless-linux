@@ -113,3 +113,38 @@ const modernWorld = { player_dangerroom: { egypt: { level: 12, plants: ['peashoo
 setProgressValue(modernWorld, endlessPath(modernWorld, 1), 64);
 assert.deepEqual(modernWorld.player_dangerroom.egypt, { level: 64, plants: ['peashooter'], mower: [false] });
 console.log('Passed: plant/world/upgrade edits, modern and legacy endless saves, unknown-field preservation, progression validation, and unsafe-path rejection.');
+
+const { LEVELS, levelCatalog, levelProperties, completeLevels, setLevelProgress, levelGroup, levelsInGroup, renderProgress } = await import('../../public/launcher/SaveProgress.js');
+assert.ok(LEVELS.length > 1000 && LEVELS.includes('modern16'));
+const levelPlayer = newPlayer();
+levelPlayer.levelProps.egypt1 = { progress: 2, modScore: 42 };
+levelPlayer.levelProps.custom_level = { progress: 1, custom: true };
+levelPlayer.advancedLevels = [{ levelID: 'egypt2', progress: 1, oldExtra: 'kept' }];
+const otherPlayer = newPlayer();
+const untouched = JSON.stringify(otherPlayer);
+const runs = JSON.stringify(levelPlayer.player_dangerroom);
+const selectedCount = levelsInGroup(levelCatalog(levelPlayer), 'egypt').length;
+assert.equal(completeLevels(levelPlayer, 'egypt'), selectedCount);
+assert.deepEqual(levelPlayer.levelProps.egypt1, { progress: 4, modScore: 42 });
+assert.deepEqual(levelPlayer.levelProps.egypt2, { progress: 4, oldExtra: 'kept' });
+assert.equal(levelPlayer.advancedLevels, undefined, 'Legacy entries must not overwrite edited progress when the game loads.');
+assert.equal(levelPlayer.levelProps.custom_level.progress, 1);
+assert.equal(levelProperties(levelPlayer, 'modern16').progress, undefined);
+assert.equal(JSON.stringify(levelPlayer.player_dangerroom), runs);
+assert.equal(JSON.stringify(otherPlayer), untouched);
+assert.equal(completeLevels(levelPlayer), LEVELS.length + 1);
+assert.equal(levelPlayer.levelProps.modern16.progress, 4, 'Unvisited levels can be completed.');
+assert.deepEqual(levelPlayer.levelProps.custom_level, { progress: 4, custom: true });
+setLevelProgress(levelPlayer, 'modern16', 2);
+assert.equal(levelPlayer.levelProps.modern16.progress, 2);
+assert.throws(() => setLevelProgress(levelPlayer, 'made_up_missing_level', 4), /Unknown level/);
+assert.throws(() => setLevelProgress(levelPlayer, '__proto__', 4), /Unknown level/);
+assert.throws(() => setLevelProgress(levelPlayer, 'modern16', 5), /Invalid level/);
+assert.throws(() => validateProgress({ levelProps: { modern16: { progress: 5 } } }), /status/);
+validateProgress(levelPlayer);
+const levelMarkup = renderProgress(newPlayer(), { progressPage: 'levels', levelGroup: 'modern' }, false);
+assert.ok(levelMarkup.includes('modern16') && levelMarkup.includes('Complete all levels') && levelMarkup.includes('Complete this category'));
+console.log('Passed: bundled unvisited levels, per-world/all completion, legacy migration, custom fields, player isolation, and unchanged endless runs.');
+
+assert.ok(levelsInGroup(LEVELS, 'epic_egypt').includes('appease1_0'));
+assert.ok(!levelsInGroup(LEVELS, 'egypt').includes('egypt_dangerroom'));

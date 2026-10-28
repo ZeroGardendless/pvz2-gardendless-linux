@@ -83,8 +83,22 @@ fn inspect(path: &Path) -> Result<Package, String> {
     } else {
         return Err("Choose a datapack folder or ZIP".into());
     };
+    let prefix = if let Some(zip) = zip.as_mut() {
+        if zip.file_names().any(|name| name == "pack.json") {
+            String::new()
+        } else {
+            let names: Vec<_> = zip.file_names().filter(|name| !name.ends_with('/') && !name.starts_with("__MACOSX/") && !name.ends_with(".DS_Store")).map(str::to_owned).collect();
+            let first = names.first().ok_or("Empty datapack ZIP")?;
+            let (folder, _) = first.split_once('/').ok_or("ZIP is missing pack.json")?;
+            let prefix = format!("{folder}/");
+            if !names.iter().all(|name| name.starts_with(&prefix)) || !names.iter().any(|name| name == &format!("{prefix}pack.json")) {
+                return Err("ZIP needs pack.json at its root or inside one enclosing folder".into());
+            }
+            prefix
+        }
+    } else { String::new() };
     let manifest = match zip.as_mut() {
-        Some(zip) => zip_bytes(zip, "pack.json", 128 * 1024),
+        Some(zip) => zip_bytes(zip, &format!("{prefix}pack.json"), 128 * 1024),
         None => limited_file(&path.join("pack.json"), 128 * 1024),
     }?;
     let value: serde_json::Value = json5::from_str(
@@ -114,7 +128,7 @@ fn inspect(path: &Path) -> Result<Package, String> {
         ("thumbnail.webp", "image/webp"),
     ] {
         let bytes = match zip.as_mut() {
-            Some(zip) => zip_bytes(zip, name, 1024 * 1024),
+            Some(zip) => zip_bytes(zip, &format!("{prefix}{name}"), 1024 * 1024),
             None => limited_file(&path.join(name), 1024 * 1024),
         };
         if let Ok(bytes) = bytes {
@@ -607,6 +621,16 @@ mod tests {
         zip.write_all(b"bad").unwrap();
         zip.finish().unwrap();
         assert!(validate_zip(&unsafe_zip).is_err());
+        fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn enclosing_folder_zip_can_be_inspected_and_imported() {
+        let root = workspace();
+        let path = root.join("wrapped.zip");
+        fs::write(&path, include_bytes!("../../../scripts/checks/WrappedPackageFixture.zip")).unwrap();
+        assert_eq!(inspect(&path).unwrap().uuid, "fixture.mod");
+        validate_zip(&path).unwrap();
+        install(&path, &root.join("installed")).unwrap();
         fs::remove_dir_all(root).unwrap();
     }
     #[cfg(unix)]

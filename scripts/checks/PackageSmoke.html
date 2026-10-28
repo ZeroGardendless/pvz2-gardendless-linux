@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><title>Package worker check</title>
+<script type="module">
+import {readDroppedPackages} from "/launcher/DropImports.js";
+try {
+ const bytes = new Uint8Array(await (await fetch('/__checks/PackageFixture.zip')).arrayBuffer());
+ const transfer = new DataTransfer();
+ transfer.items.add(new File([bytes], "fixture.zip", {type:"application/zip"}));
+ const dropped = await readDroppedPackages(transfer);
+ if(dropped[0].bytes.length !== bytes.length) throw Error("Dropped bytes changed");
+ const worker = new Worker('/gpnext/core/NestPackWorker.js', {type:'module'});
+ const entries = await new Promise((resolve,reject)=>{
+  setTimeout(()=>reject(Error('Worker timed out')),5000);
+  worker.onerror=e=>reject(Error(e.message||'Worker failed'));
+  worker.onmessage=({data})=>data.error?reject(Error(data.error)):resolve(data.entries);
+  worker.postMessage(bytes,[bytes.buffer]);
+ });
+ worker.terminate();
+ document.title='RESULT: PASS '+entries.length+' files';
+} catch(e) {document.title='RESULT: FAIL '+e.message;}
+</script>

@@ -1,3 +1,5 @@
+import { createModCardLoader } from "../ModCard.js";
+import { l as packSection } from "../Components.js";
 import { isJsModdingRuntimeEnabled } from "../../core/SettingsStore.js";
 import { o as t } from "../Translations.js";
 import { a as n, n as r, o as i, r as a } from "../Components.js";
@@ -85,6 +87,7 @@ function _({ prepare: e2, storage: n2, hasUnsavedChanges: i2, restart: o2 = () =
   } };
 }
 function v(e2, i2 = null, o2 = null, s2 = null) {
+  const loadCard = createModCardLoader((id) => e2.describe(id));
   let c2, l2, u2, d2 = false, f2 = false, p2 = null, m2 = null, h2 = null, g2 = false, _2 = null, v2 = null, y2 = null, b = null, x = 0, S = null, C = (e3) => JSON.stringify(e3.map(({ id: e4, enabled: t2 }) => ({ id: e4, enabled: t2 }))), w = () => l2 && C(l2) !== C(u2.desired.mods), T = () => {
     u2 = e2.getState(), l2 = structuredClone(u2.desired.mods), m2 = null;
   }, E = (e3) => {
@@ -308,10 +311,20 @@ function v(e2, i2 = null, o2 = null, s2 = null) {
       let n2 = document.createElement(`div`);
       n2.className = `gp-mod-notice`, n2.append(E(t(`requirements.jsSuspended`))), e2.openRequirementSettings && n2.append(r(t(`requirements.open.experimental`), () => e2.openRequirementSettings(`experimental`), { small: true })), c2.append(n2);
     }
+    const packGroups = /* @__PURE__ */ new Map();
+    for (const enabled of [true, false]) if (l2.some((pack) => Boolean(pack.enabled || pack.suspendedByJsModding) === enabled)) {
+      const section = packSection(t(enabled ? "patcher.packs" : "patcher.disabledPacks"), []);
+      c2.append(section);
+      packGroups.set(enabled, section._body);
+    }
     if (l2.length || c2.appendChild(E(t(`selection.empty`))), l2.forEach((i3, o4) => {
       let u3 = document.createElement(`div`);
-      u3.className = `gp-mod-selection-row`;
-      let d3 = document.createElement(`label`), f3 = document.createElement(`input`), p3 = i3.fallbackName || i3.runtimeNamespace || i3.id, h3 = r(p3, async () => {
+      u3.className = `gp-pack-card gp-mod-selection-row`;
+      const artwork = document.createElement("div");
+      artwork.className = "gp-pack-thumb gp-pack-thumb-fallback";
+      artwork.textContent = "PK";
+      u3.classList.toggle("gp-pack-disabled", !i3.enabled);
+      let d3 = document.createElement(`div`), p3 = i3.fallbackName || i3.runtimeNamespace || i3.id, h3 = r(p3, async () => {
         k(i3.id + `:details`);
         let t2 = { loading: true };
         b = t2, F(), c2.querySelector(`button`)?.focus({ preventScroll: true });
@@ -322,15 +335,22 @@ function v(e2, i2 = null, o2 = null, s2 = null) {
         }
         t2.loading = false, b === t2 && F();
       });
-      h3.classList.add(`gp-mod-name`), h3.disabled = s3, h3.dataset.modFocus = i3.id + `:details`, f3.type = `checkbox`, f3.className = `gp-checkbox`, f3.checked = i3.enabled || i3.suspendedByJsModding === true, f3.disabled = s3 || i3.suspendedByJsModding === true, f3.dataset.modFocus = i3.id + `:toggle`, f3.setAttribute(`aria-label`, t(`modDetail.enable`, p3)), f3.addEventListener(`change`, () => {
-        i3.enabled = f3.checked, m2 = null, F();
-      });
+      h3.classList.add(`gp-mod-name`), h3.disabled = s3, h3.dataset.modFocus = i3.id + `:details`;
       let g3 = document.createElement(`div`);
-      if (g3.className = `gp-mod-info`, g3.append(h3), i3.suspendedByJsModding) {
+      if (g3.className = `gp-mod-info gp-pack-info`, g3.append(h3), i3.suspendedByJsModding) {
         let e3 = document.createElement(`span`);
         e3.className = `gp-mod-status`, e3.textContent = t(`requirements.paused`), g3.append(e3);
       }
-      d3.append(f3), u3.append(d3, g3);
+      const toggle = r(t(i3.enabled ? "patcher.disablePack" : "patcher.enablePack"), () => {
+        i3.enabled = !i3.enabled;
+        m2 = null;
+        F();
+      }, { small: true, variant: i3.enabled ? "danger" : "success" });
+      toggle.disabled = s3 || i3.suspendedByJsModding === true;
+      toggle.dataset.modFocus = i3.id + `:toggle`;
+      d3.append(toggle);
+      u3.append(artwork, g3);
+      loadCard(i3, artwork, g3);
       let _3 = (e3, a2, c3) => {
         let u4 = r(``, () => {
           let t2 = o4 + e3;
@@ -338,7 +358,11 @@ function v(e2, i2 = null, o2 = null, s2 = null) {
         });
         return u4.appendChild(n(a2)), u4.title = t(c3), u4.setAttribute(`aria-label`, t(c3)), u4.dataset.modFocus = i3.id + `:` + e3, u4.disabled = s3 || o4 + e3 < 0 || o4 + e3 >= l2.length, u4;
       };
-      u3.appendChild(a(_3(-1, `m6 14 6-6 6 6`, `selection.up`), _3(1, `m6 10 6 6 6-6`, `selection.down`))), c2.appendChild(u3);
+      const controls = a(_3(-1, `m6 14 6-6 6 6`, `selection.up`), _3(1, `m6 10 6 6 6-6`, `selection.down`));
+      controls.classList.add("gp-pack-ctrl");
+      controls.append(d3);
+      u3.append(controls);
+      packGroups.get(Boolean(i3.enabled || i3.suspendedByJsModding)).append(u3);
     }), w() || d2) {
       let n2 = r(t(d2 ? `migration.committing` : `migration.confirm`), async () => {
         if (!d2) {

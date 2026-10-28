@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>GP-Next visual check</title>
+<style>body{margin:0;background:linear-gradient(110deg,#1e3030,#171f30);font-family:system-ui;min-height:100vh}</style>
+<script type="module">
+import {n as createOverlay} from '/gpnext/ui/Overlay.js';
+import {createModManager} from '/gpnext/ui/tabs/ModManager.js';
+import {createPreferencesTab} from '/gpnext/ui/tabs/Preferences.js';
+import {render as renderAbout} from '/gpnext/ui/tabs/About.js';
+try {
+ const image = new Uint8Array(await (await fetch('/gpnicon.png')).arrayBuffer());
+ const logo = 'data:image/png;base64,'+btoa(String.fromCharCode(...image));
+ const mods=[{id:'fixture.active',fallbackName:'Example datapack',version:'1.0.0',contentDigest:'a'.repeat(64),enabled:true},{id:'fixture.disabled',fallbackName:'Another datapack',version:'2.0.0',contentDigest:'b'.repeat(64),enabled:false}];
+ const configuration={revision:0,mods,overrides:[],modSettings:{version:1,mods:{}}};
+ const record={desired:configuration,active:{configuration},journal:null,recovery:null};
+ const manager=createModManager({getRegisteredModSettings:()=>[]},null,{getState:()=>record,describe:async id=>({name:mods.find(m=>m.id===id).fallbackName,version:'1.0.0',author:'Example author',description:'A sample package with its own logo.',thumbnailUrl:logo,capabilities:['json','asset'],requirements:[],files:[],depends:[],optionalDepends:[],warnings:[]}),save:async()=>{}});
+ const settings=createPreferencesTab(),overlay=createOverlay();
+ for(const [id,key,tab] of [['patcher','tab.mods',manager],['data','tab.data',{render(){}}],['tools','sections.tools',{render(){}}],['settings','tab.settings',settings],['performance','tab.performance',{render(){}}],['log','tab.log',{render(){}}],['about','tab.about',{render:renderAbout}]]) overlay.registerTab({id,labelKey:key,...tab});
+ overlay.setVersion('1.5.5');overlay.show();
+ window.addEventListener('error',event=>{document.title='RESULT: FAIL '+event.message;});
+ setTimeout(()=>{
+  if(document.querySelectorAll('.gp-tab').length!==7) throw Error('Unexpected navigation');
+  if(document.querySelectorAll('.gp-pack-thumb img').length!==2) throw Error('Missing mod artwork');
+  document.title='RESULT: PASS GP-Next cards and original navigation';
+ },500);
+} catch(error){document.title='RESULT: FAIL '+error.message;}
+</script>

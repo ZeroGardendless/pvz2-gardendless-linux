@@ -10,7 +10,7 @@
     "gpnext:readable": "node scripts/gpnext/Format.mjs && node scripts/gpnext/NameExports.mjs",
     "gpnext:readable:check": "node scripts/gpnext/Format.mjs --check && node scripts/gpnext/NameExports.mjs --check && node scripts/checks/ModuleGraph.mjs",
     "tauri": "node scripts/assets/PatchCocos.mjs && tauri",
-    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs && node scripts/checks/UpdateIntegration.mjs && node scripts/checks/Gardenest.mjs && npm run check:launcher",
+    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs && node scripts/checks/UpdateIntegration.mjs && node scripts/checks/Gardenest.mjs && node scripts/checks/DropImports.mjs && npm run check:launcher",
     "assets:optimize": "python scripts/assets/optimize-pngs.py",
     "build:binary": "npm run check && node scripts/native/Build.mjs",
     "assets:bundle": "python scripts/assets/game-bundle.py pack",

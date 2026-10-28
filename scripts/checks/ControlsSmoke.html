@@ -1,0 +1,37 @@
+<!doctype html><meta charset="utf-8"><title>Control regression</title>
+<link rel="stylesheet" href="/launcher/Styles.css">
+<label>Outside<select id="outside"><option>First</option><option>Second</option></select></label>
+<div id="unrelated" style="height:80px;overflow:auto"><div style="height:500px">Other panel</div></div>
+<dialog id="modal"><label>Inside modal<select id="inside"><option>One</option><option>Two</option></select></label></dialog>
+<script type="module">
+import { installControls } from '/launcher/Controls.js';
+const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const frame = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+try {
+    installControls();
+    const button = document.querySelector('#outside-control');
+    button.click();
+    const menu = document.querySelector('.select-menu');
+    assert(menu, 'Dropdown opens');
+    document.querySelector('#unrelated').dispatchEvent(new Event('scroll'));
+    window.dispatchEvent(new Event('resize'));
+    const note = document.createElement('span'); note.textContent = 'Background update'; document.body.append(note);
+    await frame();
+    assert(document.querySelector('.select-menu') === menu, 'Scroll, resize, and background mutations keep the same open menu');
+    button.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    assert(document.querySelector('#outside').value === 'Second', 'Keyboard selection works');
+    assert(!document.querySelector('.select-menu'), 'Selection closes once');
+    button.click();
+    button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    assert(button.getAttribute('aria-expanded') === 'false', 'Escape closes');
+    const modal = document.querySelector('#modal'); modal.showModal();
+    document.querySelector('#inside-control').click();
+    assert(modal.querySelector('.select-menu'), 'Dropdown shares modal top layer');
+    assert(getComputedStyle(modal).transform === 'none', 'Dialog animation cannot offset fixed menus');
+    await new Promise(resolve => setTimeout(resolve, 250));
+    assert(modal.querySelector('.select-menu'), 'Modal menu stays open after animation');
+    document.title = 'RESULT: PASS launcher menus';
+    document.body.append('PASS launcher menu stability, resize, scroll, keyboard selection, Escape, and modal placement');
+} catch (error) { console.error(error); document.title = 'RESULT: FAIL ' + error.message; }
+</script>

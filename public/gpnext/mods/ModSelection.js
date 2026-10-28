@@ -1,3 +1,4 @@
+import { readPackArtwork } from "./PackArtwork.js";
 import { o as e } from "./ModOperationPlan.js";
 import { n as t } from "./ConfigurationModSettings.js";
 import { isJsModdingRuntimeEnabled, getGpNextFeatureState } from "../core/SettingsStore.js";
@@ -161,7 +162,7 @@ function h(e2, { prepare: n2, installStore: r2, canEdit: a2 = () => true, prepar
     let p2 = (await this.requirements(a3.desired)).get(n3).requirements;
     if (e2.getState() !== a3) throw Error(`Mod configuration changed; reopen the details`);
     let m2 = a3.active.configuration.mods.find((e3) => e3.id === n3 && e3.enabled), h2 = !!m2 !== l3.enabled || !!m2 && (m2.contentDigest !== l3.contentDigest || JSON.stringify(m2.settings) !== JSON.stringify(l3.settings));
-    return Object.freeze({ id: n3, canUninstall: l3.legacy === false, requirements: p2, namespace: t(l3), pending: h2, activeVersion: m2?.version ?? null, name: d3.name, version: d3.version, author: d3.author, description: d3.description, depends: Object.freeze([...d3.depends]), optionalDepends: Object.freeze([...d3.optionalDepends]), gpNextVersion: s(d3), warnings: Object.freeze(f2 ? [i(`modDetail.contentUnavailable`)] : c(d3)), containsScripts: f2 ? null : !!d3.js, files: Object.freeze(f2 ? [] : u3.listPaths()) });
+    return Object.freeze({ id: n3, canUninstall: l3.legacy === false, requirements: p2, namespace: t(l3), pending: h2, activeVersion: m2?.version ?? null, name: d3.name, thumbnailUrl: readPackArtwork(u3), capabilities: Object.freeze([...d3.capabilities || []]), version: d3.version, author: d3.author, description: d3.description, depends: Object.freeze([...d3.depends]), optionalDepends: Object.freeze([...d3.optionalDepends]), gpNextVersion: s(d3), warnings: Object.freeze(f2 ? [i(`modDetail.contentUnavailable`)] : c(d3)), containsScripts: f2 ? null : !!d3.js, files: Object.freeze(f2 ? [] : u3.listPaths()) });
   }, async save(t2, r3) {
     let i2 = structuredClone(t2), o2 = e2.getState();
     if (!a2() || o2.journal || o2.recovery?.required) throw Error(`Mod configuration is not ready for editing`);

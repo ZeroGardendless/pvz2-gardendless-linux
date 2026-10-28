@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {readDroppedPackages} from '../../public/launcher/DropImports.js';
+const zip = readFileSync(new URL('./PackageFixture.zip',import.meta.url));
+const file = new File([zip],'test.zip');
+const dropped = await readDroppedPackages({files:[file]});
+assert.deepEqual(dropped[0].bytes,new Uint8Array(zip));
+const leaf=(name,text)=>({name,isFile:true,file(resolve){resolve(new File([text],name));}});
+const folder=(name,children)=>({name,isDirectory:true,createReader(){let done=false;return {readEntries(resolve){resolve(done?[]:children);done=true;}};}});
+const root=folder('Pack',[leaf('pack.json','{}'),folder('data',[leaf('objects.json','{}')])]);
+const packages=await readDroppedPackages({items:[{kind:'file',webkitGetAsEntry:()=>root,getAsFile:()=>null}]});
+assert.deepEqual(packages[0].entries.map(([name])=>name),['pack.json','data/objects.json']);
+await assert.rejects(readDroppedPackages({files:[new File(['hi'],'no.txt')]}),/ZIP/);
+await assert.rejects(readDroppedPackages({files:[]}),/between/);
+await assert.rejects(readDroppedPackages({items:[{kind:'file',webkitGetAsEntry:()=>folder('bad',[leaf('..','')]),getAsFile:()=>null}]}),/Invalid/);
+console.log('Passed dropped File bytes, nested folders, path rejection and package limits.');

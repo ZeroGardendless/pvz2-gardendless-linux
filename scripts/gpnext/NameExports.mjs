@@ -260,6 +260,8 @@ for (let pass = 0; pass < 12; pass += 1) {
     );
     const names = declaredNames(sourceFile);
     function addCandidate(localIdentifier, publicIdentifier) {
+      // Keep this explicit alias: two different tabs export a generic render.
+      if (localIdentifier.text === "renderExperiments") return;
       if (localIdentifier.text === publicIdentifier.text || names.has(publicIdentifier.text)) return;
       const key = `${fileName}:${publicIdentifier.text}`;
       importNameCounts.set(key, (importNameCounts.get(key) ?? 0) + 1);

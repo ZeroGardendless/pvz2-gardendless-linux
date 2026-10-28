@@ -226,7 +226,7 @@
       for (n2(e3, t3); e3 < i3; ) {
         n2(e3, 4, i3);
         let t4 = r2(e3), o3 = r2(e3 + 2);
-        (a3.has(t4) || ![21589, 30837].includes(t4)) && U(`EXTRA`), a3.add(t4), e3 += 4, n2(e3, o3, i3), e3 += o3;
+        (a3.has(t4) || ![10, 21589, 30837].includes(t4)) && U(`EXTRA`), a3.add(t4), e3 += 4, n2(e3, o3, i3), e3 += o3;
       }
     }, l2 = s2, u2 = 0, d2 = [], f2 = /* @__PURE__ */ new Set(), p2 = /* @__PURE__ */ new Set();
     for (let t3 = 0; t3 < o2; t3++) {

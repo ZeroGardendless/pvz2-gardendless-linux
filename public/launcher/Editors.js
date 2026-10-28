@@ -1,5 +1,5 @@
 import { invoke, isDesktop, escapeHtml as esc } from './Store.js';
-import { renderProgress, validateProgress, newPlayer, newPlant, newEndless, prepareCollection, setProgressValue, setPlantUnlocked, unlockAllPlants, WORLDS, TUTORIALS } from './SaveProgress.js';
+import { renderProgress, validateProgress, newPlayer, newPlant, newEndless, prepareCollection, setProgressValue, setPlantUnlocked, unlockAllPlants, completeLevels, setLevelProgress, WORLDS, TUTORIALS } from './SaveProgress.js';
 import { DEFAULT_KEYBINDS, KEY_CODES } from './EditorsData.js';
 
 export { DEFAULT_KEYBINDS, KEY_CODES } from './EditorsData.js';
@@ -260,6 +260,10 @@ export function mountEditors(container, { profileId = 'default', profileName = '
                 if (action === 'add-plant') prepareCollection(player, 'plantProps')[state.plantId] = newPlant();
                 if (action === 'remove-plant') delete prepareCollection(player, 'plantProps')[state.plantId];
                 if (action === 'unlock-all-plants') { unlockAllPlants(player); setStatus('All catalog plants unlocked in this draft. Review and Apply to save.'); }
+                if (action === 'complete-world' || action === 'complete-all-levels') {
+                    const count = completeLevels(player, action === 'complete-world' ? state.levelGroup : 'all');
+                    edit(); setStatus(`${count} levels marked completed in this draft. Review and Apply to save.`); render(); return;
+                }
                 if (action === 'reset-daily') {
                     setProgressValue(player, ['arcade_plant_decoding', 'played_today'], false);
                     setProgressValue(player, ['arcade_plant_decoding', 'gem_today'], 0);
@@ -307,6 +311,7 @@ export function mountEditors(container, { profileId = 'default', profileName = '
 
     const input = event => {
         const target = event.target;
+        if (target.matches('[data-progress-level-group]')) { state.levelGroup = target.value; state.progressQuery = ''; render(); return; }
         if (target.matches('[data-progress-plant]') && !state.rawDirty && !busy) {
             try { setPlantUnlocked(state.players[state.playerIndex], target.dataset.progressPlant, target.checked); edit(); render(); }
             catch (failure) { error = errorMessage(failure); render(); }
@@ -328,7 +333,8 @@ export function mountEditors(container, { profileId = 'default', profileName = '
                 if (path[0] === 'player_dangerroom') {
                     const runs = prepareCollection(player, 'player_dangerroom'); runs[path[1]] ||= newEndless();
                 }
-                setProgressValue(player, path, value);
+                if (path[0] === 'levelProps') setLevelProgress(player, path[1], value);
+                else setProgressValue(player, path, value);
                 edit(); updateDirtyControls();
                 validateProgress(player); target.setCustomValidity('');
             } catch (failure) { target.setCustomValidity(errorMessage(failure)); target.reportValidity(); }

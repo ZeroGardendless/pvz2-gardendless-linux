@@ -8,6 +8,7 @@ export function installControls(root = document) {
         button.setAttribute('aria-expanded', 'false');
         button.removeAttribute('aria-activedescendant');
         menu.remove(); open = null;
+        document.dispatchEvent(new Event('launcher:menuclose'));
         if (focus && button.isConnected) button.focus();
     };
     function sync() {
@@ -72,7 +73,15 @@ export function installControls(root = document) {
         });
         // A modal dialog has its own top layer; keep its menu in that layer too.
         (button.closest('dialog') || document.body).append(menu);
+        open = { select, button, menu, options, index: Math.max(0, options.findIndex(option => option.selected)) };
+        positionMenu();
+        button.setAttribute('aria-expanded', 'true'); highlight(open.index);
+    }
+    function positionMenu() {
+        if (!open) return;
+        const { button, menu } = open;
         const rect = button.getBoundingClientRect();
+        menu.style.top = ''; menu.style.bottom = '';
         const height = Math.min(320, Math.max(120, innerHeight - 24));
         const below = innerHeight - rect.bottom - 12;
         menu.style.width = `${Math.min(Math.max(rect.width, 220), innerWidth - 24)}px`;
@@ -81,8 +90,14 @@ export function installControls(root = document) {
         menu.style.maxHeight = `${Math.max(80, Math.min(height, down ? below : rect.top - 12))}px`;
         if (down) menu.style.top = `${rect.bottom + 6}px`;
         else menu.style.bottom = `${innerHeight - rect.top + 6}px`;
-        open = { select, button, menu, options, index: Math.max(0, options.findIndex(option => option.selected)) };
-        button.setAttribute('aria-expanded', 'true'); highlight(open.index);
+    }
+    let positionFrame = 0;
+    function schedulePosition() {
+        if (open && !positionFrame) positionFrame = requestAnimationFrame(() => {
+            positionFrame = 0;
+            if (open?.button.isConnected) positionMenu();
+            else close();
+        });
     }
     function key(event, select, button) {
         if (event.key === 'Escape') { if (open) { event.preventDefault(); event.stopPropagation(); close(true); } return; }
@@ -114,8 +129,11 @@ export function installControls(root = document) {
     }, true);
     if (root !== document) document.addEventListener('pointerdown', event => { if (open && !open.menu.contains(event.target) && !open.button.contains(event.target)) close(); }, true);
     root.addEventListener('change', sync);
-    root.addEventListener('scroll', event => { if (open && !open.menu.contains(event.target)) close(); }, true);
-    window.addEventListener('resize', () => close());
+    // Scrolling an unrelated panel or resizing must not dismiss an active choice.
+    root.addEventListener('scroll', event => {
+        if (open && (event.target === document || event.target.contains?.(open.button))) schedulePosition();
+    }, true);
+    window.addEventListener('resize', schedulePosition);
     // Ripples and dropdown options never change the underlying form controls.
     // Coalesce actual form changes, without rescanning the page for every animation node.
     const decoration = node => node.nodeType === 1 && node.matches('.press-ripple, .select-menu, .select-option, .select-control');

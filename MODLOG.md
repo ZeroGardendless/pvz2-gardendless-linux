@@ -26,3 +26,15 @@ version label from assets, and added rotating frontend diagnostics. Lossless PNG
 optimization saved about 201 MB. Frontend checks pass; Rust: 35 passed, 3 ignored.
 Browser startup and render scaling checked. User authorized v0.16.1 publication.
 Native GP-Next cloud authorization remains explicitly deferred.
+
+## 2026-10-28 — preserve the old overlay and repair imports
+
+Restored the customized 1.5.0 visual layout while retaining upstream 1.5.5 logic.
+Added bounded/cached datapack artwork and restored Enable/Disable cards. Fixed
+Gardenest's valid NTFS timestamp ZIP metadata, disabled-JS installation, wrapped
+ZIP inspection, and Flatpak-friendly browser File drops. Kept canonical review
+and disabled-by-default imports. Added launcher menu stability fixes and a Levels
+save editor using generated resource and world-map catalogs. Completion edits
+remain drafts until backup-before-apply; real saves were not modified in testing.
+Frontend and native WebKit regression checks pass. Release/install details follow
+in docs/HANDOFF.md after final packaging.

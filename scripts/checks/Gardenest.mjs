@@ -1,9 +1,10 @@
+import {readFileSync} from 'node:fs';
+import {unpackFixture} from './PackageWorker.mjs';
 import assert from 'node:assert/strict';
 const files=new Map(),dirs=new Set();
 const commands=[];
 // Node provides Web Crypto for the real snapshot hashing.
-const snapshotEntries=[['pack.json',new TextEncoder().encode(JSON.stringify({packFormatVersion:1,name:'Fixture',uuid:'fixture.mod',version:'1.0.0',description:'No scripts'}))]];
-const payload=new TextEncoder().encode('fixture zip bytes');
+const payload=new Uint8Array(readFileSync(new URL('./PackageFixture.zip',import.meta.url)));
 const descriptor={protocolVersion:1,versionId:'12345678-abcd-1234-abcd-123456789abc',projectId:'prj_12345678-abcd-1234-abcd-123456789abc',type:'datapack',format:'zip',version:'1.0.0',name:'Fixture',byteLength:payload.length,sha256:Buffer.from(await crypto.subtle.digest('SHA-256',payload)).toString('hex')};
 const meta=new TextEncoder().encode(JSON.stringify(descriptor));const envelope=new Uint8Array(meta.length+payload.length+4);new DataView(envelope.buffer).setUint32(0,meta.length,true);envelope.set(meta,4);envelope.set(payload,4+meta.length);
 const invoke=async(cmd,args)=>{
@@ -25,7 +26,7 @@ const invoke=async(cmd,args)=>{
  throw Error(op);
 };
 globalThis.localStorage={getItem:()=>null,setItem(){}};globalThis.window={__TAURI_INTERNALS__:{invoke}};
-globalThis.Worker=class {postMessage(){queueMicrotask(()=>this.onmessage({data:{entries:snapshotEntries}}));}terminate(){}};
+globalThis.Worker=class {postMessage(bytes){queueMicrotask(()=>this.onmessage({data:{entries:unpackFixture(bytes)}}));}terminate(){}};
 const {prepareGardenestInstall,setPackageEnabled,installedOrigins,decodeImport,prepareLocalInstall}=await import('../../public/launcher/Gpnext.js');
 const profile={id:'test',jsModding:false};
 const install=await prepareGardenestInstall(profile,descriptor.versionId);
@@ -40,5 +41,21 @@ files.set('gp-next/packs/local.zip',payload);
 const local=await prepareLocalInstall(profile,'local.zip');
 assert.equal(local.preview.name,'Fixture');await local.commit();
 assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods[0].enabled,false);
+files.set('gp-next/packs/scripts.zip', readFileSync(new URL('./ScriptPackageFixture.zip',import.meta.url)));
+const script = await prepareLocalInstall(profile,'scripts.zip');
+assert.equal(script.preview.containsScripts,true);
+await script.commit();
+assert.equal(globalThis.__mustNeverExecute,undefined,'inspection must never execute package scripts');
+assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id==='fixture.script').enabled,false);
+await assert.rejects(setPackageEnabled(profile,'fixture.script',true),/Enable JavaScript/);
+const wrapped = unpackFixture(new Uint8Array(readFileSync(new URL('./WrappedPackageFixture.zip',import.meta.url))));
+assert.ok(wrapped.some(([name])=>name==='pack.json'),'single enclosing folder is normalized');
 const tampered=envelope.slice();tampered[tampered.length-1]^=1;await assert.rejects(decodeImport(tampered.buffer,descriptor.versionId),/checksum/);
 console.log('Passed canonical GP-Next launcher installation, immutable snapshot, disabled default, origin tracking, enable selection and checksum rejection.');
+
+if (process.env.GARDENDLESS_TEST_ZIP) {
+ files.set('gp-next/packs/public-test.zip', readFileSync(process.env.GARDENDLESS_TEST_ZIP));
+ const imported = await prepareLocalInstall(profile,'public-test.zip');
+ await imported.commit();
+ console.log('Verified real archive inspection/install into isolated fixture storage:', imported.preview.name);
+}

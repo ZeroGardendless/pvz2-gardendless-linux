@@ -56,6 +56,10 @@ export async function ensureModConfiguration(profile) {
   const fs = profileFileSystem(profile.id), storage = createConfigurationStorage(fs);
   if (await storage.read() === null && !await initializeFreshPlatform({storage, installStore: createPackInstallStore(fs), fs})) throw new Error("Open GP-Next → Mods once to migrate this profile’s existing mods, then return here.");
 }
+export async function prepareDroppedInstall(profile, dropped) {
+  const entries = dropped.entries || await unpack(dropped.bytes);
+  return prepareInstall(profile, entries);
+}
 export async function prepareLocalInstall(profile, fileName) {
   if (!fileName || /[/\\]/.test(fileName) || fileName.startsWith('.')) throw new Error("Invalid package filename");
   const fs = profileFileSystem(profile.id), path = `gp-next/packs/${fileName}`;
@@ -93,17 +97,16 @@ async function prepareInstall(profile, entries, descriptor = null) {
   const configurationState = createState({storage});
   await configurationState.load();
   const snapshot = await createSnapshot(entries);
-  const features = feature => ({"experimental.jsModding": profile.jsModding, "runtime.jsModding": profile.jsModding,
-    "experimental.worldMapJson": profile.worldMapJson, "experimental.plantLevelSystem": profile.plantLevelSystem,
+  // Inspection reads script text but never evaluates it. Runtime opt-in is
+  // enforced separately when enabling a package, not when storing it disabled.
+  const features = feature => ({"experimental.jsModding": true, "runtime.jsModding": true,
+    "experimental.worldMapJson": true, "runtime.worldMapJson": true, "experimental.plantLevelSystem": true, "runtime.plantLevelSystem": true,
     "runtime.dynamicPlantRegistry": true, "runtime.shopExtensions": true, "runtime.scrollSensitivity": true})[feature] ?? null;
   const installation = await preparePackageInstall({snapshot, configurationState, installStore, canEdit: () => true,
-    hasFeature: features, forceDisabled: true, assertCandidateAllowed(candidate) {
-      if (!profile.jsModding && candidate.packs.some(pack => pack.enabled && pack.meta.js)) throw new Error("Enable JavaScript modding in this profile to manage script mods.");
-    }}).catch(error => {
-      if (/JavaScript modding is disabled/.test(error.message)) throw new Error("Enable JavaScript modding in Profile settings before installing this script mod. Installing it does not enable the mod itself.");
-      throw error;
-    });
-  return {descriptor, preview: installation.preview, async commit() {
+    hasFeature: features, forceDisabled: true, assertCandidateAllowed() {}});
+  const preview = {...installation.preview, warnings: [...installation.preview.warnings]};
+  if (preview.containsScripts && !profile.jsModding) preview.warnings.push("JavaScript modding is off. This package stays disabled until you enable JavaScript modding and the mod itself.");
+  return {descriptor, preview, async commit() {
     // Re-read durable state immediately before commit; the installer then checks
     // identity/revision again and writes immutable bytes before desired selection.
     const before = await storage.read();
@@ -128,7 +131,13 @@ export async function setPackageEnabled(profile, packId, enabled) {
   if (record.journal || record.recovery?.required) throw new Error("Resolve the pending GP-Next recovery before changing mods.");
   const pack = record.desired.mods.find(mod => mod.id === packId);
   if (!pack) throw new Error("Package no longer exists. Refresh the list.");
-  if (enabled && !profile.jsModding) {
+  let scriptsEnabled = profile.jsModding;
+  if (profile.applySettings === false) {
+    const fs = profileFileSystem(profile.id);
+    try { scriptsEnabled = JSON.parse(await fs.readTextFile("gp-next/settings.json")).experimental?.jsModding === true; }
+    catch { scriptsEnabled = false; }
+  }
+  if (enabled && !scriptsEnabled) {
     const fs = profileFileSystem(profile.id);
     const {h: loadJson5} = await import("../gpnext/mods/FileLoader.js");
     const manifest = loadJson5().parse(await fs.readTextFile(`gp-next/installed/${pack.contentDigest}/pack.json`));

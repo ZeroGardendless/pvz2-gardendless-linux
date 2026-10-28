@@ -2011,8 +2011,13 @@ function buildOverlayDom() {
   }), document.addEventListener(`pointerdown`, (e3) => {
     h.contains(e3.target) || closeTabPicker();
   }, true);
+  let resizeFrame = null;
   let r2 = () => {
-    updateTabOverflowMenu(), scrollSelectedTabIntoView();
+    if (resizeFrame !== null) return;
+    resizeFrame = requestAnimationFrame(() => {
+      resizeFrame = null;
+      updateTabOverflowMenu(), scrollSelectedTabIntoView();
+    });
   };
   new ResizeObserver(r2).observe(h), document.fonts?.ready.then(r2), v = document.createElement(`div`), v.className = `gp-content`, v.id = `gp-content`, v.setAttribute(`role`, `tabpanel`), b = document.createElement(`div`), b.className = `gp-footer`, p.appendChild(e2), p.appendChild(h), p.appendChild(v), p.appendChild(b), document.body.appendChild(p), x = document.createElement(`div`), x.className = `gp-f1-hint`, x.addEventListener(`click`, toggleOverlay), document.body.appendChild(x), buildCommandPalette(), refreshCommandPaletteStrings(), updateHotkeyHint();
 }
@@ -2281,6 +2286,7 @@ function registerTab(e2) {
   t2 === -1 ? k.push(e2) : k[t2] = e2, m && (renderTabButtons(), A ? n2 && (renderActiveTab(), runTabLifecycleHook(k.find((e3) => e3.id === A), `onActivate`)) : switchTab(e2.id)), commandPalette && !commandPalette.hidden && renderCommandPaletteResults();
 }
 function switchTab(e2) {
+  e2 = { cheats: "tools", diagnostics: "tools", experimental: "settings" }[e2] || e2;
   let t2 = k.find((t3) => t3.id === e2);
   t2 && (A === e2 && v.children.length > 0 || (runTabLifecycleHook(k.find((e3) => e3.id === A), `onDeactivate`), A = e2, m.querySelectorAll(`.gp-tab`).forEach((t3) => {
     t3.classList.toggle(`gp-tab-active`, t3.dataset.tabId === e2), t3.setAttribute(`aria-selected`, String(t3.dataset.tabId === e2)), t3.tabIndex = t3.dataset.tabId === e2 ? 0 : -1;

@@ -30,6 +30,9 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
     context.config_mut().app.windows.clear();
     if !game_mode {
         window_config.label = "launcher".into();
+        // HTML file handles keep dropped files accessible inside Flatpak.
+        // The game retains Tauri's native drop handling.
+        window_config.drag_drop_enabled = false;
         window_config.title = "Gardendless Launcher".into();
         window_config.url = tauri::WebviewUrl::App("launcher/index.html".into());
         window_config.width = 1180.;

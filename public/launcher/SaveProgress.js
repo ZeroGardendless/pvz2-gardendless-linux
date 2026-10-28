@@ -1,7 +1,7 @@
 import { GAME_VERSION } from "./GameMetadata.js";
 import { escapeHtml as esc } from './Store.js';
-import { PLANTS, UPGRADES } from './SaveCatalog.js';
-export { PLANTS, UPGRADES } from './SaveCatalog.js';
+import { PLANTS, UPGRADES, LEVELS, WORLD_LEVELS } from './SaveCatalog.js';
+export { PLANTS, UPGRADES, LEVELS, WORLD_LEVELS } from './SaveCatalog.js';
 
 export const WORLDS = [
     ['chooser', 'World Chooser'], ['egypt', 'Ancient Egypt'], ['pirate', 'Pirate Seas'],
@@ -15,6 +15,44 @@ export const WORLDS = [
     ['epic_dino', 'Epic Jurassic Marsh'], ['epic_modern', 'Epic Modern Day'], ['epic_kongfu', 'Epic Kongfu Temple'],
     ['sky', 'Aerial Fortress'], ['epic_sky', 'Epic Aerial Fortress'],
 ];
+// Classify the actual bundled IDs; unknown/modded entries remain visible separately.
+export const LEVEL_GROUPS = [...WORLDS.filter(([id]) => id !== 'chooser'),
+    ['tutorial', 'Tutorials'], ['lod', 'Level of the Day'], ['other', 'Other levels'], ['custom', 'Saved custom levels']];
+const bundledLevels = new Set(LEVELS);
+const levelPatterns = LEVEL_GROUPS.filter(([code]) => !['other', 'custom'].includes(code))
+    .map(([code]) => [code, new RegExp('^' + code + '(?:_|[0-9])')]);
+const worldLevelSets = new Map(Object.entries(WORLD_LEVELS).map(([id, levels]) => [id, new Set(levels)]));
+export function levelGroup(id) {
+    return levelPatterns.find(([, pattern]) => pattern.test(id))?.[0] || (bundledLevels.has(id) ? 'other' : 'custom');
+}
+export function levelsInGroup(catalog, group) {
+    const map = worldLevelSets.get(group);
+    return catalog.filter(id => map ? map.has(id) : levelGroup(id) === group);
+}
+export function levelProperties(player, id) {
+    return player.levelProps?.[id] || player.advancedLevels?.find(entry => entry.levelID === id) || {};
+}
+export function levelCatalog(player) {
+    return [...new Set([...LEVELS, ...Object.keys(player.levelProps || {}),
+        ...(player.advancedLevels || []).map(entry => entry.levelID).filter(id => typeof id === 'string')])];
+}
+export function setLevelProgress(player, id, progress) {
+    if (unsafe.has(id) || !levelCatalog(player).includes(id)) throw new Error('Unknown level.');
+    if (!Number.isInteger(progress) || progress < 0 || progress > 4) throw new Error('Invalid level status.');
+    const levels = prepareCollection(player, 'levelProps');
+    levels[id] = { ...levels[id], progress };
+}
+export function completeLevels(player, group = 'all') {
+    if (group !== 'all' && !LEVEL_GROUPS.some(([id]) => id === group)) throw new Error('Unknown level group.');
+    const catalog = levelCatalog(player);
+    const ids = group === 'all' ? catalog : levelsInGroup(catalog, group);
+    const levels = prepareCollection(player, 'levelProps');
+    for (const id of ids) {
+        if (unsafe.has(id)) throw new Error('Invalid level ID.');
+        levels[id] = { ...levels[id], progress: 4 };
+    }
+    return ids.length;
+}
 export const FEATURES = {
     feature_zengarden: 'Zen Garden', feature_almanac: 'Almanac', feature_coins: 'Coins',
     feature_worldmap: 'World Map', feature_worldkeys: 'World Keys', feature_plantfood: 'Plant Food',
@@ -81,6 +119,15 @@ export function prepareCollection(player, collection) {
         }
         player.obtainedPlants = remaining;
     }
+    if (collection === 'levelProps' && Array.isArray(player.advancedLevels)) {
+        for (const entry of player.advancedLevels) {
+            if (typeof entry.levelID !== 'string' || unsafe.has(entry.levelID)) throw new Error('Invalid legacy level ID.');
+            const { levelID, ...props } = clone(entry);
+            // The game reapplies legacy progress on load, so consume it once on edit.
+            player.levelProps[levelID] = { ...props, ...player.levelProps[levelID] };
+        }
+        delete player.advancedLevels;
+    }
     if (collection === 'worldProps' && Array.isArray(player.worldProgress)) {
         const remaining = [];
         for (const entry of player.worldProgress) {
@@ -123,7 +170,7 @@ export function validateProgress(player) {
         if (value !== undefined && (!Number.isSafeInteger(value) || value < min || value > max)) throw new Error(`${label} must be a whole number from ${min} to ${max}.`);
     };
     const bool = (value, label) => { if (value !== undefined && typeof value !== 'boolean') throw new Error(`${label} must be on or off.`); };
-    for (const key of ['plantProps', 'player_upgrades', 'worldProps', 'player_dangerroom', 'arcade_plant_decoding', 'features', 'tutorial']) {
+    for (const key of ['plantProps', 'levelProps', 'player_upgrades', 'worldProps', 'player_dangerroom', 'arcade_plant_decoding', 'features', 'tutorial']) {
         if (player[key] != null && !object(player[key])) throw new Error(`${key} must be a JSON object.`);
     }
     for (const [id, plant] of Object.entries(player.plantProps || {})) {
@@ -131,6 +178,10 @@ export function validateProgress(player) {
         integer(plant.progress, `${id} status`, 0, 2); integer(plant.tutorialLevel, `${id} tutorial level`); integer(plant.boost, `${id} boost`);
         integer(plant.costume, `${id} costume`, -1); bool(plant.medal, `${id} medal`);
         if (plant.costumes !== undefined && (!Array.isArray(plant.costumes) || plant.costumes.some(value => !Number.isSafeInteger(value) || value < 0))) throw new Error(`${id} costumes must be a list of non-negative costume IDs.`);
+    }
+    for (const [id, level] of Object.entries(player.levelProps || {})) {
+        if (!object(level)) throw new Error(`Level ${id} must be an object.`);
+        integer(level.progress, `${id} status`, 0, 4);
     }
     for (const [id, upgrade] of Object.entries(player.player_upgrades || {})) {
         if (!object(upgrade)) throw new Error(`Upgrade ${id} must be an object.`);
@@ -156,7 +207,7 @@ const status = (path, value, labels = ['Locked', 'Available to unlock', 'Unlocke
 
 export function renderProgress(player, state, disabled) {
     state.progressPage ||= 'plants'; state.plantId ||= 'peashooter'; state.progressQuery ||= '';
-    const tabs = { plants: 'Plants', worlds: 'Worlds', upgrades: 'Upgrades', daily: 'Daily state', features: 'Features', tutorials: 'Tutorials' };
+    const tabs = { plants: 'Plants', worlds: 'Worlds', levels: 'Levels', upgrades: 'Upgrades', daily: 'Daily state', features: 'Features', tutorials: 'Tutorials' };
     const query = state.progressQuery.trim().toLowerCase();
     let body = '';
     if (state.progressPage === 'plants') {
@@ -165,6 +216,19 @@ export function renderProgress(player, state, disabled) {
         const plant = catalog.find(plant => plant.id === state.plantId); const props = plantProperties(player, state.plantId);
         const unlocked = catalog.filter(item => plantProperties(player, item.id)?.progress === 2).length;
         body = `<div class="plant-toolbar"><label class="field">Search plants<input type="search" data-progress-search value="${esc(state.progressQuery)}" placeholder="Name or codename"></label><span class="badge green">${unlocked} / ${catalog.length} unlocked</span>${action('unlock-all-plants', 'Unlock all plants')}</div><p class="muted">Select a card for details. Use its switch to unlock or lock it in this draft; Apply creates a backup before saving.</p><div class="plant-workspace"><div class="plant-list" role="group" aria-label="Plants">${choices.map(item => { const owned = plantProperties(player, item.id)?.progress === 2; return `<article class="plant-card ${item.id === state.plantId ? 'active' : ''} ${owned ? 'unlocked' : ''}"><button type="button" class="plant-choice" data-progress-action="select-plant" data-plant="${esc(item.id)}" aria-pressed="${item.id === state.plantId}"><span class="plant-avatar" aria-hidden="true">${esc(item.name.charAt(0))}</span><span class="plant-card-copy"><strong>${esc(item.name)}</strong><small>${esc(item.id)}</small></span></button><label class="plant-card-toggle" title="${owned ? 'Lock' : 'Unlock'} ${esc(item.name)}"><input type="checkbox" data-progress-plant="${esc(item.id)}" ${owned ? 'checked' : ''} aria-label="Unlock ${esc(item.name)}"><span class="switch" aria-hidden="true"></span></label></article>`; }).join('') || '<p class="muted">No matching plants.</p>'}</div><div class="plant-detail"><h3>${esc(plant?.name || state.plantId)}</h3><p class="muted">${esc(state.plantId)}</p>${props ? `${status(['plantProps', state.plantId, 'progress'], props.progress)}${toggle('Boosted', ['plantProps', state.plantId, 'boost'], props.boost, 'boost')}${toggle('Medal earned', ['plantProps', state.plantId, 'medal'], props.medal)}<div class="form-pair">${number('Tutorial level', ['plantProps', state.plantId, 'tutorialLevel'], props.tutorialLevel)}${number('Active costume (−1: default)', ['plantProps', state.plantId, 'costume'], props.costume ?? -1, -1)}</div><label class="field">Owned costume IDs<input ${pathAttr(['plantProps', state.plantId, 'costumes'])} data-progress-type="ids" value="${esc((props.costumes || []).join(', '))}" placeholder="0, 1, 2"></label><p class="muted">Costume IDs depend on the plant and installed mods.</p>${action('remove-plant', 'Remove from save')}` : `<p>This plant has no saved entry yet.</p>${action('add-plant', 'Add unlocked plant')}`}<a data-editor-almanac class="button quiet" href="https://pvzge.com/en/almanac/" target="_blank" rel="noopener noreferrer">Open online almanac ↗</a></div></div>`;
+    } else if (state.progressPage === 'levels') {
+        state.levelGroup ||= 'egypt';
+        const catalog = levelCatalog(player);
+        const inGroup = levelsInGroup(catalog, state.levelGroup);
+        const choices = inGroup.filter(id => id.toLowerCase().includes(query));
+        const finished = inGroup.filter(id => levelProperties(player, id).progress === 4).length;
+        const shown = choices.slice(0, 100);
+        body = `<div class="editor-toolbar"><label class="field">World / category<select data-progress-level-group>${LEVEL_GROUPS.filter(([id]) => levelsInGroup(catalog, id).length).map(([id, name]) => `<option value="${id}" ${id === state.levelGroup ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></label><span class="badge green">${finished} / ${inGroup.length} completed</span></div>
+        <div class="editor-toolbar">${action('complete-world', 'Complete this category')}${action('complete-all-levels', 'Complete all levels')}</div>
+        <p class="muted">World lists come from the bundled world maps, including unvisited levels. Changes only level status for this player; rewards, world unlocks, and ongoing endless runs stay unchanged. Review and Apply to save.</p>
+        <label class="field">Search level IDs<input type="search" data-progress-search value="${esc(state.progressQuery)}" placeholder="For example, modern16"></label>
+        <div class="progress-grid">${shown.map(id => `<article class="progress-card"><h3>${esc(id)}</h3>${status(['levelProps', id, 'progress'], levelProperties(player, id).progress, ['Locked / unvisited', 'Unlocked', 'Played', 'Awaiting completion', 'Completed'])}</article>`).join('')}</div>
+        ${choices.length > shown.length ? `<p class="muted">Showing ${shown.length} of ${choices.length}. Narrow the search to see more. Category completion includes all ${inGroup.length} levels.</p>` : ''}`;
     } else if (state.progressPage === 'worlds') {
         body = `<p class="muted">Endless progress uses the format found in this save. Other run details stay unchanged.</p><div class="progress-grid">${WORLDS.map(([, name], index) => `<article class="progress-card">${toggle(name, ['worldProps', String(index), 'unlocked'], worldProperties(player, index).unlocked)}${number('Endless level', endlessPath(player, index), progressValue(player, endlessPath(player, index)) ?? worldProperties(player, index).endlessProps?.level ?? 1, 1)}</article>`).join('')}</div>`;
     } else if (state.progressPage === 'upgrades') {
