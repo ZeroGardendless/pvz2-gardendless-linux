@@ -50,6 +50,9 @@ assert.equal(globalThis.__mustNeverExecute,undefined,'inspection must never exec
 assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id==='fixture.script').enabled,false);
 await assert.rejects(setPackageEnabled(profile,'fixture.script',true),/Enable JavaScript/);
 // Existing enabled script mods must not prevent storing another disabled package.
+await setPackageEnabled({...profile, applySettings:false},'fixture.script',true);
+assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id==='fixture.script').enabled,true,'Inherited game preferences are not replaced by a stale launcher file check.');
+assert.equal(globalThis.__mustNeverExecute,undefined);
 const withScripts = JSON.parse(files.get('gp-next/configuration-state.json'));
 withScripts.desired.mods.find(mod => mod.id === 'fixture.script').enabled = true;
 files.set('gp-next/configuration-state.json', JSON.stringify(withScripts));

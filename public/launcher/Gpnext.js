@@ -131,12 +131,9 @@ export async function setPackageEnabled(profile, packId, enabled) {
   if (record.journal || record.recovery?.required) throw new Error("Resolve the pending GP-Next recovery before changing mods.");
   const pack = record.desired.mods.find(mod => mod.id === packId);
   if (!pack) throw new Error("Package no longer exists. Refresh the list.");
-  let scriptsEnabled = profile.jsModding;
-  if (profile.applySettings === false) {
-    const fs = profileFileSystem(profile.id);
-    try { scriptsEnabled = JSON.parse(await fs.readTextFile("gp-next/settings.json")).experimental?.jsModding === true; }
-    catch { scriptsEnabled = false; }
-  }
+  // Inherited preferences belong to the game's WebKit storage, not settings.json.
+  // This only edits desired selection; cold startup still enforces runtime opt-in.
+  const scriptsEnabled = profile.applySettings === false || profile.jsModding;
   if (enabled && !scriptsEnabled) {
     const fs = profileFileSystem(profile.id);
     const {h: loadJson5} = await import("../gpnext/mods/FileLoader.js");
