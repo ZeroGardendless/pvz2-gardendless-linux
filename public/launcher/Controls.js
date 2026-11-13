@@ -1,6 +1,7 @@
 /** The native select remains the form's source of truth; its menu is enhanced locally. */
-export function installControls(root = document) {
-    let sequence = 0, open = null, search = '', searchTimer;
+let controlSequence = 0;
+export function installControls(root = document, {menuClass = '', buttonClass = '', ripples = true} = {}) {
+    let open = null, search = '', searchTimer;
     const controls = new Map();
     const close = (focus = false) => {
         if (!open) return;
@@ -21,12 +22,12 @@ export function installControls(root = document) {
         for (const select of root.querySelectorAll('select:not([data-enhanced])')) {
             select.dataset.enhanced = 'true';
             const button = document.createElement('button');
-            button.type = 'button'; button.className = 'select-control';
+            button.type = 'button'; button.className = ['select-control', buttonClass].filter(Boolean).join(' ');
             if (select.id) button.id = `${select.id}-control`;
             button.setAttribute('role', 'combobox');
             button.setAttribute('aria-haspopup', 'listbox');
             button.setAttribute('aria-expanded', 'false');
-            button.setAttribute('aria-controls', `select-menu-${++sequence}`);
+            button.setAttribute('aria-controls', `select-menu-${++controlSequence}`);
             const label = select.closest('label');
             button.setAttribute('aria-label', select.getAttribute('aria-label') || select.title ||
                 [...(label?.childNodes || [])].filter(node => node !== select).map(node => node.textContent).join(' ').trim() || select.name || 'Choose an option');
@@ -63,7 +64,7 @@ export function installControls(root = document) {
         close(); search = '';
         const options = [...select.options].filter(option => !option.disabled && !option.hidden);
         if (select.disabled || !options.length) return;
-        const menu = document.createElement('div'); menu.className = 'select-menu'; menu.id = button.getAttribute('aria-controls');
+        const menu = document.createElement('div'); menu.className = ['select-menu', menuClass].filter(Boolean).join(' '); menu.id = button.getAttribute('aria-controls');
         menu.setAttribute('role', 'listbox'); menu.setAttribute('aria-label', button.getAttribute('aria-label'));
         options.forEach((option, index) => {
             const item = document.createElement('div'); item.className = 'select-option'; item.id = `${menu.id}-${index}`;
@@ -119,7 +120,7 @@ export function installControls(root = document) {
     root.addEventListener('pointerdown', event => {
         if (open && !open.menu.contains(event.target) && !open.button.contains(event.target)) close();
         const button = event.target.closest('button:not(:disabled), a.button');
-        if (!button || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (!ripples || !button || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const rect = button.getBoundingClientRect(), ripple = document.createElement('span');
         ripple.className = 'press-ripple'; ripple.setAttribute('aria-hidden', 'true');
         const size = Math.max(rect.width, rect.height) * 2;
@@ -147,4 +148,5 @@ export function installControls(root = document) {
     });
     observer.observe(root.body || root, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
     sync();
+    return {close};
 }

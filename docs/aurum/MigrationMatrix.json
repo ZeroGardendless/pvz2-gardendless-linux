@@ -1,0 +1,524 @@
+[
+  {
+    "upstream": "build-identity-CRY9fitW.js",
+    "target": "core/BuildIdentity.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "chunk-QTnfLwEv.js",
+    "target": "vendor/ModuleHelpers.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "client-edition-SrmZ2USc.js",
+    "target": "core/ClientEdition.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "cloud-BjD8GoLi.js",
+    "target": "ui/tabs/Cloud.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "cloud-cold-host-BePk2ZkU.js",
+    "target": "platform/CloudColdHost.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "cloud-environment-DU14V3XF.js",
+    "target": "platform/CloudEnvironment.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "cloud-json-DiEtCYWg.js",
+    "target": "platform/CloudJson.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "cloud-portable-preferences-DNUHF2XL.js",
+    "target": "platform/CloudPortablePreferences.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "cloud-save-request-DCSWm02m.js",
+    "target": "platform/CloudSaveRequest.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "cloud-selection-D7K1HXj4.js",
+    "target": "platform/CloudSelection.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "cold-start-host-D4hM9pAg.js",
+    "target": "runtime/ColdStartHost.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "components-C9qt_VKb.js",
+    "target": "ui/Components.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "config-D7VCbxHw.js",
+    "target": "mods/GameConfiguration.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "configuration-mod-settings-BBluX11O.js",
+    "target": "mods/ConfigurationModSettings.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "configuration-recovery-C83kNh2G.js",
+    "target": "mods/ConfigurationRecovery.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "data-drawer-CMiRwS4v.js",
+    "target": "data/DataDrawer.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "data-entity-ledger-k1oNoUuV.js",
+    "target": "data/DataEntityLedger.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "data-store-CLivo5rQ.js",
+    "target": "data/DataStore.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "dist-js-BCqj7x_P.js",
+    "target": "platform/Dialog.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "dist-js-Bwfe5olH.js",
+    "target": "platform/DeepLink.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "dist-js-ByP3TtiK.js",
+    "target": "platform/Opener.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "dist-js-CWRsYHTE.js",
+    "target": "platform/FileSystem.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "drpc-7KX7AMOS.js",
+    "target": "platform/Presence.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "entity-inspector-xW1Hrb-L.js",
+    "target": "data/EntityInspector.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "event-JJusFfHe.js",
+    "target": "platform/Events.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "file-loader-BPLWo7Rf.js",
+    "target": "mods/FileLoader.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "frame-settings-FQJuqDvv.js",
+    "target": "runtime/FrameSettings.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "fresh-installation-7BfSAdMe.js",
+    "target": "mods/FreshInstallation.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "game-BYIB1nwv.js",
+    "target": "GameBootstrap.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "gp-next-DLmvO6RE.js",
+    "target": "Main.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "hp-overlay-CzHBgvvi.js",
+    "target": "runtime/HpOverlay.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "i18n-Dj7w-oB0.js",
+    "target": "ui/Translations.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "isolation-DLKV_2pB.js",
+    "target": "mods/Isolation.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "js-mod-loader-DMjqEHkx.js",
+    "target": "mods/JsModLoader.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "js-modding-required-B_88v2tB.js",
+    "target": "mods/JsModdingRequired.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "js-modding-selection-GSol2U5p.js",
+    "target": "mods/JsModdingSelection.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "legacy-runtime-migration-BQFiudNE.js",
+    "target": "mods/LegacyRuntimeMigration.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "local-pack-sync-Qc3KB8wO.js",
+    "target": "mods/LocalPackSync.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "new upstream architecture module; integrate imports and callers"
+  },
+  {
+    "upstream": "logger-DXOBM1av.js",
+    "target": "core/Logger.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-api-B7KwsIBO.js",
+    "target": "mods/ModApi.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-configuration-state-B3ObvNu2.js",
+    "target": "mods/ModConfigurationState.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-configuration-storage-CDEfQuVC.js",
+    "target": "mods/ModConfigurationStorage.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-controls-registry-DN3FRg4c.js",
+    "target": "mods/ModControlsRegistry.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-diagnostic-report-CTu6uaNB.js",
+    "target": "mods/ModDiagnosticReport.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-operation-plan-Yj4GHynC.js",
+    "target": "mods/ModOperationPlan.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-owned-data-DiCEpnbH.js",
+    "target": "mods/ModOwnedData.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-owned-data-storage-BFM7QfOI.js",
+    "target": "mods/ModOwnedDataStorage.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-pack-preflight-8msjV_yK.js",
+    "target": "mods/ModPackPreflight.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-package-picker-CGu2ZBep.js",
+    "target": "mods/ModPackagePicker.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-requirements-BOhAA_f0.js",
+    "target": "mods/ModRequirements.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "new upstream architecture module; integrate imports and callers"
+  },
+  {
+    "upstream": "mod-save-backup-storage-KmDqV8iD.js",
+    "target": "mods/ModSaveBackupStorage.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-save-protection-B6z-y77S.js",
+    "target": "mods/ModSaveProtection.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-selection-HHX9zY_q.js",
+    "target": "mods/ModSelection.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-settings-registry-BXp7pcg7.js",
+    "target": "mods/ModSettingsRegistry.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-troubleshooting-CQH2ME1H.js",
+    "target": "mods/ModTroubleshooting.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "mod-version-DNSM0LWE.js",
+    "target": "mods/ModVersion.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "overlay-PAqPdbLO.js",
+    "target": "ui/Overlay.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "pack-install-store-CAGEpix1.js",
+    "target": "mods/PackInstallStore.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "pack-preparation-4IGsOLkk.js",
+    "target": "mods/PackPreparation.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "pack-snapshot-CwbLxMi5.js",
+    "target": "mods/PackSnapshot.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "pack-zip-worker-BLzj9ET1.js",
+    "target": "core/NestPackWorker.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "patcher-IyxKzKC-.js",
+    "target": "mods/Patcher.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "pending-mod-selection-BofX0kao.js",
+    "target": "mods/PendingModSelection.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "new upstream architecture module; integrate imports and callers"
+  },
+  {
+    "upstream": "plant-level-state-CHNjzGD9.js",
+    "target": "runtime/PlantLevelState.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "restore-utils-K_9DWc21.js",
+    "target": "mods/RestoreUtils.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "scroll-sensitivity-fz0eQeBl.js",
+    "target": "runtime/ScrollSensitivity.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "settings-store-DAl7zVlz.js",
+    "target": "core/SettingsStore.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "startup-attempt-T9nrqK_8.js",
+    "target": "runtime/StartupAttempt.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "startup-attempt-host-BSaOUUSQ.js",
+    "target": "runtime/StartupAttemptHost.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "startup-recovery-D0JHez-2.js",
+    "target": "runtime/CocosStartup.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "tab-cheats-BWSwwiCa.js",
+    "target": "ui/tabs/Cheats.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-data-BEFLzhEq.js",
+    "target": "ui/tabs/Data.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-diagnostics-ynuJddD-.js",
+    "target": "ui/tabs/Diagnostics.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-experimental-BDudErFN.js",
+    "target": "ui/tabs/Experimental.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-log-BWUebA0B.js",
+    "target": "ui/tabs/Log.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-mod-manager-C3CU077d.js",
+    "target": "ui/tabs/ModManager.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-mods-BiWJ5ExA.js",
+    "target": "ui/tabs/Mods.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-pages-DTszUBO1.js",
+    "target": "ui/tabs/Pages.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-patcher-woQEgAT2.js",
+    "target": "ui/tabs/Patcher.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-performance-section-BCB4fGq5.js",
+    "target": "ui/tabs/PerformanceSection.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-preferences-CNllFM2X.js",
+    "target": "ui/tabs/Preferences.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-settings-B-yewoGo.js",
+    "target": "ui/tabs/Settings.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tab-tools-9ALqnmIz.js",
+    "target": "ui/tabs/Tools.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "tmpPatch-FYdMpoTA.js",
+    "target": "platform/WindowBridge.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "toast-CqhSy3sa.js",
+    "target": "ui/Toast.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "merge upstream features into preserved Linux/UI adapter; replacement prohibited without review"
+  },
+  {
+    "upstream": "trainer-shortcuts-D9QyIsio.js",
+    "target": "runtime/TrainerShortcuts.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  },
+  {
+    "upstream": "worldmap-json-patcher-BHDBwhyu.js",
+    "target": "runtime/WorldmapJsonPatcher.js",
+    "decision": "staged only; integration and adapter review pending",
+    "integration": "compare core exports and behavior, retain local integration fixes"
+  }
+]

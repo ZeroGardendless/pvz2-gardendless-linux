@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import{assetRevisionUrl,installAssetRevision}from'../../public/gpnext/runtime/AssetCache.js';
+const base='http://tauri.localhost/';
+const next=new URL(assetRevisionUrl('assets/resources/a.png?x=1#part',base,'full-png'));
+assert.equal(next.searchParams.get('x'),'1');assert.equal(next.searchParams.get('gdAssets'),'full-png');assert.equal(next.hash,'#part');
+for(const url of ['https://remote.test/assets/a.png','blob:http://tauri.localhost/id','data:image/png;base64,x','virtual:///cc','gpnext/core/SettingsStore.js'])assert.equal(assetRevisionUrl(url,base),url);
+const calls=[],downloader={download(...args){calls.push({receiver:this,args});return 42;}};
+const cc={assetManager:{downloader}};installAssetRevision(cc,base);const first=downloader.download;installAssetRevision(cc,base);assert.equal(downloader.download,first);
+const done=()=>{};assert.equal(downloader.download('id','assets/resources/a.json','.json',{retry:1},done),42);
+assert.equal(calls[0].receiver,downloader);assert.equal(calls[0].args[0],'id');assert.equal(calls[0].args[4],done);assert.ok(calls[0].args[1].includes('gdAssets='));
+downloader.download('bundle','assets/resources','bundle',{},done);assert.equal(calls[1].args[1],'assets/resources');
+console.log('Asset revisions: local-only stable cache keys, query preservation, callback/receiver/result preservation and idempotence passed.');

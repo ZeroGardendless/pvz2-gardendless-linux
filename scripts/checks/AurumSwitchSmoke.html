@@ -1,0 +1,21 @@
+<!doctype html><title>Aurum switch interaction</title><link rel="stylesheet" href="/launcher/Styles.css"><script type="module">
+import {aurumKnobMarkup} from '/launcher/Aurum.js';
+try {
+ const source=await (await fetch('/launcher/App.js')).text();
+ const start=source.indexOf('function updateAurumControl() {'),end=source.indexOf('async function refreshAurum()',start);
+ if(start<0||end<0)throw Error('Launcher control updater missing');
+ const app=document.createElement('div');document.body.append(app);
+ const state={running:null},isDesktop=true,busy=false,game=()=>({builtin:true});
+ let aurumSelection={status:'ready',installed:true,enabled:false};
+ app.innerHTML=`<div id="aurum-launch-control">${aurumKnobMarkup(aurumSelection)}</div>`;
+ const update=eval('('+source.slice(start,end).trim()+')');
+ const knob=app.querySelector('.aurum-knob');knob.focus();
+ aurumSelection={status:'loading',installed:true,enabled:false};update();
+ if(app.querySelector('.aurum-knob')!==knob||document.activeElement!==knob)throw Error('Async refresh replaced or blurred the switch');
+ aurumSelection={status:'ready',installed:true,enabled:true};update();
+ if(app.querySelector('.aurum-knob')!==knob||knob.getAttribute('aria-checked')!=='true')throw Error('Enable transition replaced the thumb');
+ aurumSelection={status:'ready',installed:true,enabled:false};update();
+ if(app.querySelector('.aurum-knob')!==knob||knob.getAttribute('aria-checked')!=='false')throw Error('Disable transition replaced the thumb');
+ document.title='RESULT: PASS Aurum switch preserves DOM identity, focus and animation across async enable/disable';
+}catch(error){document.title='RESULT: FAIL '+error.message;}
+</script>

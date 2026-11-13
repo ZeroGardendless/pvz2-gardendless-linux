@@ -32,6 +32,10 @@ try {
       await run('flatpak', ['info', reference], {stdio: 'ignore'});
     }
   }
+  await run('node', ['scripts/launcher/ReleaseNotes.mjs']);
+  await run('node', ['scripts/launcher/AssetRevision.mjs']);
+  await run('node', ['scripts/launcher/RenderCatalog.mjs']);
+  await run('node', ['scripts/aurum/Bundle.mjs']);
   await run('npm', ['run', 'check']);
   await mkdir(target, {recursive: true});
   // Preserve verified vendored crates and their mtimes across frontend builds.

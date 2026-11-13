@@ -1,5 +1,5 @@
 const __vite__mapDeps = (i2, m2 = __vite__mapDeps, d2 = m2.f || (m2.f = ["gpnext/mods/ModConfigurationState.js", "gpnext/vendor/ModuleHelpers.js", "gpnext/mods/ConfigurationModSettings.js", "gpnext/mods/ModOperationPlan.js", "gpnext/core/Logger.js", "gpnext/mods/ModConfigurationStorage.js", "gpnext/platform/FileSystem.js", "gpnext/platform/CloudJson.js", "gpnext/mods/ModSaveBackupStorage.js", "gpnext/mods/ModSaveProtection.js", "gpnext/runtime/StartupAttempt.js", "gpnext/mods/PackPreparation.js", "gpnext/mods/FileLoader.js", "gpnext/mods/PackSnapshot.js", "gpnext/mods/GameConfiguration.js", "gpnext/mods/ModPackPreflight.js", "gpnext/mods/ModVersion.js", "gpnext/ui/Translations.js", "gpnext/core/SettingsStore.js", "gpnext/platform/CloudPortablePreferences.js", "gpnext/runtime/TrainerShortcuts.js", "gpnext/core/BuildIdentity.js", "gpnext/mods/PackInstallStore.js", "gpnext/mods/JsModdingSelection.js", "gpnext/mods/ConfigurationRecovery.js"])) => i2.map((i3) => d2[i3]);
-import { a as e, c as t, i as n, l as r, o as i } from "../GameBootstrap.js";
+import { s as e, u as t, o as n, a as r, c as i } from "../GameBootstrap.js";
 import { c as a, d as o, f as s, l as c, o as l, r as u, s as d, t as f } from "../platform/FileSystem.js";
 import { f as p, l as m, m as h, n as g, p as _, r as v, t as ee } from "../ui/Components.js";
 import { n as te } from "../platform/Dialog.js";
@@ -152,6 +152,7 @@ var re = { zh: { title: `\u542F\u52A8\u6062\u590D`, attempt: `\u5C1D\u8BD5\u5F3A
 @media(max-width:540px) { .gp-recovery-screen { padding:12px; } .gp-recovery-card { padding:18px; gap:16px; } .gp-recovery-card .gp-section-body > .gp-btn-row { flex-direction:column; } .gp-recovery-card .gp-section-body > .gp-btn-row .gp-btn { flex:0 0 auto; width:100%; } }
 `;
 async function renderStartupRecovery(e2, { service: r2 = ne(), locale: a2 } = {}) {
+  const argumentsService = arguments[1]?.service;
   if (!a2) try {
     a2 = JSON.parse(localStorage.getItem(`gp-next-settings`))?.locale;
   } catch {
@@ -241,6 +242,18 @@ async function renderStartupRecovery(e2, { service: r2 = ne(), locale: a2 } = {}
   let W = m(s2.repair, [B]);
   d2.append(W, L);
   let G = async (e3, t2) => {
+    if (typeof globalThis.window?.__TAURI_INTERNALS__?.invoke !== "function") {
+      const url = URL.createObjectURL(new Blob([JSON.stringify(t2, null, 2)], { type: "application/json" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = e3;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1e3);
+      E.textContent = s2.saved;
+      return;
+    }
     let n2 = await te({ defaultPath: e3, filters: [{ name: `JSON`, extensions: [`json`] }] });
     n2 && (await o(n2, JSON.stringify(t2, null, 2)), E.textContent = s2.saved);
   }, ae = N(s2.exportSave, () => G(`gp-next-saves.json`, { version: 1, time: (/* @__PURE__ */ new Date()).toISOString(), storage: Object.fromEntries(Object.entries(C(localStorage)).filter(([e3]) => e3.startsWith(`PvZ2_`))) })), K = N(s2.retryBackup, () => $()), oe = v(ae, K);
@@ -257,6 +270,14 @@ async function renderStartupRecovery(e2, { service: r2 = ne(), locale: a2 } = {}
   }), v(se), q]), E);
   let X = (e3) => e3 ? new Date(e3).toLocaleString() : `\u2014`, Z = null, Q = null;
   async function $() {
+    if (typeof globalThis.window?.__TAURI_INTERNALS__?.invoke !== "function" && !argumentsService) {
+      T.textContent = "Native desktop connection unavailable";
+      E.textContent = "Open Gardendless from the installed launcher to check or repair its configuration. The original startup error is available under Error details.";
+      K.hidden = true;
+      z.hidden = true;
+      j(D);
+      return;
+    }
     T.textContent = s2.backupPending, Z?.remove(), Z = null, Q?.remove(), Q = null;
     let t2 = false;
     z.hidden = true;

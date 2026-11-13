@@ -1,6 +1,6 @@
 [package]
 name = "gardendless"
-version = "0.16.1"
+version = "0.16.24"
 description = "Gardendless game and launcher"
 authors = ["ZeroGardendless"]
 edition = "2021"

@@ -1,3 +1,5 @@
+import { WorkQueue } from "./AudioAssets.js";
+import { DeferredAudioPlayer } from "./DeferredAudioPlayer.js";
 import { AudioEngine } from "./AudioEngine.js";
 const clamp = (value, low, high) => Math.min(high, Math.max(low, Number(value) || 0));
 class NativeAudioEngine extends AudioEngine {
@@ -6,6 +8,8 @@ class NativeAudioEngine extends AudioEngine {
     this.invoke = invoke;
     this.backend = "native-pulse";
     this.sequence = 0;
+    this.metadataQueue = new WorkQueue(4);
+    this.metadata = /* @__PURE__ */ new Map();
     this.pauseFade = false;
     this.updates = /* @__PURE__ */ new Map();
     this.releases = /* @__PURE__ */ new Set();
@@ -71,7 +75,7 @@ class NativeAudioEngine extends AudioEngine {
       this.queue(player, player.offset);
     }
   }
-  async prepare(rawUrl) {
+  async prepare(rawUrl, { retainUntilPlay = true } = {}) {
     await this.ready;
     const url = new URL(rawUrl, this.host.location.href);
     const path = decodeURIComponent(url.pathname).replace(/^\//, "");
@@ -85,13 +89,34 @@ class NativeAudioEngine extends AudioEngine {
         if (!response.ok) throw new Error(`Audio request returned ${response.status}`);
         bytes = Array.from(new Uint8Array(await response.arrayBuffer()));
       }
-      return this.invoke("native_audio_prepare", { path: key, bytes });
+      return this.invoke("native_audio_prepare", { path: key, bytes, retainUntilPlay });
     })();
     return task;
   }
   async load(rawUrl) {
+    const url = new URL(rawUrl, this.host.location.href);
+    const path = decodeURIComponent(url.pathname).replace(/^\//, "");
+    if (url.origin === new URL(this.host.location.href).origin && path.startsWith("assets/") && /\.(?:m4a|mp3)$/i.test(path)) {
+      try {
+        if (!this.metadata.has(path)) {
+          const task = (this.metadataQueue ||= new WorkQueue(4)).run(() => this.invoke("native_audio_metadata", { path })).catch((error) => {
+            this.metadata.delete(path);
+            throw error;
+          });
+          this.metadata.set(path, task);
+          if (this.metadata.size > 4096) this.metadata.delete(this.metadata.keys().next().value);
+        }
+        const metadata = await this.metadata.get(path);
+        return new DeferredAudioPlayer(this, url.href, metadata, () => this.loadPrepared(url.href));
+      } catch (error) {
+        this.report("native metadata fallback", rawUrl, error);
+      }
+    }
+    return this.loadPrepared(rawUrl);
+  }
+  async loadPrepared(rawUrl) {
     try {
-      return new NativeAudioPlayer(this, new URL(rawUrl, this.host.location.href).href, await this.prepare(rawUrl));
+      return new NativeAudioPlayer(this, new URL(rawUrl, this.host.location.href).href, await this.prepare(rawUrl, { retainUntilPlay: false }));
     } catch (error) {
       this.report("native decode fallback", rawUrl, error);
       return super.load(rawUrl);
@@ -125,6 +150,9 @@ class NativeAudioEngine extends AudioEngine {
     player.on("played", () => shot.onPlay?.());
     player.onEnded(() => shot.stop());
     return shot;
+  }
+  async memorySnapshot() {
+    return { ...await this.invoke("native_audio_cache_stats"), metadataEntries: this.metadata.size, players: this.nativePlayers.size };
   }
   monitorFrames() {
   }

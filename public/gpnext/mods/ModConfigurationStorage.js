@@ -1,6 +1,6 @@
-import { c as e, d, f as n, o, r, s as a, t } from "../platform/FileSystem.js";
+import { c as e, d as t, f as n, o as r, r as i, s as a, t as o } from "../platform/FileSystem.js";
 var s = `gp-next`, c = `${s}/configuration-state.json`, l = `${c}.pending`, u = { baseDir: n.AppData };
-function createConfigurationStorage(d2 = { exists: t, mkdir: r, readTextFile: o, writeTextFile: d, rename: e, remove: a }) {
+function createConfigurationStorage(d2 = { exists: o, mkdir: i, readTextFile: r, writeTextFile: t, rename: e, remove: a }) {
   let f = Promise.resolve(), p = (e2, t2) => {
     let r2 = JSON.stringify(e2);
     if (r2 === void 0) throw TypeError(`Configuration record must be JSON`);

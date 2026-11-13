@@ -1,0 +1,15 @@
+<!doctype html><title>Recovery bridge check</title><script type="module">
+import {renderStartupRecovery} from '/gpnext/runtime/CocosStartup.js';
+try {
+ await renderStartupRecovery({phase:'engineImport',causes:[{code:'FIXTURE',message:'Original startup failure'}],modIssues:[]},{locale:'en'});
+ const page=document.querySelector('.gp-recovery-screen');
+ if(!page.textContent.includes('Original startup failure'))throw Error('Original error hidden');
+ if(!page.textContent.includes('Native desktop connection unavailable'))throw Error('Missing host explanation absent');
+ if(page.textContent.includes('Configuration check incomplete'))throw Error('Attempted unavailable native inspection');
+ for(const label of ['Turn off JS Modding','Reset GP-Next settings']){
+  const button=[...page.querySelectorAll('button')].find(node=>node.textContent===label);
+  if(!button?.disabled)throw Error('Repair enabled without backup: '+label);
+ }
+ document.title='RESULT: PASS recovery preserves original error and disables unavailable native repairs';
+}catch(error){document.title='RESULT: FAIL '+error.message;}
+</script>

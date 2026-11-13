@@ -1,4 +1,4 @@
-import { installOverlayPolish, installOverlayControls } from "./Polish.js";
+import { installOverlayPolish, installOverlayControls, closeOverlayControls } from "./Polish.js";
 import { t as e } from "../core/Logger.js";
 import { s as t, d as n, u as r, l as i, o } from "../runtime/TrainerShortcuts.js";
 import { getSettings } from "../core/SettingsStore.js";
@@ -1962,7 +1962,7 @@ function injectOverlayStyles() {
   e2.id = `gp-next-styles`, e2.textContent = te + te2 + uiRefreshCss, document.head.appendChild(e2);
 }
 function buildOverlayDom() {
-  p = document.createElement(`div`), p.id = `gp-overlay`;
+  p = document.createElement(`div`), p.id = `gp-overlay`, p.hidden = true, p.inert = true, p.setAttribute(`aria-hidden`, `true`);
   let e2 = document.createElement(`div`);
   e2.className = `gp-header`;
   let t2 = document.createElement(`span`);
@@ -2185,13 +2185,16 @@ function updateTabOverflowMenu() {
   if (!m) return;
   let e2 = document.activeElement === g || _.contains(document.activeElement);
   if (g.hidden = m.scrollWidth <= h.clientWidth + 1, g.hidden) {
-    closeTabPicker(), _.innerHTML = ``, e2 && getTabButtons().find((e3) => e3.dataset.tabId === A)?.focus({ preventScroll: true });
+    closeTabPicker(), delete _.dataset.signature, _.innerHTML = ``, e2 && getTabButtons().find((e3) => e3.dataset.tabId === A)?.focus({ preventScroll: true });
     return;
   }
   let t2 = m.getBoundingClientRect(), n2 = getTabButtons().filter((e3) => {
     let n3 = e3.getBoundingClientRect();
     return n3.left < t2.left - 1 || n3.right > t2.right + 1;
   }), r2 = _.contains(document.activeElement) ? document.activeElement.dataset.tabId : null;
+  const signature = JSON.stringify(n2.map((button) => [button.dataset.tabId, button.textContent, button.dataset.tabId === A]));
+  if (_.dataset.signature === signature) return;
+  _.dataset.signature = signature;
   _.innerHTML = ``;
   for (let e3 of n2) {
     let t3 = document.createElement(`button`);
@@ -2249,10 +2252,10 @@ function runTabLifecycleHook(e2, t2) {
   }
 }
 function showOverlay() {
-  p && (c(), S = true, p.classList.add(`gp-open`), x.classList.add(`gp-hidden`), setCanvasPointerEvents(true), updateTabOverflowMenu(), scrollSelectedTabIntoView(), renderActiveTab(), runTabLifecycleHook(k.find((e2) => e2.id === A), `onActivate`));
+  p && (c(), S = true, p.hidden = false, p.inert = false, p.setAttribute(`aria-hidden`, `false`), p.classList.add(`gp-open`), x.classList.add(`gp-hidden`), setCanvasPointerEvents(true), updateTabOverflowMenu(), scrollSelectedTabIntoView(), renderActiveTab(), runTabLifecycleHook(k.find((e2) => e2.id === A), `onActivate`));
 }
 function hideOverlay() {
-  p && (closeCommandPalette(), S = false, closeTabPicker(), p.classList.remove(`gp-open`), x.classList.remove(`gp-hidden`), setCanvasPointerEvents(false), u(), runTabLifecycleHook(k.find((e2) => e2.id === A), `onDeactivate`));
+  p && (closeCommandPalette(), closeOverlayControls(), S = false, closeTabPicker(), p.hidden = true, p.inert = true, p.setAttribute(`aria-hidden`, `true`), p.classList.remove(`gp-open`), x.classList.remove(`gp-hidden`), setCanvasPointerEvents(false), u(), runTabLifecycleHook(k.find((e2) => e2.id === A), `onDeactivate`));
 }
 function toggleOverlay() {
   S ? hideOverlay() : showOverlay();

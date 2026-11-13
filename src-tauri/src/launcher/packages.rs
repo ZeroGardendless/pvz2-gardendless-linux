@@ -87,16 +87,32 @@ fn inspect(path: &Path) -> Result<Package, String> {
         if zip.file_names().any(|name| name == "pack.json") {
             String::new()
         } else {
-            let names: Vec<_> = zip.file_names().filter(|name| !name.ends_with('/') && !name.starts_with("__MACOSX/") && !name.ends_with(".DS_Store")).map(str::to_owned).collect();
+            let names: Vec<_> = zip
+                .file_names()
+                .filter(|name| {
+                    !name.ends_with('/')
+                        && !name.starts_with("__MACOSX/")
+                        && !name.ends_with(".DS_Store")
+                })
+                .map(str::to_owned)
+                .collect();
             let first = names.first().ok_or("Empty datapack ZIP")?;
             let (folder, _) = first.split_once('/').ok_or("ZIP is missing pack.json")?;
             let prefix = format!("{folder}/");
-            if !names.iter().all(|name| name.starts_with(&prefix)) || !names.iter().any(|name| name == &format!("{prefix}pack.json")) {
-                return Err("ZIP needs pack.json at its root or inside one enclosing folder".into());
+            if !names.iter().all(|name| name.starts_with(&prefix))
+                || !names
+                    .iter()
+                    .any(|name| name == &format!("{prefix}pack.json"))
+            {
+                return Err(
+                    "ZIP needs pack.json at its root or inside one enclosing folder".into(),
+                );
             }
             prefix
         }
-    } else { String::new() };
+    } else {
+        String::new()
+    };
     let manifest = match zip.as_mut() {
         Some(zip) => zip_bytes(zip, &format!("{prefix}pack.json"), 128 * 1024),
         None => limited_file(&path.join("pack.json"), 128 * 1024),
@@ -627,7 +643,11 @@ mod tests {
     fn enclosing_folder_zip_can_be_inspected_and_imported() {
         let root = workspace();
         let path = root.join("wrapped.zip");
-        fs::write(&path, include_bytes!("../../../scripts/checks/WrappedPackageFixture.zip")).unwrap();
+        fs::write(
+            &path,
+            include_bytes!("../../../scripts/checks/WrappedPackageFixture.zip"),
+        )
+        .unwrap();
         assert_eq!(inspect(&path).unwrap().uuid, "fixture.mod");
         validate_zip(&path).unwrap();
         install(&path, &root.join("installed")).unwrap();

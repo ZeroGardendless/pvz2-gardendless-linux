@@ -1,8 +1,10 @@
+import {RELEASE_NOTES,RELEASE_VERSION} from './ReleaseNotes.js';
+import {AURUM_ID, readAurumSelection, aurumKnobMarkup} from './Aurum.js';
 import { readDroppedPackages } from "./DropImports.js";
 import { installDiagnostics } from "./Diagnostics.js";
 installDiagnostics();
 import { catalog, gardenestMarkup, refreshCatalog, versionFor } from "./Gardenest.js";
-import { prepareGardenestInstall, prepareLocalInstall, prepareDroppedInstall, ensureModConfiguration, setPackageEnabled } from "./Gpnext.js";
+import { prepareGardenestInstall, prepareLocalInstall, prepareDroppedInstall, profileFileSystem, ensureModConfiguration, setPackageEnabled } from "./Gpnext.js";
 import {packageCards, packageDetails, filterPackages} from './Packages.js';
 import {logsMarkup, filteredLog} from './Logs.js';
 import { installControls } from './Controls.js';
@@ -30,6 +32,7 @@ let restartRequired = false;
 let busy = false, busyAction = null, releases = null, releaseLoading = false, download = null, installing = false, checks = null;
 let disposeEditor = null;
 let gpnextPackages = null, packageQuery = '';
+let aurumSelection = {status:'loading'}, aurumRequest = 0, aurumProfile = null;
 let logFiles = null, selectedLog = '', logEntry = null, logLoading = false;
 let logReadRevision = 0;
 const gardenestDownloads = [];
@@ -77,13 +80,14 @@ async function action(operation, name = null) {
         busy = false;
         busyAction = null;
         queueMicrotask(showGardenestDownload);
-        if (state && !isEditorPage())
+        if (state && !isEditorPage() && !(name === 'toggle-aurum' && page === 'library'))
             render();
         else
             updateButtons();
     }
 }
 function updateButtons() {
+    updateAurumControl();
     app.querySelectorAll('[data-mutates]').forEach(el => { el.disabled = busy || !isDesktop; });
     app.querySelectorAll('[data-action]').forEach(el => {
         if (!launchActions.includes(el.dataset.action))
@@ -115,11 +119,43 @@ function versionRows() {
     ${!g.builtin ? button('remove-game', '<span class="sr-only">Remove from library</span>', 'trash', 'icon-button quiet', `data-id="${esc(g.id)}"`) : ''}
   </article>`).join('');
 }
+function updateAurumControl() {
+    const control = app.querySelector('#aurum-launch-control');
+    if (!control || !state) return;
+    const template = document.createElement('template');
+    template.innerHTML = aurumKnobMarkup(aurumSelection, {available:isDesktop && game().builtin, busy, running:Boolean(state.running)});
+    const button = control.querySelector('.aurum-knob'), next = template.content.querySelector('.aurum-knob');
+    if (!button) { control.replaceChildren(template.content); return; }
+    // Preserve focus, pressed feedback and the thumb's transition across async reads.
+    button.disabled = next.disabled;
+    button.title = next.title;
+    button.setAttribute('aria-checked', next.getAttribute('aria-checked'));
+    control.querySelector('#aurum-state').textContent = template.content.querySelector('#aurum-state').textContent;
+}
+async function refreshAurum() {
+    const request = ++aurumRequest, id = profile().id;
+    if (aurumProfile !== id) aurumSelection = {status:'loading'};
+    aurumProfile = id;
+    aurumSelection = {...aurumSelection,status:'loading'}; updateAurumControl();
+    try {
+        const selection = isDesktop ? await readAurumSelection(profileFileSystem(id)) : {status:'ready',installed:false,enabled:false};
+        if (request === aurumRequest && profile().id === id) aurumSelection = selection;
+    } catch (error) {
+        if (request === aurumRequest && profile().id === id) aurumSelection = {status:'error',error:String(error.message || error)};
+    }
+    if (request === aurumRequest) updateAurumControl();
+}
+async function reviewAurum() {
+    const response = await fetch(new URL('../builtin/Aurum.zip', import.meta.url));
+    if (!response.ok) throw new Error('The bundled Aurum package is unavailable. Reinstall the current Flatpak.');
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    reviewInstallation(await prepareDroppedInstall({...profile()}, {bytes}));
+}
 function libraryPage() {
     const current = game();
     return `${heading('', 'Library', 'Game versions, profiles, and launch controls.', button('import', 'Import game', 'plus', 'secondary', 'data-mutates'))}
     <section class="hero" aria-label="Selected game"><div class="hero-copy"><span class="badge ${current.available ? 'green' : 'red'}">${current.available ? (state.running ? 'Game running' : 'Ready to play') : 'Executable missing'}</span><h2>${esc(current.name)}</h2><div class="hero-version">${icon('leaf')}<span>${esc(current.version)}</span><span>${current.builtin ? 'Included game' : 'Imported installation'}</span></div><p>${current.builtin ? 'GP-Next included · Separate save profiles · Offline play' : 'This version uses its original game saves and GP-Next.'}</p></div><div class="hero-symbol" aria-hidden="true">${icon('leaf')}</div></section>
-    <section class="launch-bar" aria-label="Launch controls"><label><span>Game version</span><select id="game-choice">${selectOptions(state.games, current.id, g => `${g.name} · ${g.builtin ? 'included' : g.version}`)}</select></label><label><span>Profile</span><select id="profile-choice">${selectOptions(state.profiles, profile().id)}</select></label>${button('edit-current', '<span class="sr-only">Edit selected profile</span>', 'sliders', 'icon-button secondary', 'title="Edit profile"')}${button('play', state.running ? 'Game running' : 'Play', 'play', 'primary play-button', 'data-mutates')}</section>
+    <section class="launch-bar" aria-label="Launch controls"><label><span>Game version</span><select id="game-choice">${selectOptions(state.games, current.id, g => `${g.name} · ${g.builtin ? 'included' : g.version}`)}</select></label><label><span>Profile</span><select id="profile-choice">${selectOptions(state.profiles, profile().id)}</select></label>${button('edit-current', '<span class="sr-only">Edit selected profile</span>', 'sliders', 'icon-button secondary', 'title="Edit profile"')}<div class="play-actions"><div id="aurum-launch-control" class="aurum-launch-control">${aurumKnobMarkup(aurumSelection, {available:isDesktop && current.builtin, busy, running:Boolean(state.running)})}</div>${button('play', state.running ? 'Game running' : 'Play', 'play', 'primary play-button', 'data-mutates')}</div></section>
     ${isFlatpak() ? `<div class="notice">${icon('info')}<p>This installation updates through Flatpak. Native executable imports are available in the standalone launcher.</p></div>` : ''}
     ${!current.available ? `<div class="notice warning">${icon('info')}<p>The executable has moved or was removed. Import its new location to launch this version.</p></div>` : ''}
     ${!current.builtin ? `<div class="notice">${icon('info')}<p>Imported builds keep their original saves and mods. Profile save isolation and GP-Next launch preferences require the included game. Graphics selection still applies.</p></div>` : ''}
@@ -139,6 +175,7 @@ function gpnextPage() {
     ${profileContext('Packages and preferences below belong to this profile.')}
     <section class="gpn-banner"><div class="gpn-mark">${icon('puzzle')}</div><div><h2>${esc(profile().name)}</h2><p>Manage installed datapacks here. GP-Next validates your selection when the game starts.</p></div><span class="badge green">Ready</span></section>
     <section class="datapack-drop" id="datapack-drop"><div class="drop-symbol">${icon('download')}</div><div><h2>Drop your datapacks here</h2><p>ZIP files or folders containing pack.json. Imports use <strong>${esc(profile().name)}</strong>.</p></div><div class="drop-actions">${button('import-packs', 'Choose ZIPs', 'plus', 'primary', 'data-mutates')}${button('import-pack-folder', 'Choose folder', 'folder', 'secondary', 'data-mutates')}${button('go-gardenest', 'Browse Gardenest', 'external', 'quiet')}</div></section>
+    <section class="panel"><div class="section-heading"><div><h2>Aurum</h2><span class="badge">Experimental</span></div>${button('install-aurum', 'Review Aurum', 'activity', 'secondary', 'data-mutates')}</div><p class="muted">Configurable startup improvements and performance diagnostics. Install it for this profile, then enable it in Datapacks. Speedups are still being measured.</p></section>
     <section class="panel"><div class="section-heading"><div><h2>Installed datapacks</h2><span id="package-count" class="muted">${gpnextPackages?.length ?? 0} datapacks</span></div>${button('refresh-packages', 'Refresh', 'refresh', 'secondary')}</div><label class="package-search">${icon('search')}<input id="package-search" type="search" placeholder="Search names, authors and descriptions" value="${esc(packageQuery)}" aria-label="Search datapacks"></label><div class="package-cards">${packageCards(gpnextPackages)}</div><p class="empty-state" id="package-no-results" hidden>No matching datapacks.</p><div class="card-actions">${button('open-mod-folder', 'Open package folder', 'folder', 'secondary')}${button('edit-current', 'Edit launch preferences', 'sliders', 'secondary')}</div></section>
     <div class="tool-grid">${[
         ['go-save', 'save', 'Save progress', 'Edit plants, worlds, upgrades, and currencies before launch.', 'Open save editor'],
@@ -147,6 +184,7 @@ function gpnextPage() {
         ['go-logs', 'activity', 'Session logs', 'Inspect the last launch and share diagnostics if something fails.', 'Open logs']
     ].map(([action, glyph, title, description, label]) => `<article class="panel tool-card"><div class="tool-icon">${icon(glyph)}</div><h2>${title}</h2><p>${description}</p>${button(action, label, 'arrow', 'text-button')}</article>`).join('')}</div>
     <div class="notice">${icon('info')}<p>Start the game from Library. Open GP-Next with your configured hotkey after it loads.</p></div>
+    <section class="panel"><h2>Character renders</h2><p class="muted">Export transparent PNGs using the bundled skeletons and atlases. Includes idle poses, costumes, alternate forms, actions and miscellaneous objects, organized by codename.</p>${button('export-idle-renders','Export render ZIP','download','secondary','data-mutates')} ${button('custom-zombie-render','Custom render','image','secondary','data-mutates')}</section>
     <section class="panel online-tools"><div class="section-heading"><h2>Official online tools</h2><span class="badge">Opens in browser</span></div><div class="online-tool-list">${[
         ['leaf', 'Almanac', 'Look up Gardendless plants and zombies.', 'https://pvzge.com/en/almanac/'],
         ['grid', 'Level editor', 'Create boards, choose seed slots, and edit waves.', 'https://pvzge.com/en/useful-tool/level-editor'],
@@ -262,6 +300,7 @@ async function installNativeEvents() {
 function releasesPage() {
     return `${heading('', 'Releases', isFlatpak() ? 'Update the launcher and included game from GitHub.' : 'Download a game version and keep your existing installations.', button('refresh-releases', releaseLoading ? 'Checking…' : 'Check releases', 'refresh', 'secondary', releaseLoading ? 'disabled' : ''))}
     ${isFlatpak() ? `<div class="notice">${icon('info')}<p>Download a verified Flatpak bundle from GitHub to update the launcher and included game. Close the game first; restart the launcher after installation.</p></div>` : ''}
+    <section class="panel"><div class="section-heading"><h2>Installed build · v${esc(RELEASE_VERSION)}</h2></div><details><summary>What changed</summary><pre class="release-notes">${esc(RELEASE_NOTES)}</pre></details></section>
     ${releases?.cached ? `<div class="notice">${icon('info')}<p>Showing cached release notes. Downloads need a connection to GitHub.</p></div>` : ''}
     ${restartRequired ? `<div class="notice success" role="status">${icon('check')}<p>Update installed. Close and reopen Gardendless to use the new launcher and game.</p></div>` : ''}
     <div id="download-status">${downloadMarkup()}</div>
@@ -305,6 +344,7 @@ function navigation() {
     }).join('')}</div>`).join('');
 }
 let renderedPage = null;
+let renderedMarkup = null;
 let pendingMenuRender = false;
 document.addEventListener('launcher:menuclose', () => {
     if (!pendingMenuRender) return;
@@ -320,10 +360,6 @@ function render() {
     const focusId = active?.id;
     const openNotes = samePage ? [...app.querySelectorAll('.release-card details')].map(el => el.open) : [];
     renderedPage = page;
-    if (disposeEditor) {
-        disposeEditor();
-        disposeEditor = null;
-    }
     const currentPage = pages[page] || pages.library;
     const pageContent = { library: libraryPage, profiles: profilesPage, gpnext: gpnextPage, releases: releasesPage, settings: settingsPage, save: editorPage, keybinds: editorPage, logs: logsPage, gardenest: gardenestPage };
     if (!app.querySelector('.shell')) app.innerHTML = `<div class="shell"><aside class="sidebar"><a class="brand" href="#library" aria-label="Gardendless library"><img class="brand-mark" src="./Icon.png" alt=""><span>Gardendless<small>Launcher</small></span></a><nav aria-label="Main navigation">${navigation()}</nav><div class="sidebar-bottom"><div class="availability"><span class="status-dot"></span>${isDesktop ? 'Offline play available' : 'Browser preview'}</div><button type="button" data-action="docs" class="nav-item">${icon('external')}<span>Documentation</span></button><div class="sidebar-version">Launcher ${esc(state.launcherVersion)}</div></div></aside><div class="workspace"><div class="topbar"><details class="mobile-menu"><summary aria-label="Open navigation">${icon('menu')}</summary><nav aria-label="Launcher navigation">${navigation()}</nav></details><span class="breadcrumb"><span class="desktop-crumb">Gardendless</span><span class="breadcrumb-divider desktop-crumb">/</span><strong>${currentPage[1]}</strong></span><div><span id="session-status">${state.running ? '<span class="badge green">Game running</span>' : ''}</span><span class="profile-chip" title="${esc(profile().name)}">${icon('leaf')}<span>${esc(profile().name)}</span></span></div></div><main id="main" tabindex="-1"></main></div></div>`;
@@ -341,8 +377,12 @@ function render() {
     app.querySelector('.sidebar-version').textContent = `Launcher ${state.launcherVersion}`;
     app.querySelector('#session-status').innerHTML = state.running ? '<span class="badge green">Game running</span>' : '';
     const main = app.querySelector('#main');
-    main.classList.remove('page-enter');
-    main.innerHTML = `${!isDesktop ? '<div class="preview-notice">Browser preview · Profile data and desktop actions are available in the installed launcher.</div>' : ''}${pageContent[page]()}`;
+    const markup = `${!isDesktop ? '<div class="preview-notice">Browser preview · Profile data and desktop actions are available in the installed launcher.</div>' : ''}${pageContent[page]()}`;
+    if (samePage && markup === renderedMarkup) { updateButtons(); return; }
+    renderedMarkup = markup;
+    if (disposeEditor) { disposeEditor(); disposeEditor = null; }
+    if (!samePage) main.classList.remove('page-enter');
+    main.innerHTML = markup;
     document.title = `${currentPage[1]} · Gardendless Launcher`;
     app.querySelectorAll('.release-card details').forEach((el, index) => { el.open = Boolean(openNotes[index]); });
     window.scrollTo({top: scroll, behavior: 'instant'});
@@ -367,6 +407,7 @@ function navigate(next) {
     history.replaceState(null, '', `#${next}`);
     render();
     if (next === 'gpnext') refreshPackages();
+    if (next === 'library') refreshAurum();
     if (next === 'logs') refreshLogs();
     if (next === 'gardenest' && isDesktop) refreshCatalog(profile().id, app);
     document.querySelector('#main')?.classList.add('page-enter');
@@ -404,7 +445,8 @@ function editProfile(value = freshProfile()) {
         const next = { ...p, id: values.get('id'), name: values.get('name'), gpu: values.get('gpu'), windowBackend: values.get('windowBackend') || p.windowBackend, frameRate: Number(values.get('frameRate')), renderScale: Number(values.get('renderScale')), widescreen: values.get('widescreen'), audioProfile: values.get('audioProfile') };
         for (const key of ['recovery', 'applySettings', 'jsModding', 'worldMapJson', 'plantLevelSystem'])
             next[key] = values.has(key);
-        action(async () => { state = await invoke('launcher_save_profile', { profile: next }); selectedProfile = state.profiles.find(item => item.id === next.id)?.id || state.profiles.at(-1).id; remember('launcher-profile', selectedProfile); dialog.close(); notify('Profile saved. Your choices apply on the next launch.'); if (isEditorPage()) render(); });
+        action(async () => { state = await invoke('launcher_save_profile', { profile: next }); selectedProfile = state.profiles.find(item => item.id === next.id)?.id || state.profiles.at(-1).id; remember('launcher-profile', selectedProfile);
+        refreshAurum(); dialog.close(); notify('Profile saved. Your choices apply on the next launch.'); if (isEditorPage()) render(); });
     });
 }
 function confirmDialog(title, message, operation) {
@@ -472,6 +514,7 @@ async function handleAction(target) {
             await gardenestInstallation.commit(); gardenestInstallation = null; dialog.close();
             notify('Package installed disabled. Enable it from Datapacks when ready.');
             gpnextPackages = null;
+            await refreshAurum();
             if (page === 'gardenest') await refreshCatalog(profile().id, app);
             if (page === 'gpnext') await refreshPackages();
             await nextLocalImport();
@@ -496,6 +539,7 @@ async function handleAction(target) {
     if (name === 'select-profile') {
         selectedProfile = target.dataset.id;
         remember('launcher-profile', selectedProfile);
+        refreshAurum();
         render();
         notify('Profile selected.');
         return;
@@ -510,6 +554,23 @@ async function handleAction(target) {
     }
     if (name === 'edit-current') {
         editProfile(profile());
+        return;
+    }
+    if (name === 'custom-zombie-render') { await action(()=>invoke('launcher_render_export',{generator:true}),name); return; }
+    if (name === 'export-idle-renders') { await action(()=>invoke('launcher_render_export'),name); return; }
+    if (name === 'install-aurum' || name === 'toggle-aurum') {
+        await action(async () => {
+            if (state.running) throw new Error('Close the game before changing Aurum.');
+            if (!game().builtin) throw new Error('Aurum is available for the included game.');
+            await refreshAurum();
+            if (aurumSelection.status !== 'ready') throw new Error(aurumSelection.error || 'Could not read Aurum settings.');
+            if (name === 'install-aurum' || !aurumSelection.installed || aurumSelection.needsUpdate) await reviewAurum();
+            else {
+                await setPackageEnabled({...profile()}, AURUM_ID, !aurumSelection.enabled);
+                await refreshAurum();
+                notify(`Aurum ${aurumSelection.enabled ? 'enabled' : 'disabled'} for the next launch.`);
+            }
+        }, name);
         return;
     }
     if (name === 'inspect-package') {
@@ -643,6 +704,7 @@ document.addEventListener('change', event => {
     if (event.target.id === 'profile-choice') {
         selectedProfile = event.target.value;
         remember('launcher-profile', selectedProfile);
+        refreshAurum();
         if (page === 'gpnext') gpnextPackages = null;
         render();
         if (page === 'gpnext') refreshPackages();
@@ -652,6 +714,7 @@ document.addEventListener('change', event => {
 window.addEventListener('hashchange', () => navigate(location.hash.slice(1)));
 try {
     state = await loadState();
+    refreshAurum();
     startCaelestiaSync();
     page = pages[location.hash.slice(1)] ? location.hash.slice(1) : 'library';
     render();

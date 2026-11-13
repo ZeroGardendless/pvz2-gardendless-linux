@@ -1,0 +1,32 @@
+<!doctype html><meta charset="utf-8"><title>Game windows check</title>
+<script type="module">
+import{initializeGamePlatform,renderGameMarkdown}from'/game-platform.js';
+import{initializeMusicPacks}from'/game-music-packs.js';
+const sleep=()=>new Promise(resolve=>setTimeout(resolve,20));
+async function wait(check){for(let i=0;i<500;i++){if(await check())return;await sleep();}throw Error('Window check timed out: '+[...document.querySelectorAll('dialog[open]')].map(d=>d.querySelector('output')?.textContent||d.textContent.slice(-300)).join(' | '));}
+const level=JSON.stringify({objects:[]}),bytes=new TextEncoder().encode(level),header=new TextEncoder().encode(`blob ${bytes.length}\0`),framed=new Uint8Array(header.length+bytes.length);framed.set(header);framed.set(bytes,header.length);
+const sha=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-1',framed)),byte=>byte.toString(16).padStart(2,'0')).join('');
+const nativeCalls=[];window.__TAURI_INTERNALS__={invoke:async(command,args)=>{
+ if(command!=='game_http_get')throw Error('Unexpected command');nativeCalls.push(args.url);
+ const value=args.url.includes('/git/trees/')?{truncated:false,tree:[{type:'blob',path:'test/level.json',sha,size:bytes.length}]}:args.url.includes('/raw/main/')?null:{InsideVersion:'0.16.25',EnNewFeatures:['# New version','**Fixture notes**']};
+ return value===null?bytes.buffer:new TextEncoder().encode(JSON.stringify(value)).buffer;
+}};
+const nativeFetch=window.fetch;window.fetch=async(input,...rest)=>{
+ const response=await nativeFetch(input,...rest);
+ if(!String(input).includes('game-keybind-window.html'))return response;
+ const script=`<script>(async()=>{const binds=await window.keybindAPI.get();if(!document.body.textContent.includes('Pause'))throw Error('Keybind HTML did not render');binds.Game_Pause='KEY_P';await window.keybindAPI.apply(binds);})();<\/script>`;
+ return new Response((await response.text()).replace('</body>',script+'</body>'),{headers:{'content-type':'text/html'}});
+};
+try{
+ const api=window.electronAPI={openUrl:async()=>{}};initializeGamePlatform(api);
+ const sanitized=renderGameMarkdown('# Heading\n\n**Bold**<script>bad()<\/script><img src="x" onerror="bad()">');if(!sanitized.includes('<h1>Heading</h1>')||sanitized.includes('onerror=')||sanitized.includes('<script>'))throw Error('Markdown rendering/sanitization failed');
+ await api.openMarkdownWindow('docs/update.en.md','Updates');if(!document.querySelector('.game-markdown h1')||!api.isMarkdownWindowOpen())throw Error('Markdown window did not render headings');api.closeMarkdownWindow();
+ const binds=await api.openKeybindWindow({Game_Pause:'SPACE',Game_SpeedUp:'KEY_S'},'en');if(binds?.Game_Pause!=='KEY_P'||binds.Game_SpeedUp!=='KEY_S')throw Error('Keybind apply did not round-trip through the sandboxed HTML window');
+ let played;api.onGithubPlayLevelContent(text=>played=text);await api.openGithubWindow([],'en');const community=[...document.querySelectorAll('dialog[open]')].find(d=>d.textContent.includes('Community levels'));if(!community?.textContent.includes('test/level.json'))throw Error('Community catalog missing');community.querySelector('div button').click();await wait(()=>played);if(played!==level||api.isGithubWindowOpen())throw Error('Verified community level was not returned to the game');
+ const update=await api.checkRemoteUpdate('en');if(!update.shouldUpdate||!document.querySelector('dialog[open] .game-markdown strong'))throw Error('Update window missing');api.closeUpdateWindow();
+ initializeMusicPacks(window);let index=0;api.pickMusicPackFiles=async()=>[{path:'pack.json',blob:new Blob([JSON.stringify({id:'fixture'+(++index),name:'Fixture '+index,audio:{clip:'clip.mp3'}})])},{path:'clip.mp3',blob:new Blob([new Uint8Array([1,2])])}];
+ await api.openMusicPackWindow('en');const music=document.querySelector('.pvzge-music-packs');music.querySelector('[data-import]').click();await wait(async()=> (await api.listMusicPacks()).length===1);music.querySelector('[data-import]').click();await wait(async()=> (await api.listMusicPacks()).length===2);await wait(()=>music.querySelectorAll('li').length===2);music.querySelectorAll('li')[1].querySelector('[aria-label="Move up"]').click();await wait(async()=> (await api.listMusicPacks())[0]?.id==='fixture2');api.closeMusicPackWindow();
+ if(nativeCalls.length!==3)throw Error('Game windows bypassed native HTTP transport');
+ document.title='RESULT: PASS Markdown/update windows, sandboxed keybind apply, native community transport/hash/play and music import/order';
+}catch(error){document.title='RESULT: FAIL '+error.message+' '+error.stack;}
+</script>

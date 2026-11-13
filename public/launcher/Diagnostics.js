@@ -4,7 +4,12 @@ export function installDiagnostics(host = window) {
   host.__gdDiagnostics = true;
   const queue = [];
   let timer = null;
-  const stringify = value => value instanceof Error ? value.stack || value.message : typeof value === "string" ? value : String(value);
+  const stringify = value => {
+    if (value instanceof Error) return value.stack || value.message;
+    if (typeof value === "string") return value;
+    try { return JSON.stringify(value, (_key, item) => item instanceof Error ? {message:item.message,stack:item.stack,code:item.code} : item); }
+    catch { return String(value); }
+  };
   const record = (level, values) => {
     if (queue.length < 20) queue.push({level, message: values.map(stringify).join(" ").slice(0, 4096)});
     if (timer !== null) return;

@@ -33,7 +33,9 @@ function i(e2, t2 = false) {
   return window.__TAURI_INTERNALS__.transformCallback(e2, t2);
 }
 async function a(e2, t2 = {}, n2) {
-  return window.__TAURI_INTERNALS__.invoke(e2, t2, n2);
+  const invoke = globalThis.window?.__TAURI_INTERNALS__?.invoke;
+  if (typeof invoke !== "function") throw new Error("Native desktop connection unavailable. Open Gardendless from the installed launcher.");
+  return invoke(e2, t2, n2);
 }
 var o = class {
   get rid() {

@@ -126,6 +126,8 @@ function declaredNames(sourceFile) {
   function visit(node) {
     if (
       (ts.isVariableDeclaration(node) ||
+        ts.isParameter(node) ||
+        ts.isBindingElement(node) ||
         ts.isFunctionDeclaration(node) ||
         ts.isClassDeclaration(node) ||
         ts.isImportClause(node) ||
@@ -262,6 +264,7 @@ for (let pass = 0; pass < 12; pass += 1) {
     function addCandidate(localIdentifier, publicIdentifier) {
       // Keep this explicit alias: two different tabs export a generic render.
       if (localIdentifier.text === "renderExperiments") return;
+      if (publicIdentifier.text.length < 3) return;
       if (localIdentifier.text === publicIdentifier.text || names.has(publicIdentifier.text)) return;
       const key = `${fileName}:${publicIdentifier.text}`;
       importNameCounts.set(key, (importNameCounts.get(key) ?? 0) + 1);

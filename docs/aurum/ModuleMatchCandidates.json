@@ -1,0 +1,1920 @@
+{
+  "reference": "/home/zero/gardendless-reference/update-20261027/extracted/assets",
+  "note": "Review proposals only; never use uncertain matches to overwrite local adapters.",
+  "proposals": [
+    {
+      "upstream": "build-identity-BQbyCSm9.js",
+      "stringCount": 1,
+      "candidates": [
+        {
+          "file": "core/BuildIdentity.js",
+          "intersection": 1,
+          "score": 1
+        },
+        {
+          "file": "Bootstrap.js",
+          "intersection": 0,
+          "score": 0
+        },
+        {
+          "file": "GameBootstrap.js",
+          "intersection": 0,
+          "score": 0
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "chunk-QTnfLwEv.js",
+      "stringCount": 4,
+      "candidates": [
+        {
+          "file": "vendor/ModuleHelpers.js",
+          "intersection": 4,
+          "score": 1
+        },
+        {
+          "file": "runtime/FrameRate.js",
+          "intersection": 2,
+          "score": 0.3333333333333333
+        },
+        {
+          "file": "mods/RestoreUtils.js",
+          "intersection": 1,
+          "score": 0.25
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "client-edition-SrmZ2USc.js",
+      "stringCount": 1,
+      "candidates": [
+        {
+          "file": "core/ClientEdition.js",
+          "intersection": 1,
+          "score": 1
+        },
+        {
+          "file": "Bootstrap.js",
+          "intersection": 0,
+          "score": 0
+        },
+        {
+          "file": "GameBootstrap.js",
+          "intersection": 0,
+          "score": 0
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cloud-BjD8GoLi.js",
+      "stringCount": 488,
+      "candidates": [
+        {
+          "file": "ui/tabs/Cloud.js",
+          "intersection": 488,
+          "score": 1
+        },
+        {
+          "file": "ui/Translations.js",
+          "intersection": 400,
+          "score": 0.13183915622940012
+        },
+        {
+          "file": "platform/CloudSelection.js",
+          "intersection": 13,
+          "score": 0.02411873840445269
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cloud-cold-host-vKVGu5uI.js",
+      "stringCount": 1,
+      "candidates": [
+        {
+          "file": "platform/CloudColdHost.js",
+          "intersection": 1,
+          "score": 1
+        },
+        {
+          "file": "Bootstrap.js",
+          "intersection": 0,
+          "score": 0
+        },
+        {
+          "file": "GameBootstrap.js",
+          "intersection": 0,
+          "score": 0
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cloud-environment-BA_8c8F9.js",
+      "stringCount": 18,
+      "candidates": [
+        {
+          "file": "platform/CloudEnvironment.js",
+          "intersection": 18,
+          "score": 1
+        },
+        {
+          "file": "platform/CloudSelection.js",
+          "intersection": 10,
+          "score": 0.1388888888888889
+        },
+        {
+          "file": "runtime/WorldmapJsonPatcher.js",
+          "intersection": 3,
+          "score": 0.0967741935483871
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cloud-json-DiEtCYWg.js",
+      "stringCount": 104,
+      "candidates": [
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 104,
+          "score": 0.9904761904761905
+        },
+        {
+          "file": "core/PreferenceTransfer.js",
+          "intersection": 19,
+          "score": 0.15079365079365079
+        },
+        {
+          "file": "platform/CloudSelection.js",
+          "intersection": 20,
+          "score": 0.13513513513513514
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cloud-portable-preferences-DNUHF2XL.js",
+      "stringCount": 7,
+      "candidates": [
+        {
+          "file": "platform/CloudPortablePreferences.js",
+          "intersection": 7,
+          "score": 1
+        },
+        {
+          "file": "core/PreferenceTransfer.js",
+          "intersection": 6,
+          "score": 0.14285714285714285
+        },
+        {
+          "file": "platform/CloudSelection.js",
+          "intersection": 7,
+          "score": 0.109375
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cloud-save-request-CBkdbXPJ.js",
+      "stringCount": 81,
+      "candidates": [
+        {
+          "file": "platform/CloudSaveRequest.js",
+          "intersection": 81,
+          "score": 1
+        },
+        {
+          "file": "ui/tabs/Cheats.js",
+          "intersection": 16,
+          "score": 0.06779661016949153
+        },
+        {
+          "file": "platform/CloudEnvironment.js",
+          "intersection": 5,
+          "score": 0.05319148936170213
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cloud-selection-D7K1HXj4.js",
+      "stringCount": 64,
+      "candidates": [
+        {
+          "file": "platform/CloudSelection.js",
+          "intersection": 64,
+          "score": 1
+        },
+        {
+          "file": "platform/CloudEnvironment.js",
+          "intersection": 10,
+          "score": 0.1388888888888889
+        },
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 20,
+          "score": 0.1342281879194631
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "cold-start-host-CADTGjzw.js",
+      "stringCount": 146,
+      "candidates": [
+        {
+          "file": "runtime/ColdStartHost.js",
+          "intersection": 146,
+          "score": 1
+        },
+        {
+          "file": "mods/ModOperationPlan.js",
+          "intersection": 13,
+          "score": 0.07878787878787878
+        },
+        {
+          "file": "mods/ModSelection.js",
+          "intersection": 14,
+          "score": 0.07035175879396985
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "components-BQTMzGnv.js",
+      "stringCount": 74,
+      "candidates": [
+        {
+          "file": "ui/Components.js",
+          "intersection": 74,
+          "score": 1
+        },
+        {
+          "file": "ui/tabs/Mods.js",
+          "intersection": 14,
+          "score": 0.1346153846153846
+        },
+        {
+          "file": "ui/Appearance.js",
+          "intersection": 14,
+          "score": 0.11864406779661017
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "config-BSw-VcGm.js",
+      "stringCount": 79,
+      "candidates": [
+        {
+          "file": "mods/GameConfiguration.js",
+          "intersection": 79,
+          "score": 1
+        },
+        {
+          "file": "mods/ModApi.js",
+          "intersection": 39,
+          "score": 0.06678082191780822
+        },
+        {
+          "file": "data/DataEntityLedger.js",
+          "intersection": 4,
+          "score": 0.047619047619047616
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "configuration-mod-settings-0jrikUVR.js",
+      "stringCount": 8,
+      "candidates": [
+        {
+          "file": "mods/ConfigurationModSettings.js",
+          "intersection": 8,
+          "score": 1
+        },
+        {
+          "file": "mods/RestoreUtils.js",
+          "intersection": 1,
+          "score": 0.125
+        },
+        {
+          "file": "platform/Dialog.js",
+          "intersection": 1,
+          "score": 0.1
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "configuration-recovery-C9c2J-MQ.js",
+      "stringCount": 9,
+      "candidates": [
+        {
+          "file": "mods/ConfigurationRecovery.js",
+          "intersection": 9,
+          "score": 1
+        },
+        {
+          "file": "mods/ModConfigurationState.js",
+          "intersection": 1,
+          "score": 0.012345679012345678
+        },
+        {
+          "file": "Bootstrap.js",
+          "intersection": 0,
+          "score": 0
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "data-drawer-Y55quSaP.js",
+      "stringCount": 99,
+      "candidates": [
+        {
+          "file": "data/DataDrawer.js",
+          "intersection": 99,
+          "score": 1
+        },
+        {
+          "file": "ui/Components.js",
+          "intersection": 16,
+          "score": 0.10191082802547771
+        },
+        {
+          "file": "ui/tabs/Data.js",
+          "intersection": 11,
+          "score": 0.08661417322834646
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "data-entity-ledger-BtnUMQOj.js",
+      "stringCount": 9,
+      "candidates": [
+        {
+          "file": "data/DataEntityLedger.js",
+          "intersection": 9,
+          "score": 1
+        },
+        {
+          "file": "runtime/WorldmapJsonPatcher.js",
+          "intersection": 2,
+          "score": 0.08695652173913043
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 1,
+          "score": 0.08333333333333333
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "data-store-CzgBmhOM.js",
+      "stringCount": 13,
+      "candidates": [
+        {
+          "file": "data/DataStore.js",
+          "intersection": 13,
+          "score": 1
+        },
+        {
+          "file": "mods/RestoreUtils.js",
+          "intersection": 1,
+          "score": 0.07692307692307693
+        },
+        {
+          "file": "runtime/WorldmapJsonPatcher.js",
+          "intersection": 2,
+          "score": 0.07407407407407407
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "dist-js-BCqj7x_P.js",
+      "stringCount": 3,
+      "candidates": [
+        {
+          "file": "platform/Dialog.js",
+          "intersection": 3,
+          "score": 1
+        },
+        {
+          "file": "mods/RestoreUtils.js",
+          "intersection": 1,
+          "score": 0.3333333333333333
+        },
+        {
+          "file": "runtime/FrameRate.js",
+          "intersection": 1,
+          "score": 0.16666666666666666
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "dist-js-Bwfe5olH.js",
+      "stringCount": 5,
+      "candidates": [
+        {
+          "file": "platform/DeepLink.js",
+          "intersection": 5,
+          "score": 1
+        },
+        {
+          "file": "Bootstrap.js",
+          "intersection": 0,
+          "score": 0
+        },
+        {
+          "file": "GameBootstrap.js",
+          "intersection": 0,
+          "score": 0
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "dist-js-ByP3TtiK.js",
+      "stringCount": 2,
+      "candidates": [
+        {
+          "file": "platform/Opener.js",
+          "intersection": 2,
+          "score": 1
+        },
+        {
+          "file": "Bootstrap.js",
+          "intersection": 0,
+          "score": 0
+        },
+        {
+          "file": "GameBootstrap.js",
+          "intersection": 0,
+          "score": 0
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "dist-js-CWRsYHTE.js",
+      "stringCount": 46,
+      "candidates": [
+        {
+          "file": "platform/FileSystem.js",
+          "intersection": 46,
+          "score": 1
+        },
+        {
+          "file": "mods/PackSnapshot.js",
+          "intersection": 1,
+          "score": 0.013157894736842105
+        },
+        {
+          "file": "core/NestPackWorker.js",
+          "intersection": 1,
+          "score": 0.011764705882352941
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "drpc-BuSvU-v3.js",
+      "stringCount": 0,
+      "candidates": [
+        {
+          "file": "Bootstrap.js",
+          "intersection": 0,
+          "score": 0
+        },
+        {
+          "file": "GameBootstrap.js",
+          "intersection": 0,
+          "score": 0
+        },
+        {
+          "file": "Main.js",
+          "intersection": 0,
+          "score": 0
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "entity-inspector-xW1Hrb-L.js",
+      "stringCount": 86,
+      "candidates": [
+        {
+          "file": "data/EntityInspector.js",
+          "intersection": 86,
+          "score": 1
+        },
+        {
+          "file": "runtime/HpOverlay.js",
+          "intersection": 55,
+          "score": 0.514018691588785
+        },
+        {
+          "file": "mods/ModSettingsRegistry.js",
+          "intersection": 3,
+          "score": 0.027522935779816515
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "event-JJusFfHe.js",
+      "stringCount": 22,
+      "candidates": [
+        {
+          "file": "platform/Events.js",
+          "intersection": 22,
+          "score": 1
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 1,
+          "score": 0.04
+        },
+        {
+          "file": "mods/ModPackagePicker.js",
+          "intersection": 1,
+          "score": 0.037037037037037035
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "file-loader-Dpx4zMpi.js",
+      "stringCount": 127,
+      "candidates": [
+        {
+          "file": "mods/FileLoader.js",
+          "intersection": 127,
+          "score": 1
+        },
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 11,
+          "score": 0.049773755656108594
+        },
+        {
+          "file": "data/DataDrawer.js",
+          "intersection": 8,
+          "score": 0.03669724770642202
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "frame-settings-FQJuqDvv.js",
+      "stringCount": 11,
+      "candidates": [
+        {
+          "file": "runtime/FrameRate.js",
+          "intersection": 2,
+          "score": 0.15384615384615385
+        },
+        {
+          "file": "core/Uuid.js",
+          "intersection": 1,
+          "score": 0.08333333333333333
+        },
+        {
+          "file": "mods/Isolation.js",
+          "intersection": 1,
+          "score": 0.08333333333333333
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "fresh-installation-BiBXbtM1.js",
+      "stringCount": 4,
+      "candidates": [
+        {
+          "file": "mods/FreshInstallation.js",
+          "intersection": 4,
+          "score": 1
+        },
+        {
+          "file": "mods/ModConfigurationStorage.js",
+          "intersection": 1,
+          "score": 0.1111111111111111
+        },
+        {
+          "file": "runtime/StartupAttempt.js",
+          "intersection": 1,
+          "score": 0.047619047619047616
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "game-wJAaNzfT.js",
+      "stringCount": 113,
+      "candidates": [
+        {
+          "file": "GameBootstrap.js",
+          "intersection": 104,
+          "score": 0.9122807017543859
+        },
+        {
+          "file": "core/Preload.js",
+          "intersection": 13,
+          "score": 0.11504424778761062
+        },
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 12,
+          "score": 0.05825242718446602
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "gp-next-vFRrytUR.js",
+      "stringCount": 305,
+      "candidates": [
+        {
+          "file": "Main.js",
+          "intersection": 300,
+          "score": 0.9230769230769231
+        },
+        {
+          "file": "ui/tabs/ModManager.js",
+          "intersection": 16,
+          "score": 0.037209302325581395
+        },
+        {
+          "file": "ui/tabs/Cheats.js",
+          "intersection": 16,
+          "score": 0.034782608695652174
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "hp-overlay-CB4q6Fq4.js",
+      "stringCount": 76,
+      "candidates": [
+        {
+          "file": "runtime/HpOverlay.js",
+          "intersection": 76,
+          "score": 1
+        },
+        {
+          "file": "data/EntityInspector.js",
+          "intersection": 55,
+          "score": 0.514018691588785
+        },
+        {
+          "file": "ui/tabs/PerformanceSection.js",
+          "intersection": 16,
+          "score": 0.051118210862619806
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "i18n-CviGzum-.js",
+      "stringCount": 2755,
+      "candidates": [
+        {
+          "file": "ui/Translations.js",
+          "intersection": 2753,
+          "score": 0.933853459972863
+        },
+        {
+          "file": "ui/tabs/Cloud.js",
+          "intersection": 400,
+          "score": 0.14069644741470277
+        },
+        {
+          "file": "ui/tabs/PerformanceSection.js",
+          "intersection": 129,
+          "score": 0.04480722473080931
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "internal/index.js",
+      "stringCount": 147,
+      "candidates": [
+        {
+          "file": "vendor/ModuleHelpers.js",
+          "intersection": 1,
+          "score": 0.006666666666666667
+        },
+        {
+          "file": "mods/JsModdingRequired.js",
+          "intersection": 1,
+          "score": 0.006211180124223602
+        },
+        {
+          "file": "runtime/Recovery.js",
+          "intersection": 1,
+          "score": 0.006172839506172839
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "isolation-DLKV_2pB.js",
+      "stringCount": 2,
+      "candidates": [
+        {
+          "file": "mods/Isolation.js",
+          "intersection": 2,
+          "score": 1
+        },
+        {
+          "file": "core/Uuid.js",
+          "intersection": 1,
+          "score": 0.3333333333333333
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 1,
+          "score": 0.2
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "js-mod-loader-CLdQYrT-.js",
+      "stringCount": 291,
+      "candidates": [
+        {
+          "file": "mods/JsModLoader.js",
+          "intersection": 291,
+          "score": 1
+        },
+        {
+          "file": "runtime/ColdStartHost.js",
+          "intersection": 15,
+          "score": 0.035545023696682464
+        },
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 13,
+          "score": 0.033942558746736295
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "js-modding-required-B_2kQ1Pb.js",
+      "stringCount": 15,
+      "candidates": [
+        {
+          "file": "mods/JsModdingRequired.js",
+          "intersection": 15,
+          "score": 1
+        },
+        {
+          "file": "ui/tabs/Experimental.js",
+          "intersection": 5,
+          "score": 0.13513513513513514
+        },
+        {
+          "file": "runtime/Recovery.js",
+          "intersection": 2,
+          "score": 0.06896551724137931
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "js-modding-selection-BECL7uRy.js",
+      "stringCount": 6,
+      "candidates": [
+        {
+          "file": "mods/JsModdingSelection.js",
+          "intersection": 6,
+          "score": 1
+        },
+        {
+          "file": "mods/ModPackagePicker.js",
+          "intersection": 1,
+          "score": 0.09090909090909091
+        },
+        {
+          "file": "runtime/StartupAttempt.js",
+          "intersection": 2,
+          "score": 0.09090909090909091
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "legacy-runtime-migration-ynOTwb5Z.js",
+      "stringCount": 49,
+      "candidates": [
+        {
+          "file": "mods/LegacyRuntimeMigration.js",
+          "intersection": 49,
+          "score": 1
+        },
+        {
+          "file": "mods/FreshInstallation.js",
+          "intersection": 2,
+          "score": 0.0392156862745098
+        },
+        {
+          "file": "mods/ModSaveProtection.js",
+          "intersection": 3,
+          "score": 0.037037037037037035
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "logger-B5QI9Y1q.js",
+      "stringCount": 5,
+      "candidates": [
+        {
+          "file": "core/Logger.js",
+          "intersection": 5,
+          "score": 1
+        },
+        {
+          "file": "mods/RestoreUtils.js",
+          "intersection": 1,
+          "score": 0.2
+        },
+        {
+          "file": "platform/Dialog.js",
+          "intersection": 1,
+          "score": 0.14285714285714285
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "main/index.js",
+      "stringCount": 9801,
+      "candidates": [
+        {
+          "file": "mods/PackPreparation.js",
+          "intersection": 698,
+          "score": 0.047995599257374684
+        },
+        {
+          "file": "mods/ModApi.js",
+          "intersection": 149,
+          "score": 0.01461357395056885
+        },
+        {
+          "file": "mods/Patcher.js",
+          "intersection": 66,
+          "score": 0.006508233901982053
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-api-BSEJPshj.js",
+      "stringCount": 544,
+      "candidates": [
+        {
+          "file": "mods/ModApi.js",
+          "intersection": 544,
+          "score": 1
+        },
+        {
+          "file": "mods/GameConfiguration.js",
+          "intersection": 39,
+          "score": 0.06678082191780822
+        },
+        {
+          "file": "ui/tabs/Cheats.js",
+          "intersection": 28,
+          "score": 0.040756914119359534
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-configuration-state-BYcoKruS.js",
+      "stringCount": 73,
+      "candidates": [
+        {
+          "file": "mods/ModConfigurationState.js",
+          "intersection": 73,
+          "score": 1
+        },
+        {
+          "file": "mods/ModOperationPlan.js",
+          "intersection": 8,
+          "score": 0.08247422680412371
+        },
+        {
+          "file": "mods/ModSaveProtection.js",
+          "intersection": 5,
+          "score": 0.04854368932038835
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-configuration-storage-CDEfQuVC.js",
+      "stringCount": 6,
+      "candidates": [
+        {
+          "file": "mods/ModConfigurationStorage.js",
+          "intersection": 6,
+          "score": 1
+        },
+        {
+          "file": "core/Uuid.js",
+          "intersection": 1,
+          "score": 0.14285714285714285
+        },
+        {
+          "file": "mods/Isolation.js",
+          "intersection": 1,
+          "score": 0.14285714285714285
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-controls-registry-DN3FRg4c.js",
+      "stringCount": 4,
+      "candidates": [
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 4,
+          "score": 1
+        },
+        {
+          "file": "core/Uuid.js",
+          "intersection": 1,
+          "score": 0.2
+        },
+        {
+          "file": "mods/Isolation.js",
+          "intersection": 1,
+          "score": 0.2
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-diagnostic-report-CTu6uaNB.js",
+      "stringCount": 31,
+      "candidates": [
+        {
+          "file": "mods/ModDiagnosticReport.js",
+          "intersection": 31,
+          "score": 1
+        },
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 8,
+          "score": 0.0625
+        },
+        {
+          "file": "runtime/ColdStartHost.js",
+          "intersection": 9,
+          "score": 0.05357142857142857
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-operation-plan-Yj4GHynC.js",
+      "stringCount": 32,
+      "candidates": [
+        {
+          "file": "mods/ModOperationPlan.js",
+          "intersection": 32,
+          "score": 1
+        },
+        {
+          "file": "mods/ModConfigurationState.js",
+          "intersection": 8,
+          "score": 0.08247422680412371
+        },
+        {
+          "file": "runtime/ColdStartHost.js",
+          "intersection": 13,
+          "score": 0.07878787878787878
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-owned-data-DiCEpnbH.js",
+      "stringCount": 28,
+      "candidates": [
+        {
+          "file": "mods/ModOwnedData.js",
+          "intersection": 28,
+          "score": 1
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 2,
+          "score": 0.06666666666666667
+        },
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 8,
+          "score": 0.064
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-owned-data-storage-BFM7QfOI.js",
+      "stringCount": 18,
+      "candidates": [
+        {
+          "file": "mods/ModOwnedDataStorage.js",
+          "intersection": 18,
+          "score": 1
+        },
+        {
+          "file": "core/Uuid.js",
+          "intersection": 1,
+          "score": 0.05263157894736842
+        },
+        {
+          "file": "mods/Isolation.js",
+          "intersection": 1,
+          "score": 0.05263157894736842
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-pack-preflight-DqwzoN7Y.js",
+      "stringCount": 20,
+      "candidates": [
+        {
+          "file": "mods/ModPackPreflight.js",
+          "intersection": 20,
+          "score": 1
+        },
+        {
+          "file": "core/SettingsStore.js",
+          "intersection": 4,
+          "score": 0.11428571428571428
+        },
+        {
+          "file": "mods/JsModdingSelection.js",
+          "intersection": 2,
+          "score": 0.08333333333333333
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-package-picker-Ub0khwNv.js",
+      "stringCount": 6,
+      "candidates": [
+        {
+          "file": "mods/ModPackagePicker.js",
+          "intersection": 6,
+          "score": 1
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 1,
+          "score": 0.1111111111111111
+        },
+        {
+          "file": "mods/JsModdingSelection.js",
+          "intersection": 1,
+          "score": 0.09090909090909091
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-save-backup-storage-CUoIsDWW.js",
+      "stringCount": 12,
+      "candidates": [
+        {
+          "file": "mods/ModSaveBackupStorage.js",
+          "intersection": 12,
+          "score": 1
+        },
+        {
+          "file": "mods/ModSaveProtection.js",
+          "intersection": 5,
+          "score": 0.11904761904761904
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 1,
+          "score": 0.06666666666666667
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-save-protection-_Sw7NeL6.js",
+      "stringCount": 35,
+      "candidates": [
+        {
+          "file": "mods/ModSaveProtection.js",
+          "intersection": 35,
+          "score": 1
+        },
+        {
+          "file": "mods/ModSaveBackupStorage.js",
+          "intersection": 5,
+          "score": 0.11904761904761904
+        },
+        {
+          "file": "data/DataEntityLedger.js",
+          "intersection": 3,
+          "score": 0.07317073170731707
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-selection-BP2riAj_.js",
+      "stringCount": 67,
+      "candidates": [
+        {
+          "file": "mods/ModSelection.js",
+          "intersection": 67,
+          "score": 1
+        },
+        {
+          "file": "runtime/ColdStartHost.js",
+          "intersection": 14,
+          "score": 0.07035175879396985
+        },
+        {
+          "file": "runtime/StartupAttemptHost.js",
+          "intersection": 4,
+          "score": 0.057971014492753624
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-settings-registry-QzmZ3Tq6.js",
+      "stringCount": 26,
+      "candidates": [
+        {
+          "file": "mods/ModSettingsRegistry.js",
+          "intersection": 26,
+          "score": 1
+        },
+        {
+          "file": "runtime/WorldmapJsonPatcher.js",
+          "intersection": 3,
+          "score": 0.07692307692307693
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 2,
+          "score": 0.07142857142857142
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-troubleshooting-DWYKHsE7.js",
+      "stringCount": 17,
+      "candidates": [
+        {
+          "file": "mods/ModTroubleshooting.js",
+          "intersection": 17,
+          "score": 1
+        },
+        {
+          "file": "data/DataStore.js",
+          "intersection": 2,
+          "score": 0.07142857142857142
+        },
+        {
+          "file": "ui/tabs/Log.js",
+          "intersection": 5,
+          "score": 0.07042253521126761
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "mod-version-DNSM0LWE.js",
+      "stringCount": 110,
+      "candidates": [
+        {
+          "file": "mods/ModVersion.js",
+          "intersection": 110,
+          "score": 1
+        },
+        {
+          "file": "platform/CloudJson.js",
+          "intersection": 5,
+          "score": 0.023809523809523808
+        },
+        {
+          "file": "mods/ModSettingsRegistry.js",
+          "intersection": 3,
+          "score": 0.022556390977443608
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "nest-pack-worker-BW1GWrQ3.js",
+      "stringCount": 40,
+      "candidates": [
+        {
+          "file": "core/NestPackWorker.js",
+          "intersection": 40,
+          "score": 1
+        },
+        {
+          "file": "mods/PackSnapshot.js",
+          "intersection": 16,
+          "score": 0.2909090909090909
+        },
+        {
+          "file": "mods/FileLoader.js",
+          "intersection": 2,
+          "score": 0.012121212121212121
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "overlay-K1OLfx5W.js",
+      "stringCount": 81,
+      "candidates": [
+        {
+          "file": "ui/Overlay.js",
+          "intersection": 75,
+          "score": 0.5244755244755245
+        },
+        {
+          "file": "ui/tabs/Data.js",
+          "intersection": 7,
+          "score": 0.061946902654867256
+        },
+        {
+          "file": "ui/Components.js",
+          "intersection": 8,
+          "score": 0.05442176870748299
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "pack-install-store-BVzqej8P.js",
+      "stringCount": 25,
+      "candidates": [
+        {
+          "file": "mods/PackInstallStore.js",
+          "intersection": 25,
+          "score": 1
+        },
+        {
+          "file": "data/DataStore.js",
+          "intersection": 2,
+          "score": 0.05555555555555555
+        },
+        {
+          "file": "runtime/WorldmapJsonPatcher.js",
+          "intersection": 2,
+          "score": 0.05128205128205128
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "pack-preparation-4g9OdXJw.js",
+      "stringCount": 5440,
+      "candidates": [
+        {
+          "file": "mods/PackPreparation.js",
+          "intersection": 5440,
+          "score": 1
+        },
+        {
+          "file": "ui/Translations.js",
+          "intersection": 25,
+          "score": 0.0029900729577801697
+        },
+        {
+          "file": "mods/GameConfiguration.js",
+          "intersection": 9,
+          "score": 0.001633393829401089
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "pack-snapshot-BQiaoXVH.js",
+      "stringCount": 31,
+      "candidates": [
+        {
+          "file": "mods/PackSnapshot.js",
+          "intersection": 31,
+          "score": 1
+        },
+        {
+          "file": "core/NestPackWorker.js",
+          "intersection": 16,
+          "score": 0.2909090909090909
+        },
+        {
+          "file": "mods/ModSaveBackupStorage.js",
+          "intersection": 1,
+          "score": 0.023809523809523808
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "patcher-B2wNU-OS.js",
+      "stringCount": 406,
+      "candidates": [
+        {
+          "file": "mods/Patcher.js",
+          "intersection": 406,
+          "score": 1
+        },
+        {
+          "file": "mods/ModApi.js",
+          "intersection": 31,
+          "score": 0.03373231773667029
+        },
+        {
+          "file": "mods/FileLoader.js",
+          "intersection": 17,
+          "score": 0.03294573643410853
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "plant-level-state-fOwz5Wwb.js",
+      "stringCount": 8,
+      "candidates": [
+        {
+          "file": "runtime/PlantLevelState.js",
+          "intersection": 8,
+          "score": 1
+        },
+        {
+          "file": "mods/RestoreUtils.js",
+          "intersection": 1,
+          "score": 0.125
+        },
+        {
+          "file": "platform/Dialog.js",
+          "intersection": 1,
+          "score": 0.1
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "resources/index.js",
+      "stringCount": 4,
+      "candidates": [
+        {
+          "file": "vendor/ModuleHelpers.js",
+          "intersection": 1,
+          "score": 0.14285714285714285
+        },
+        {
+          "file": "ui/tabs/Mods.js",
+          "intersection": 1,
+          "score": 0.02127659574468085
+        },
+        {
+          "file": "mods/FileLoader.js",
+          "intersection": 1,
+          "score": 0.007692307692307693
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "restore-utils-K_9DWc21.js",
+      "stringCount": 1,
+      "candidates": [
+        {
+          "file": "mods/RestoreUtils.js",
+          "intersection": 1,
+          "score": 1
+        },
+        {
+          "file": "platform/Dialog.js",
+          "intersection": 1,
+          "score": 0.3333333333333333
+        },
+        {
+          "file": "runtime/FrameRate.js",
+          "intersection": 1,
+          "score": 0.25
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "scroll-sensitivity-vJ0iEE0i.js",
+      "stringCount": 29,
+      "candidates": [
+        {
+          "file": "runtime/ScrollSensitivity.js",
+          "intersection": 29,
+          "score": 1
+        },
+        {
+          "file": "runtime/FrameRate.js",
+          "intersection": 2,
+          "score": 0.06451612903225806
+        },
+        {
+          "file": "vendor/ModuleHelpers.js",
+          "intersection": 2,
+          "score": 0.06451612903225806
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "settings-store-DAl7zVlz.js",
+      "stringCount": 17,
+      "candidates": [
+        {
+          "file": "core/SettingsStore.js",
+          "intersection": 17,
+          "score": 0.8947368421052632
+        },
+        {
+          "file": "mods/ModPackPreflight.js",
+          "intersection": 4,
+          "score": 0.12121212121212122
+        },
+        {
+          "file": "mods/JsModdingSelection.js",
+          "intersection": 2,
+          "score": 0.09523809523809523
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "startup-attempt-BU9KjpJp.js",
+      "stringCount": 18,
+      "candidates": [
+        {
+          "file": "runtime/StartupAttempt.js",
+          "intersection": 18,
+          "score": 1
+        },
+        {
+          "file": "mods/JsModdingSelection.js",
+          "intersection": 2,
+          "score": 0.09090909090909091
+        },
+        {
+          "file": "core/SettingsStore.js",
+          "intersection": 3,
+          "score": 0.08823529411764706
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "startup-attempt-host-Bmmmr0ij.js",
+      "stringCount": 6,
+      "candidates": [
+        {
+          "file": "runtime/StartupAttemptHost.js",
+          "intersection": 6,
+          "score": 1
+        },
+        {
+          "file": "mods/ModSelection.js",
+          "intersection": 4,
+          "score": 0.057971014492753624
+        },
+        {
+          "file": "runtime/StartupAttempt.js",
+          "intersection": 1,
+          "score": 0.043478260869565216
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "startup-recovery-Cuif5a-x.js",
+      "stringCount": 140,
+      "candidates": [
+        {
+          "file": "runtime/CocosStartup.js",
+          "intersection": 140,
+          "score": 1
+        },
+        {
+          "file": "data/DataDrawer.js",
+          "intersection": 9,
+          "score": 0.0391304347826087
+        },
+        {
+          "file": "ui/tabs/Settings.js",
+          "intersection": 9,
+          "score": 0.036585365853658534
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-cheats-CUv1_pzc.js",
+      "stringCount": 171,
+      "candidates": [
+        {
+          "file": "ui/tabs/Cheats.js",
+          "intersection": 171,
+          "score": 1
+        },
+        {
+          "file": "platform/CloudSaveRequest.js",
+          "intersection": 16,
+          "score": 0.06779661016949153
+        },
+        {
+          "file": "runtime/TrainerShortcuts.js",
+          "intersection": 13,
+          "score": 0.059907834101382486
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-data-Css7nrec.js",
+      "stringCount": 39,
+      "candidates": [
+        {
+          "file": "ui/tabs/Data.js",
+          "intersection": 39,
+          "score": 1
+        },
+        {
+          "file": "data/DataDrawer.js",
+          "intersection": 11,
+          "score": 0.08661417322834646
+        },
+        {
+          "file": "ui/Components.js",
+          "intersection": 8,
+          "score": 0.0761904761904762
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-diagnostics-CvPN6EDv.js",
+      "stringCount": 3,
+      "candidates": [
+        {
+          "file": "ui/tabs/Diagnostics.js",
+          "intersection": 3,
+          "score": 1
+        },
+        {
+          "file": "ui/tabs/Tools.js",
+          "intersection": 1,
+          "score": 0.125
+        },
+        {
+          "file": "Main.js",
+          "intersection": 1,
+          "score": 0.003105590062111801
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-experimental-B24XjxBI.js",
+      "stringCount": 27,
+      "candidates": [
+        {
+          "file": "ui/tabs/Experimental.js",
+          "intersection": 27,
+          "score": 1
+        },
+        {
+          "file": "mods/JsModdingRequired.js",
+          "intersection": 5,
+          "score": 0.13513513513513514
+        },
+        {
+          "file": "core/SettingsStore.js",
+          "intersection": 3,
+          "score": 0.06976744186046512
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-log-D-WlwRUX.js",
+      "stringCount": 49,
+      "candidates": [
+        {
+          "file": "ui/tabs/Log.js",
+          "intersection": 40,
+          "score": 0.5882352941176471
+        },
+        {
+          "file": "ui/Components.js",
+          "intersection": 10,
+          "score": 0.08849557522123894
+        },
+        {
+          "file": "mods/ModTroubleshooting.js",
+          "intersection": 5,
+          "score": 0.08196721311475409
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-mod-manager-BiXsbxJc.js",
+      "stringCount": 137,
+      "candidates": [
+        {
+          "file": "ui/tabs/ModManager.js",
+          "intersection": 129,
+          "score": 0.8657718120805369
+        },
+        {
+          "file": "ui/tabs/Patcher.js",
+          "intersection": 14,
+          "score": 0.06896551724137931
+        },
+        {
+          "file": "ui/tabs/Experimental.js",
+          "intersection": 10,
+          "score": 0.06493506493506493
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-mods-cKE4BjkW.js",
+      "stringCount": 44,
+      "candidates": [
+        {
+          "file": "ui/tabs/Mods.js",
+          "intersection": 44,
+          "score": 1
+        },
+        {
+          "file": "ui/Components.js",
+          "intersection": 14,
+          "score": 0.1346153846153846
+        },
+        {
+          "file": "ui/tabs/Settings.js",
+          "intersection": 16,
+          "score": 0.11188811188811189
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-pages-xDT8pQ8T.js",
+      "stringCount": 7,
+      "candidates": [
+        {
+          "file": "ui/tabs/Pages.js",
+          "intersection": 7,
+          "score": 1
+        },
+        {
+          "file": "ui/tabs/About.js",
+          "intersection": 2,
+          "score": 0.04878048780487805
+        },
+        {
+          "file": "mods/JsModdingRequired.js",
+          "intersection": 1,
+          "score": 0.047619047619047616
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-patcher-Cpmlm8lY.js",
+      "stringCount": 80,
+      "candidates": [
+        {
+          "file": "ui/tabs/Patcher.js",
+          "intersection": 80,
+          "score": 1
+        },
+        {
+          "file": "ui/tabs/ModManager.js",
+          "intersection": 22,
+          "score": 0.11055276381909548
+        },
+        {
+          "file": "ui/ModCard.js",
+          "intersection": 7,
+          "score": 0.08641975308641975
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-performance-section-CKAvlAKE.js",
+      "stringCount": 253,
+      "candidates": [
+        {
+          "file": "ui/tabs/PerformanceSection.js",
+          "intersection": 253,
+          "score": 1
+        },
+        {
+          "file": "runtime/HpOverlay.js",
+          "intersection": 16,
+          "score": 0.051118210862619806
+        },
+        {
+          "file": "ui/Translations.js",
+          "intersection": 129,
+          "score": 0.04201954397394137
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-preferences-DvmhxITE.js",
+      "stringCount": 17,
+      "candidates": [
+        {
+          "file": "ui/tabs/About.js",
+          "intersection": 7,
+          "score": 0.15217391304347827
+        },
+        {
+          "file": "ui/tools/UuidGenerator.js",
+          "intersection": 2,
+          "score": 0.0625
+        },
+        {
+          "file": "core/Logger.js",
+          "intersection": 1,
+          "score": 0.047619047619047616
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-settings-DD3ChfJD.js",
+      "stringCount": 114,
+      "candidates": [
+        {
+          "file": "ui/tabs/Settings.js",
+          "intersection": 114,
+          "score": 0.991304347826087
+        },
+        {
+          "file": "ui/tabs/Mods.js",
+          "intersection": 16,
+          "score": 0.11267605633802817
+        },
+        {
+          "file": "core/PreferenceTransfer.js",
+          "intersection": 15,
+          "score": 0.10714285714285714
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tab-tools-BgxOyrDj.js",
+      "stringCount": 1,
+      "candidates": [
+        {
+          "file": "ui/tabs/Tools.js",
+          "intersection": 1,
+          "score": 0.16666666666666666
+        },
+        {
+          "file": "ui/tabs/Settings.js",
+          "intersection": 1,
+          "score": 0.008695652173913044
+        },
+        {
+          "file": "Main.js",
+          "intersection": 1,
+          "score": 0.003125
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "tmpPatch-D2r4t3cB.js",
+      "stringCount": 151,
+      "candidates": [
+        {
+          "file": "platform/WindowBridge.js",
+          "intersection": 150,
+          "score": 0.9933774834437086
+        },
+        {
+          "file": "core/SettingsStore.js",
+          "intersection": 4,
+          "score": 0.024096385542168676
+        },
+        {
+          "file": "ui/tabs/Settings.js",
+          "intersection": 6,
+          "score": 0.023076923076923078
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "toast-CqhSy3sa.js",
+      "stringCount": 9,
+      "candidates": [
+        {
+          "file": "ui/Toast.js",
+          "intersection": 9,
+          "score": 1
+        },
+        {
+          "file": "ui/Polish.js",
+          "intersection": 1,
+          "score": 0.09090909090909091
+        },
+        {
+          "file": "audio/AudioAssets.js",
+          "intersection": 1,
+          "score": 0.05555555555555555
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "trainer-shortcuts-D9QyIsio.js",
+      "stringCount": 59,
+      "candidates": [
+        {
+          "file": "runtime/TrainerShortcuts.js",
+          "intersection": 59,
+          "score": 1
+        },
+        {
+          "file": "ui/tabs/Cheats.js",
+          "intersection": 13,
+          "score": 0.059907834101382486
+        },
+        {
+          "file": "ui/Overlay.js",
+          "intersection": 8,
+          "score": 0.0425531914893617
+        }
+      ],
+      "reviewRequired": true
+    },
+    {
+      "upstream": "worldmap-json-patcher-D55f4YnO.js",
+      "stringCount": 16,
+      "candidates": [
+        {
+          "file": "runtime/WorldmapJsonPatcher.js",
+          "intersection": 16,
+          "score": 1
+        },
+        {
+          "file": "mods/ModControlsRegistry.js",
+          "intersection": 2,
+          "score": 0.1111111111111111
+        },
+        {
+          "file": "runtime/FrameRate.js",
+          "intersection": 2,
+          "score": 0.1111111111111111
+        }
+      ],
+      "reviewRequired": true
+    }
+  ]
+}

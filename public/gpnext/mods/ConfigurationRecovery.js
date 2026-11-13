@@ -1,5 +1,5 @@
 import { i as e } from "./PackPreparation.js";
-import { n } from "./ModSaveProtection.js";
+import { n as t } from "./ModSaveProtection.js";
 async function restoreLastActiveSelection({ configurationState: t2, installStore: n2, assertCandidateAllowed: r2 }) {
   let i = t2.getState();
   if (i.journal || i.recovery?.required) throw Error(`Interrupted operation requires verified recovery`);
@@ -18,7 +18,7 @@ async function recoverLastActiveConfiguration({ configurationState: n2, installS
     if (m = l.recovery.failedTarget.backupId, !m || !a) throw Error(`Startup save backup is unavailable`);
     let e2 = await a.read(m);
     if (u(), !e2) throw Error(`Startup save backup is missing`);
-    p = n({ storage: { getItem: () => e2.raw } });
+    p = t({ storage: { getItem: () => e2.raw } });
   }
   let g = () => {
     for (let e2 of f) p.checkAvailable(e2, d);

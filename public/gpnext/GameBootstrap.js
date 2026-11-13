@@ -1,8 +1,10 @@
+import { installAssetRevision } from "./runtime/AssetCache.js";
+import { aurumHost } from "./runtime/AurumHost.js";
 import { installCocosAudio } from "./audio/CocosAudio.js";
+import { initializeGameAudio } from "./audio/GameAudioBridge.js";
 import { applyFrameRate } from "./runtime/FrameRate.js";
 import { getSettings } from "./core/SettingsStore.js";
-import { initializeGameAudio } from "./audio/GameAudioBridge.js";
-const __vite__mapDeps = (i2, m2 = __vite__mapDeps, d2 = m2.f || (m2.f = ["gpnext/platform/WindowBridge.js", "gpnext/platform/CloudJson.js", "gpnext/platform/Events.js", "gpnext/platform/FileSystem.js", "gpnext/platform/Opener.js", "gpnext/runtime/CocosStartup.js", "gpnext/platform/Dialog.js", "gpnext/ui/Components.js", "gpnext/core/SettingsStore.js", "gpnext/vendor/ModuleHelpers.js", "gpnext/platform/CloudPortablePreferences.js", "gpnext/runtime/TrainerShortcuts.js", "gpnext/mods/JsModdingRequired.js", "gpnext/ui/Translations.js", "gpnext/core/Logger.js", "gpnext/runtime/StartupAttempt.js", "gpnext/mods/PackPreparation.js", "gpnext/mods/FileLoader.js", "gpnext/mods/PackSnapshot.js", "gpnext/mods/GameConfiguration.js", "gpnext/mods/ModOperationPlan.js", "gpnext/mods/ModPackPreflight.js", "gpnext/mods/ModVersion.js", "gpnext/core/BuildIdentity.js", "gpnext/mods/ModConfigurationStorage.js", "gpnext/mods/FreshInstallation.js", "gpnext/mods/ModConfigurationState.js", "gpnext/mods/ConfigurationModSettings.js", "gpnext/mods/PackInstallStore.js", "gpnext/mods/JsModdingSelection.js", "gpnext/mods/Patcher.js", "gpnext/data/DataEntityLedger.js", "gpnext/mods/Isolation.js", "gpnext/runtime/PlantLevelState.js", "gpnext/mods/RestoreUtils.js", "gpnext/ui/Toast.js", "gpnext/mods/ModSaveBackupStorage.js", "gpnext/mods/ModSaveProtection.js", "gpnext/runtime/ColdStartHost.js", "gpnext/mods/JsModLoader.js", "gpnext/mods/ModApi.js", "gpnext/data/EntityInspector.js", "gpnext/mods/ModControlsRegistry.js", "gpnext/mods/ModOwnedDataStorage.js", "gpnext/mods/ModOwnedData.js", "gpnext/mods/ModSettingsRegistry.js", "gpnext/mods/ModSelection.js", "gpnext/runtime/StartupAttemptHost.js", "gpnext/platform/CloudColdHost.js", "gpnext/platform/CloudSelection.js", "gpnext/platform/CloudEnvironment.js", "gpnext/mods/ConfigurationRecovery.js", "gpnext/Main.js", "gpnext/core/ClientEdition.js", "gpnext/runtime/FrameSettings.js", "gpnext/ui/Overlay.js", "gpnext/data/DataDrawer.js"])) => i2.map((i3) => d2[i3]);
+const __vite__mapDeps = (i2, m2 = __vite__mapDeps, d2 = m2.f || (m2.f = ["gpnext/runtime/CocosStartup.js", "gpnext/platform/FileSystem.js", "gpnext/platform/CloudJson.js", "gpnext/platform/Dialog.js", "gpnext/ui/Components.js", "gpnext/core/SettingsStore.js", "gpnext/vendor/ModuleHelpers.js", "gpnext/platform/CloudPortablePreferences.js", "gpnext/runtime/TrainerShortcuts.js", "gpnext/mods/JsModdingRequired.js", "gpnext/ui/Translations.js", "gpnext/core/Logger.js", "gpnext/platform/WindowBridge.js", "gpnext/platform/Events.js", "gpnext/platform/Opener.js", "gpnext/runtime/StartupAttempt.js", "gpnext/mods/PackPreparation.js", "gpnext/mods/PackSnapshot.js", "gpnext/mods/FileLoader.js", "gpnext/mods/GameConfiguration.js", "gpnext/mods/ModOperationPlan.js", "gpnext/mods/ModPackPreflight.js", "gpnext/mods/ModVersion.js", "gpnext/core/BuildIdentity.js", "gpnext/mods/ModConfigurationStorage.js", "gpnext/mods/FreshInstallation.js", "gpnext/mods/ModConfigurationState.js", "gpnext/mods/ConfigurationModSettings.js", "gpnext/mods/ModSettingsRegistry.js", "gpnext/mods/PackInstallStore.js", "gpnext/mods/LocalPackSync.js", "gpnext/mods/JsModdingSelection.js", "gpnext/mods/ModRequirements.js", "gpnext/mods/PendingModSelection.js", "gpnext/mods/Patcher.js", "gpnext/data/DataEntityLedger.js", "gpnext/mods/Isolation.js", "gpnext/runtime/PlantLevelState.js", "gpnext/mods/RestoreUtils.js", "gpnext/ui/Toast.js", "gpnext/mods/ModSaveBackupStorage.js", "gpnext/mods/ModSaveProtection.js", "gpnext/runtime/ColdStartHost.js", "gpnext/mods/JsModLoader.js", "gpnext/mods/ModApi.js", "gpnext/data/EntityInspector.js", "gpnext/mods/ModControlsRegistry.js", "gpnext/mods/ModOwnedDataStorage.js", "gpnext/mods/ModOwnedData.js", "gpnext/mods/ModSelection.js", "gpnext/runtime/StartupAttemptHost.js", "gpnext/platform/CloudColdHost.js", "gpnext/platform/CloudSelection.js", "gpnext/platform/CloudEnvironment.js", "gpnext/mods/ConfigurationRecovery.js", "gpnext/Main.js", "gpnext/core/ClientEdition.js", "gpnext/runtime/FrameSettings.js", "gpnext/ui/Overlay.js", "gpnext/data/DataDrawer.js"])) => i2.map((i3) => d2[i3]);
 import { n as e } from "./vendor/ModuleHelpers.js";
 import { f as t, i as n, n as r, p as i, r as a, t as o } from "./platform/CloudJson.js";
 var s = 10 * 1024 * 1024, c = Object.freeze({ maxDepth: 36, maxNodes: 6e5 }), l = s, u = (e2) => r(e2, l, c), d = [`prepared`, `applying`, `verified`, `completed`, `rolling_back`, `rolled_back`], f = (e2) => {
@@ -138,71 +140,19 @@ async function _() {
 function v() {
   return g ??= _(), g;
 }
-var y = `.avif`, b = 8, x = `.webp`;
-async function S(e2) {
-  await installCocosAudio(e2);
-  let t2 = e2.macro?.SUPPORT_TEXTURE_FORMATS, n2 = e2.ImageAsset?.extnames;
-  if (!Array.isArray(t2) || !Array.isArray(n2)) throw Error(`Cocos image format tables are unavailable`);
-  if (t2.includes(y) || t2.push(y), n2.includes(y) || n2.push(y), n2.indexOf(y) !== b) throw Error(`Cocos AVIF format index must be ${b}`);
-  let r2 = [[e2.assetManager?.downloader, `_downloaders`], [e2.assetManager?.factory, `_producers`], [e2.assetManager?.parser, `_parsers`]];
-  for (let [e3, t3] of r2) {
-    let n3 = e3?.[t3]?.[x];
-    if (!e3?.register || typeof n3 != `function`) throw Error(`Cocos AVIF registration source is unavailable: ${t3}`);
-    e3.register(y, n3);
-  }
-}
-async function E() {
-  await initializeGameAudio();
-}
-var D = `modulepreload`, O = function(e2) {
-  return `/` + e2;
-}, k = {}, A = function(e2, t2, n2) {
-  let r2 = Promise.resolve();
-  if (t2 && t2.length > 0) {
-    let o2 = function(e4) {
-      return Promise.all(e4.map((e5) => Promise.resolve(e5).then((e6) => ({ status: `fulfilled`, value: e6 }), (e6) => ({ status: `rejected`, reason: e6 }))));
-    };
-    let e3 = document.getElementsByTagName(`link`), i3 = document.querySelector(`meta[property=csp-nonce]`), a2 = i3?.nonce || i3?.getAttribute(`nonce`);
-    r2 = o2(t2.map((t3) => {
-      if (t3 = O(t3, n2), t3 in k) return;
-      k[t3] = true;
-      let r3 = t3.endsWith(`.css`), i4 = r3 ? `[rel="stylesheet"]` : ``;
-      if (n2) for (let n3 = e3.length - 1; n3 >= 0; n3--) {
-        let i5 = e3[n3];
-        if (i5.href === t3 && (!r3 || i5.rel === `stylesheet`)) return;
-      }
-      else if (document.querySelector(`link[href="${t3}"]${i4}`)) return;
-      let o3 = document.createElement(`link`);
-      if (o3.rel = r3 ? `stylesheet` : D, r3 || (o3.as = `script`), o3.crossOrigin = ``, o3.href = t3, a2 && o3.setAttribute(`nonce`, a2), document.head.appendChild(o3), r3) return new Promise((e4, n3) => {
-        o3.addEventListener(`load`, e4), o3.addEventListener(`error`, () => n3(Error(`Unable to preload CSS for ${t3}`)));
-      });
-    }));
-  }
-  function i2(e3) {
-    let t3 = new Event(`vite:preloadError`, { cancelable: true });
-    if (t3.payload = e3, window.dispatchEvent(t3), !t3.defaultPrevented) throw e3;
-  }
-  return r2.then((t3) => {
-    for (let e3 of t3 || []) e3.status === `rejected` && i2(e3.reason);
-    return e2().catch(i2);
-  });
-};
-async function j() {
-  i() && await A(() => import("./platform/WindowBridge.js"), __vite__mapDeps([0, 1, 2, 3, 4])), await E();
-}
-var M = `gpn-startup-failure`;
-function N(e2 = globalThis.location?.href) {
+var y = `gpn-startup-failure`;
+function b(e2 = globalThis.location?.href) {
   return !!e2 && new URL(e2).searchParams.get(`gpn-recovery`) === `1`;
 }
-function P(e2 = globalThis.location.href) {
+function x(e2 = globalThis.location.href) {
   let t2 = new URL(e2);
   return t2.searchParams.set(`gpn-recovery`, `1`), t2.href;
 }
-function F(e2 = globalThis.location.href) {
+function ee(e2 = globalThis.location.href) {
   let t2 = new URL(e2);
   return t2.searchParams.delete(`gpn-recovery`), t2.href;
 }
-function I(e2) {
+function te(e2) {
   let t2 = [], n2 = /* @__PURE__ */ new Map(), r2 = /* @__PURE__ */ new Set();
   for (let i2 = e2; i2 && !r2.has(i2) && t2.length < 6; i2 = i2.cause) {
     r2.add(i2);
@@ -215,38 +165,70 @@ function I(e2) {
   }
   return { time: (/* @__PURE__ */ new Date()).toISOString(), phase: String(e2?.phase || `bootstrap`), causes: t2, modIssues: [...n2.values()] };
 }
-function L(e2, t2 = sessionStorage) {
-  let n2 = I(e2);
-  return t2.setItem(M, JSON.stringify(n2)), n2;
+function ne(e2, t2 = sessionStorage) {
+  let n2 = te(e2);
+  return t2.setItem(y, JSON.stringify(n2)), n2;
 }
-function R(e2 = sessionStorage) {
+function S(e2 = sessionStorage) {
   try {
-    let t2 = JSON.parse(e2.getItem(M));
+    let t2 = JSON.parse(e2.getItem(y));
     if (t2 && Array.isArray(t2.causes) && t2.causes.every((e3) => e3 && typeof e3.message == `string` && typeof e3.code == `string`) && typeof t2.phase == `string`) return t2;
   } catch {
   }
   return { phase: `bootstrap`, causes: [], time: null };
 }
-function z(e2) {
+function C(e2) {
   let t2 = e2.causes.map((e3) => e3.code || ``), n2 = e2.causes.map((e3) => e3.message || ``).join(`
 `);
   return t2.some((e3) => /SAVE_(INVALID|CONTENT_MISSING|BACKUP)/.test(e3)) ? `save` : /WebGL|graphics device|GPU|context lost/i.test(n2) ? `graphics` : /ENOENT|not found|missing|differs|dependency|incompatible|requires recovery|configuration|manifest/i.test(n2) ? `configuration` : /timed out|timeout/i.test(n2) ? `timeout` : `unknown`;
 }
-function B(e2, { redact: t2 = true, backup: n2 = null } = {}) {
-  return { version: 1, time: e2.time, phase: e2.phase, category: z(e2), backup: n2 ? { time: n2.time, verified: true } : null, modIssues: (e2.modIssues || []).map((e3) => ({ id: e3.id, evidence: e3.evidence, phase: e3.phase, ...t2 ? {} : { name: e3.name, version: e3.version, errors: e3.errors } })), errors: e2.causes.map((e3) => ({ code: /^[A-Z][A-Z0-9_]{0,79}$/.test(e3.code) ? e3.code : `STARTUP_FAILED`, ...t2 ? {} : { message: e3.message } })) };
+function re(e2, { redact: t2 = true, backup: n2 = null } = {}) {
+  return { version: 1, time: e2.time, phase: e2.phase, category: C(e2), backup: n2 ? { time: n2.time, verified: true } : null, modIssues: (e2.modIssues || []).map((e3) => ({ id: e3.id, evidence: e3.evidence, phase: e3.phase, ...t2 ? {} : { name: e3.name, version: e3.version, errors: e3.errors } })), errors: e2.causes.map((e3) => ({ code: /^[A-Z][A-Z0-9_]{0,79}$/.test(e3.code) ? e3.code : `STARTUP_FAILED`, ...t2 ? {} : { message: e3.message } })) };
 }
-var V = e({ STARTUP_PHASES: () => H, StartupFailure: () => U, openStartupRecovery: () => G, showStartupFailure: () => K, startCocos: () => W }), H = Object.freeze([`beforeEngineImport`, `beforeEngineInit`, `beforeProject`, `afterProject`, `beforeRun`]), U = class extends Error {
+var w = `modulepreload`, T = function(e2) {
+  return `/` + e2;
+}, E = {}, D = function(e2, t2, n2) {
+  let r2 = Promise.resolve();
+  if (t2 && t2.length > 0) {
+    let o2 = function(e4) {
+      return Promise.all(e4.map((e5) => Promise.resolve(e5).then((e6) => ({ status: `fulfilled`, value: e6 }), (e6) => ({ status: `rejected`, reason: e6 }))));
+    };
+    let e3 = document.getElementsByTagName(`link`), i3 = document.querySelector(`meta[property=csp-nonce]`), a2 = i3?.nonce || i3?.getAttribute(`nonce`);
+    r2 = o2(t2.map((t3) => {
+      if (t3 = T(t3, n2), t3 in E) return;
+      E[t3] = true;
+      let r3 = t3.endsWith(`.css`), i4 = r3 ? `[rel="stylesheet"]` : ``;
+      if (n2) for (let n3 = e3.length - 1; n3 >= 0; n3--) {
+        let i5 = e3[n3];
+        if (i5.href === t3 && (!r3 || i5.rel === `stylesheet`)) return;
+      }
+      else if (document.querySelector(`link[href="${t3}"]${i4}`)) return;
+      let o3 = document.createElement(`link`);
+      if (o3.rel = r3 ? `stylesheet` : w, r3 || (o3.as = `script`), o3.crossOrigin = ``, o3.href = t3, a2 && o3.setAttribute(`nonce`, a2), document.head.appendChild(o3), r3) return new Promise((e4, n3) => {
+        o3.addEventListener(`load`, e4), o3.addEventListener(`error`, () => n3(Error(`Unable to preload CSS for ${t3}`)));
+      });
+    }));
+  }
+  function i2(e3) {
+    let t3 = new Event(`vite:preloadError`, { cancelable: true });
+    if (t3.payload = e3, window.dispatchEvent(t3), !t3.defaultPrevented) throw e3;
+  }
+  return r2.then((t3) => {
+    for (let e3 of t3 || []) e3.status === `rejected` && i2(e3.reason);
+    return e2().catch(i2);
+  });
+}, ie = e({ STARTUP_PHASES: () => O, StartupFailure: () => k, openStartupRecovery: () => j, showStartupFailure: () => M, startCocos: () => A }), O = Object.freeze([`beforeEngineImport`, `beforeEngineInit`, `beforeProject`, `afterProject`, `beforeRun`]), k = class extends Error {
   constructor(e2, t2) {
     super(`Cocos startup failed at ${e2}: ${t2?.message || String(t2)}`, { cause: t2 }), this.name = `StartupFailure`, this.phase = e2, this.restartRequired = true;
   }
 };
-async function W({ importEngine: e2, configureEngine: t2, initOptions: n2, phases: r2 = {}, timeoutMs: i2 = 3e4, onPhase: a2 = () => {
+async function A({ importEngine: e2, configureEngine: t2, initOptions: n2, phases: r2 = {}, timeoutMs: i2 = 3e4, onPhase: a2 = () => {
 } }) {
-  for (let [e3, t3] of Object.entries(r2)) if (!H.includes(e3) || typeof t3 != `function`) throw TypeError(`Invalid startup task: ${e3}`);
+  for (let [e3, t3] of Object.entries(r2)) if (!O.includes(e3) || typeof t3 != `function`) throw TypeError(`Invalid startup task: ${e3}`);
   if (!Number.isFinite(i2) || i2 <= 0) throw TypeError(`Invalid startup timeout`);
   let o2 = { ...r2 }, s2 = new AbortController(), c2 = `beforeEngineImport`, l2, u2 = [], d2 = { signal: s2.signal }, f2 = 0, p2 = async (e3) => {
     if (l2) throw l2;
-    if (c2 = e3, e3 !== H[f2]) throw Error(`Unexpected startup phase: ${e3}`);
+    if (c2 = e3, e3 !== O[f2]) throw Error(`Unexpected startup phase: ${e3}`);
     if (f2 += 1, a2(e3), !o2[e3]) return;
     let t3, n3;
     try {
@@ -256,7 +238,7 @@ async function W({ importEngine: e2, configureEngine: t2, initOptions: n2, phase
         }, s2.signal.addEventListener(`abort`, n3, { once: true });
       })]);
     } catch (t4) {
-      throw l2 = t4 instanceof U ? t4 : new U(e3, t4), s2.abort(l2), l2;
+      throw l2 = t4 instanceof k ? t4 : new k(e3, t4), s2.abort(l2), l2;
     } finally {
       clearTimeout(t3), s2.signal.removeEventListener(`abort`, n3);
     }
@@ -272,151 +254,218 @@ async function W({ importEngine: e2, configureEngine: t2, initOptions: n2, phase
     }
     return await p2(`beforeEngineInit`), c2 = `engineInit`, await r3.game.init(typeof n2 == `function` ? n2(r3) : n2), await p2(`beforeRun`), c2 = `gameRun`, await r3.game.run(), r3;
   } catch (e3) {
-    throw l2 = e3 instanceof U ? e3 : new U(c2, e3), s2.abort(l2), l2;
+    throw l2 = e3 instanceof k ? e3 : new k(c2, e3), s2.abort(l2), l2;
   } finally {
     for (let [e3, t3] of u2) e3.remove(t3);
   }
 }
-async function G() {
-  if (!N()) return false;
+async function j() {
+  if (!b()) return false;
   try {
-    let { renderStartupRecovery: e2 } = await A(async () => {
+    let { renderStartupRecovery: e2 } = await D(async () => {
       let { renderStartupRecovery: e3 } = await import("./runtime/CocosStartup.js");
       return { renderStartupRecovery: e3 };
-    }, __vite__mapDeps([5, 3, 1, 6, 7]));
-    await e2(R());
+    }, __vite__mapDeps([0, 1, 2, 3, 4]));
+    await e2(S());
   } catch (e2) {
     let t2 = document.createElement(`pre`);
     t2.style.cssText = `position:fixed;inset:24px;z-index:2147483647;background:#1c1c1e;color:#fff;padding:24px;white-space:pre-wrap`, t2.textContent = `Recovery unavailable: ${e2.message || e2}`, document.body.append(t2);
   }
   return true;
 }
-async function K(e2) {
+async function M(e2) {
   console.error(`[Cocos Bootstrap] failed to start game`, e2);
   try {
-    L(e2);
+    ne(e2);
   } catch {
   }
-  let { isJsModdingRuntimeEnabled: t2 } = await A(async () => {
+  let { isJsModdingRuntimeEnabled: t2 } = await D(async () => {
     let { isJsModdingRuntimeEnabled: e3 } = await import("./core/SettingsStore.js").then((e4) => e4.u);
     return { isJsModdingRuntimeEnabled: e3 };
-  }, __vite__mapDeps([8, 9, 10, 11])), n2 = R();
+  }, __vite__mapDeps([5, 6, 7, 8])), n2 = S();
   if (e2.jsModdingSuspended && !t2() && n2.causes.some((e3) => e3.code === `SAVE_CONTENT_MISSING`)) {
-    let { showJsModdingRequired: e3 } = await A(async () => {
+    let { showJsModdingRequired: e3 } = await D(async () => {
       let { showJsModdingRequired: e4 } = await import("./mods/JsModdingRequired.js");
       return { showJsModdingRequired: e4 };
-    }, __vite__mapDeps([12, 13, 9, 8, 10, 11, 14, 7]));
+    }, __vite__mapDeps([9, 10, 6, 5, 7, 8, 11, 4]));
     e3();
     return;
   }
-  globalThis.location.replace(P());
+  globalThis.location.replace(x());
 }
-var q, J, Y, X = false, Z = null;
-function Q() {
-  return J || null;
+var N = `.avif`, P = 8, ae = `.webp`;
+function oe(e2) {
+  let t2 = e2.macro?.SUPPORT_TEXTURE_FORMATS, n2 = e2.ImageAsset?.extnames;
+  if (!Array.isArray(t2) || !Array.isArray(n2)) throw Error(`Cocos image format tables are unavailable`);
+  if (t2.includes(N) || t2.push(N), n2.includes(N) || n2.push(N), n2.indexOf(N) !== P) throw Error(`Cocos AVIF format index must be ${P}`);
+  let r2 = [[e2.assetManager?.downloader, `_downloaders`], [e2.assetManager?.factory, `_producers`], [e2.assetManager?.parser, `_parsers`]];
+  for (let [e3, t3] of r2) {
+    let n3 = e3?.[t3]?.[ae];
+    if (!e3?.register || typeof n3 != `function`) throw Error(`Cocos AVIF registration source is unavailable: ${t3}`);
+    e3.register(N, n3);
+  }
 }
-var ee = { async beforeEngineImport() {
+async function R() {
+  await initializeGameAudio();
+}
+async function z() {
+  i() && await D(() => import("./platform/WindowBridge.js"), __vite__mapDeps([12, 2, 13, 1, 3, 14])), await R();
+}
+var B = `__PVZGE_STARTUP_TIMELINE__`, V = 1;
+function H() {
+  return globalThis.performance?.now?.() ?? 0;
+}
+function U() {
+  let e2 = globalThis[B];
+  if (e2 && Array.isArray(e2.marks)) return e2;
+  let t2 = H(), n2 = { version: V, timeOriginMs: globalThis.performance?.timeOrigin ?? Date.now() - t2, marks: [] };
+  return globalThis[B] = n2, n2;
+}
+function W(e2, t2 = null) {
+  let n2 = U(), r2 = n2.marks.find((t3) => t3.name === e2);
+  if (r2) return r2;
+  let i2 = H(), a2 = { name: e2, elapsedMs: i2, epochMs: n2.timeOriginMs + i2, details: t2 };
+  return n2.marks.push(a2), a2;
+}
+function G() {
+  let e2 = U(), t2 = e2.marks.map((e3) => ({ ...e3, details: e3.details && typeof e3.details == `object` ? { ...e3.details } : e3.details })), n2 = t2[t2.length - 1];
+  return { source: `browser`, status: t2.length ? `available` : `unavailable`, version: e2.version || V, timeOriginMs: e2.timeOriginMs, durationToLastMarkMs: n2?.elapsedMs ?? null, marks: t2 };
+}
+var K, q, J, Y = false, X = null;
+function pe() {
+  return q || null;
+}
+var Z = { async beforeEngineImport() {
   if (!globalThis.window?.__TAURI_INTERNALS__) return;
-  let { consumeStartupAttempt: e2, assertStartupAttempt: t2, prepareStartupAttempt: n2 } = await A(async () => {
+  let { consumeStartupAttempt: e2, assertStartupAttempt: t2, prepareStartupAttempt: n2 } = await D(async () => {
     let { consumeStartupAttempt: e3, assertStartupAttempt: t3, prepareStartupAttempt: n3 } = await import("./runtime/StartupAttempt.js");
     return { consumeStartupAttempt: e3, assertStartupAttempt: t3, prepareStartupAttempt: n3 };
-  }, __vite__mapDeps([15, 16, 17, 9, 3, 1, 18, 19, 14, 20, 21, 22, 13, 8, 10, 11, 23])), r2 = e2(), { createConfigurationStorage: i2 } = await A(async () => {
+  }, __vite__mapDeps([15, 16, 17, 18, 6, 2, 1, 19, 11, 20, 21, 22, 10, 5, 7, 8, 23])), r2 = e2(), { createConfigurationStorage: i2 } = await D(async () => {
     let { createConfigurationStorage: e3 } = await import("./mods/ModConfigurationStorage.js");
     return { createConfigurationStorage: e3 };
-  }, __vite__mapDeps([24, 3, 1])), a2 = i2(), o2 = await a2.read();
-  if (o2 === null) {
-    let [{ initializeFreshPlatform: e3 }, { createPackInstallStore: t3 }] = await Promise.all([A(() => import("./mods/FreshInstallation.js"), __vite__mapDeps([25, 3, 1, 18, 26, 9, 27, 20, 14])), A(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([28, 3, 1, 18]))]);
-    if (o2 = await e3({ storage: a2, installStore: t3() }), o2 === null) return;
+  }, __vite__mapDeps([24, 1, 2])), a2 = i2();
+  if (await a2.read() === null) {
+    let [{ initializeFreshPlatform: e3 }, { createPackInstallStore: t3 }] = await Promise.all([D(() => import("./mods/FreshInstallation.js"), __vite__mapDeps([25, 18, 6, 2, 1, 17, 19, 11, 26, 27, 20, 28])), D(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([29, 2, 1, 17]))]);
+    await e3({ storage: a2, installStore: t3() });
   }
-  let { createConfigurationState: s2 } = await A(async () => {
+  let { createConfigurationState: o2 } = await D(async () => {
     let { createConfigurationState: e3 } = await import("./mods/ModConfigurationState.js").then((e4) => e4.r);
     return { createConfigurationState: e3 };
-  }, __vite__mapDeps([26, 9, 27, 20, 14]));
-  q = s2({ storage: a2 });
-  let c2 = await q.load();
+  }, __vite__mapDeps([26, 6, 27, 20, 11]));
+  K = o2({ storage: a2 });
+  let s2 = await K.load();
   if (r2) {
-    let { createPackInstallStore: e3 } = await A(async () => {
+    let { createPackInstallStore: e3 } = await D(async () => {
       let { createPackInstallStore: e4 } = await import("./mods/PackInstallStore.js");
       return { createPackInstallStore: e4 };
-    }, __vite__mapDeps([28, 3, 1, 18]));
-    Z = await n2(c2, e3()), t2(r2, Z.binding), X = true;
+    }, __vite__mapDeps([29, 2, 1, 17]));
+    X = await n2(s2, e3()), t2(r2, X.binding), Y = true;
     return;
   }
-  await q.prepareFreshStartup({ isFresh: () => !X && !J });
-  let [{ reconcileJsModdingSelection: l2 }, { createPackInstallStore: u2 }, { isJsModdingRuntimeEnabled: d2 }] = await Promise.all([A(() => import("./mods/JsModdingSelection.js"), __vite__mapDeps([29, 17, 9, 3, 1, 18, 19, 14])), A(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([28, 3, 1, 18])), A(() => import("./core/SettingsStore.js").then((e3) => e3.u), __vite__mapDeps([8, 9, 10, 11]))]);
-  await l2(q, u2(), d2()), X = true;
+  await K.prepareFreshStartup({ isFresh: () => !Y && !q });
+  let [{ createLocalPackSync: c2 }, { createPackInstallStore: l2 }] = await Promise.all([D(() => import("./mods/LocalPackSync.js"), __vite__mapDeps([30, 6, 2, 17, 18, 1, 19, 11, 27, 20, 31, 21, 22, 10, 5, 7, 8, 32])), D(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([29, 2, 1, 17]))]);
+  W(`gp-next:local-sync:start`), await c2({ configurationState: K, installStore: l2() })(), W(`gp-next:local-sync:end`), await (await D(async () => {
+    let { applyPendingModSelection: e3 } = await import("./mods/PendingModSelection.js").then((e4) => e4.n);
+    return { applyPendingModSelection: e3 };
+  }, __vite__mapDeps([33, 6, 27, 20, 11]))).applyPendingModSelection(K), Y = true;
 }, async afterProject({ cc: e2, signal: t2 }) {
-  if (!q) return;
-  let [{ CorePatcher: n2 }, { createPackInstallStore: r2 }, { createNativeSaveBackupStorage: i2 }, { createNativeSaveBoundary: a2 }, { prepareColdStartHost: o2 }] = await Promise.all([A(() => import("./mods/Patcher.js"), __vite__mapDeps([30, 9, 3, 1, 6, 17, 18, 19, 14, 16, 20, 21, 22, 13, 8, 10, 11, 31, 32, 33, 34, 35])), A(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([28, 3, 1, 18])), A(() => import("./mods/ModSaveBackupStorage.js"), __vite__mapDeps([36, 3, 1, 37, 9])), A(() => import("./mods/ModSaveProtection.js").then((e3) => e3.r), __vite__mapDeps([37, 9])), A(() => import("./runtime/ColdStartHost.js"), __vite__mapDeps([38, 9, 18, 17, 3, 1, 19, 14, 16, 20, 21, 22, 13, 8, 10, 11, 23, 27, 39, 40, 41, 42, 43, 44, 37, 45, 35, 46, 31]))]);
+  if (!K) return;
+  aurumHost.setStartupOptions(K.getState().desired.modSettings?.mods?.["gardendless.aurum"]?.values || {});
+  let [{ CorePatcher: n2 }, { createPackInstallStore: r2 }, { createNativeSaveBackupStorage: i2 }, { createNativeSaveBoundary: a2 }, { prepareColdStartHost: o2 }] = await Promise.all([D(() => import("./mods/Patcher.js"), __vite__mapDeps([34, 6, 1, 2, 3, 18, 17, 19, 11, 16, 20, 21, 22, 10, 5, 7, 8, 35, 36, 37, 38, 39])), D(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([29, 2, 1, 17])), D(() => import("./mods/ModSaveBackupStorage.js"), __vite__mapDeps([40, 1, 2, 41, 6, 11])), D(() => import("./mods/ModSaveProtection.js").then((e3) => e3.r), __vite__mapDeps([41, 6, 11])), D(() => import("./runtime/ColdStartHost.js"), __vite__mapDeps([42, 6, 17, 18, 2, 1, 19, 11, 16, 20, 21, 22, 10, 5, 7, 8, 27, 43, 44, 45, 46, 47, 48, 41, 28, 39, 30, 31, 32, 49, 35, 33]))]);
   t2.throwIfAborted();
   let s2 = i2();
-  if (Z) {
-    let { createConfigurationStorage: i3 } = await A(async () => {
+  if (X) {
+    let { createConfigurationStorage: i3 } = await D(async () => {
       let { createConfigurationStorage: e3 } = await import("./mods/ModConfigurationStorage.js");
       return { createConfigurationStorage: e3 };
-    }, __vite__mapDeps([24, 3, 1]));
-    if (localStorage.getItem(`gp-next-settings`) !== Z.preferences || JSON.stringify(await i3().read()) !== JSON.stringify(q.getState())) throw Error(`Configuration changed before startup attempt`);
-    let { prepareStartupAttemptHost: o3 } = await A(async () => {
+    }, __vite__mapDeps([24, 1, 2]));
+    if (localStorage.getItem(`gp-next-settings`) !== X.preferences || JSON.stringify(await i3().read()) !== JSON.stringify(K.getState())) throw Error(`Configuration changed before startup attempt`);
+    let { prepareStartupAttemptHost: o3 } = await D(async () => {
       let { prepareStartupAttemptHost: e3 } = await import("./runtime/StartupAttemptHost.js");
       return { prepareStartupAttemptHost: e3 };
-    }, __vite__mapDeps([47, 39, 18, 17, 9, 3, 1, 19, 14, 22, 40, 13, 8, 10, 11, 41, 42, 20, 43, 44, 21, 37, 45, 35, 46, 16, 27, 31]));
-    J = await o3({ review: Z, record: q.getState(), installStore: r2(), saveBoundary: a2({ storage: window.localStorage, backups: s2 }), patcher: new n2(), cc: e2, signal: t2 });
+    }, __vite__mapDeps([50, 16, 17, 18, 6, 2, 1, 19, 11, 20, 21, 22, 10, 5, 7, 8, 43, 44, 45, 46, 47, 48, 41, 28, 39, 49, 27, 35, 32, 33]));
+    q = await o3({ review: X, configurationState: K, installStore: r2(), saveBoundary: a2({ storage: window.localStorage, backups: s2 }), patcher: new n2(), cc: e2, signal: t2 });
     return;
   }
-  J = await o2({ configurationState: q, installStore: r2(), backups: s2, saveBoundary: a2({ storage: window.localStorage, backups: s2 }), patcher: new n2(), cc: e2, signal: t2 });
+  q = await o2({ configurationState: K, installStore: r2(), backups: s2, saveBoundary: a2({ storage: window.localStorage, backups: s2 }), patcher: new n2(), cc: e2, signal: t2 });
 }, async beforeRun({ cc }) {
   applyFrameRate(cc.game, getSettings().frameRate);
-  J && await J.publish();
+  q && await q.publish();
 } };
-async function $(e2) {
-  if (Y) return Y;
-  if (Y = e2, globalThis.window?.__TAURI_INTERNALS__ && await (await A(async () => {
+async function Q(e2) {
+  if (J) return J;
+  if (J = e2, globalThis.window?.__TAURI_INTERNALS__ && await (await D(async () => {
     let { reportCloudStartup: e3 } = await import("./platform/CloudColdHost.js");
     return { reportCloudStartup: e3 };
-  }, __vite__mapDeps([48, 1, 49, 10, 44, 50, 26, 9, 27, 20, 14, 11, 19, 3]))).reportCloudStartup(false).catch(() => {
-  }), J && J.getPhase() !== `active` && J.getPhase() !== `failed-restart-required`) try {
-    await J.fail(e2);
+  }, __vite__mapDeps([51, 2, 52, 7, 48, 53, 26, 6, 27, 20, 11, 8, 19, 1]))).reportCloudStartup(false).catch(() => {
+  }), q && q.getPhase() !== `active` && q.getPhase() !== `failed-restart-required`) try {
+    await q.fail(e2);
   } catch (e3) {
-    Y = e3;
+    J = e3;
   }
-  let t2 = X ? q?.getState() : null;
-  if (t2?.recovery?.required && (Y.recoveryRequiresRestart = true), t2?.desired.mods.some((e3) => e3.suspendedByJsModding) && (Y.jsModdingSuspended = true), t2 && !t2.journal && !t2.recovery?.required && !J) {
+  let t2 = Y ? K?.getState() : null;
+  if (t2?.recovery?.required && (J.recoveryRequiresRestart = true), t2?.desired.mods.some((e3) => e3.suspendedByJsModding) && (J.jsModdingSuspended = true), t2 && !t2.journal && !t2.recovery?.required && !q) {
     let { revision: e3, ...n2 } = t2.active.configuration, { revision: r2, ...i2 } = t2.desired;
-    JSON.stringify(n2) !== JSON.stringify(i2) && (Y.recoveryAction = async () => {
-      let [{ restoreLastActiveSelection: e4 }, { createPackInstallStore: t3 }, { isJsModdingRuntimeEnabled: n3 }] = await Promise.all([A(() => import("./mods/ConfigurationRecovery.js"), __vite__mapDeps([51, 16, 17, 9, 3, 1, 18, 19, 14, 20, 21, 22, 13, 8, 10, 11, 37])), A(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([28, 3, 1, 18])), A(() => import("./core/SettingsStore.js").then((e5) => e5.u), __vite__mapDeps([8, 9, 10, 11]))]);
-      return e4({ configurationState: q, installStore: t3(), assertCandidateAllowed(e5) {
+    JSON.stringify(n2) !== JSON.stringify(i2) && (J.recoveryAction = async () => {
+      let [{ restoreLastActiveSelection: e4 }, { createPackInstallStore: t3 }, { isJsModdingRuntimeEnabled: n3 }] = await Promise.all([D(() => import("./mods/ConfigurationRecovery.js"), __vite__mapDeps([54, 16, 17, 18, 6, 2, 1, 19, 11, 20, 21, 22, 10, 5, 7, 8, 41])), D(() => import("./mods/PackInstallStore.js"), __vite__mapDeps([29, 2, 1, 17])), D(() => import("./core/SettingsStore.js").then((e5) => e5.u), __vite__mapDeps([5, 6, 7, 8]))]);
+      return e4({ configurationState: K, installStore: t3(), assertCandidateAllowed(e5) {
         if (e5.packs.some((e6) => e6.enabled !== false && e6.meta.js) && !n3()) throw Error(`JavaScript modding is disabled for this session`);
       } });
     });
   }
-  return Y;
+  return J;
 }
-async function te() {
-  if (!await v() && !await G()) try {
-    await j();
-    let e2 = document.getElementById(`GameCanvas`);
-    if (!e2?.parentElement) throw Error(`GameCanvas or its parent was not found`);
-    e2.addEventListener(`contextmenu`, (e3) => e3.preventDefault());
-    let t2 = e2.parentElement.getBoundingClientRect();
-    e2.width = t2.width, e2.height = t2.height, await W({ phases: ee, importEngine: () => window.System.import(`cc`), configureEngine: S, initOptions: (e3) => ({ debugMode: e3.DebugMode.ERROR, settingsPath: `src/settings.json`, overrideSettings: { profiling: { showFPS: false } } }) });
-  } catch (e2) {
-    K(await $(e2));
+var me = 1.5, he = false;
+function ge(e2) {
+  let t2 = Math.max(1, Number(e2.screen?.devicePixelRatio) || 1), n2 = Math.min(1, me / t2), r2 = e2.director?.root?.pipeline;
+  return !r2 || n2 >= 1 ? { status: r2 ? `unchanged` : `unavailable`, devicePixelRatio: t2, shadingScale: 1, effectivePixelRatio: t2 } : (r2.shadingScale = n2, { status: `applied`, devicePixelRatio: t2, shadingScale: n2, effectivePixelRatio: t2 * n2 });
+}
+function $(e2) {
+  let t2 = ge(e2);
+  return globalThis.__PVZGE_LITE_RUNTIME__ = { edition: `lite`, renderScale: t2, startup: G() }, t2;
+}
+async function _e() {
+  if (!await v() && !await j()) {
+    W(`lite-bootstrap-start`);
+    try {
+      await z();
+      let e2 = document.getElementById(`GameCanvas`);
+      if (!e2?.parentElement) throw Error(`GameCanvas or its parent was not found`);
+      e2.addEventListener(`contextmenu`, (e3) => e3.preventDefault());
+      let t2 = e2.parentElement.getBoundingClientRect();
+      e2.width = t2.width, e2.height = t2.height, await A({ importEngine: () => window.System.import(`cc`), configureEngine: async (e3) => {
+        installAssetRevision(e3);
+        await installCocosAudio(e3);
+        W(`cocos-engine-imported`), oe(e3), e3.game.once(e3.Game.EVENT_ENGINE_INITED, () => {
+          W(`cocos-engine-ready`);
+        }), e3.game.once(e3.Game.EVENT_GAME_INITED, () => {
+          W(`cocos-game-initialized`, $(e3)), e3.screen.on(`window-resize`, () => $(e3));
+        }), e3.director.once(e3.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
+          $(e3), W(`first-scene-launched`, { sceneName: e3.director.getScene()?.name || null }), globalThis.__PVZGE_LITE_RUNTIME__ && (globalThis.__PVZGE_LITE_RUNTIME__.startup = G());
+        });
+      }, phases: { ...Z, beforeEngineInit: () => W(`cocos-game-init-start`), beforeRun: async (startupContext) => {
+        await Z.beforeRun(startupContext), W(`cocos-game-init-complete`);
+      } }, initOptions: (e3) => ({ debugMode: e3.DebugMode.ERROR, settingsPath: `src/settings.json`, overrideSettings: { engine: { macros: { ENABLE_WEBGL_ANTIALIAS: he } }, profiling: { showFPS: false } } }) }), W(`cocos-game-run-called`);
+    } catch (e2) {
+      M(await Q(e2));
+    }
   }
 }
-if (typeof document !== "undefined" && document.getElementById("GameCanvas")) {
-  te(), v().then((e2) => {
-    e2 || N() || (A(() => import("./Main.js"), __vite__mapDeps([52, 9, 1, 2, 3, 6, 4, 18, 17, 19, 14, 22, 53, 13, 8, 10, 11, 54, 32, 7, 55, 56, 35])), A(() => import("./platform/WindowBridge.js"), __vite__mapDeps([0, 1, 2, 3, 4])));
+if (typeof window !== "undefined" && typeof document !== "undefined" && document.getElementById("GameCanvas")) {
+  _e(), v().then((e2) => {
+    e2 || b() || (D(() => import("./Main.js"), __vite__mapDeps([55, 6, 2, 13, 1, 3, 14, 17, 18, 19, 11, 22, 56, 10, 5, 7, 8, 57, 36, 4, 58, 59, 39])), D(() => import("./platform/WindowBridge.js"), __vite__mapDeps([12, 2, 13, 1, 3, 14])));
   });
 }
 export {
-  N as a,
-  B as c,
-  z as i,
-  A as l,
-  Q as n,
-  F as o,
-  V as r,
-  P as s,
-  $ as t,
-  m as u
+  D as a,
+  ee as c,
+  m as d,
+  ie as i,
+  x as l,
+  pe as n,
+  C as o,
+  W as r,
+  b as s,
+  Q as t,
+  re as u
 };

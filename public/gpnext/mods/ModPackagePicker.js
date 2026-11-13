@@ -1,4 +1,4 @@
-import { a, i as t, n } from "../platform/FileSystem.js";
+import { a as e, i as t, n } from "../platform/FileSystem.js";
 import { t as r } from "./PackSnapshot.js";
 import { t as i } from "../platform/Dialog.js";
 async function pickModPackage({ directory: a2 = false } = {}) {
@@ -9,7 +9,7 @@ async function pickModPackage({ directory: a2 = false } = {}) {
     if (e2 !== s && !e2.startsWith(s + `/`)) throw Error(`Read is outside the selected mod`);
     return o.replace(/[\\/]+$/, ``) + e2.slice(s.length);
   };
-  return r(s, { lstat: (e2) => n(c(e2)), readDir: (e2) => t(c(e2)), readFile: (t2) => a(c(t2)) });
+  return r(s, { lstat: (e2) => n(c(e2)), readDir: (e2) => t(c(e2)), readFile: (t2) => e(c(t2)) });
 }
 export {
   pickModPackage

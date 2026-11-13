@@ -1,0 +1,35 @@
+{
+  "Version": "0.16.24",
+  "Name": "PvZ2_Prerelease_GitHubLevels",
+  "Updates": [
+    {
+      "en": "**!! ATTENTION !! If you updated from `0.15.x` or before, you'll need to migrate the save file path. There are two methods as follows:**",
+      "zh": "**！！注意！！如果你更新自`0.15.x`或之前，需要迁移存档路径！！有以下两种方法：**"
+    },
+    {
+      "en": "\t\t1. (Recommended) Turn off the game and go to the path: `%APPDATA%\\win`, and rename this folder to `pvz2_ge_electron`.",
+      "zh": "\t\t1. （推荐）关闭游戏后，前往路径：`%APPDATA%\\win`，将这个文件夹重命名为 `pvz2_ge_electron`。"
+    },
+    {
+      "en": "\t\t2. Open the old game version and export each save file one by one; then open the new game version and import the exported save files one by one.",
+      "zh": "\t\t2. 打开旧的游戏版本，将其中的每一个存档一一导出；打开新的游戏版本，将导出的存档一一导入。"
+    },
+    {
+      "en": "Added Aqua Vine, Bud'uh Boom.",
+      "zh": "加入水生藤蔓、爆浆玉露。"
+    },
+    {
+      "en": "Added Epic Levels for Aqua Vine(by the community).",
+      "zh": "新增水生藤蔓史诗任务（由社区制作）。"
+    },
+    {
+      "en": "Music Packs now allow order changing.",
+      "zh": "音乐包现支持顺序改变。"
+    },
+    {
+      "en": "Lowered the in-game character calculation frequency, which **MIGHT** provide optimization.",
+      "zh": "降低游戏内角色计算频率，**可能**做到了优化。"
+    }
+  ],
+  "BuildTime": "2026-11-12T06:13:02.520Z"
+}

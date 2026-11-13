@@ -1,2 +1,2 @@
-// Generated from the bundled Cocos Links asset.
-export const GAME_VERSION = "0.16.1";
+// Generated from bundled game version metadata.
+export const GAME_VERSION = "0.16.24";

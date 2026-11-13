@@ -49,6 +49,7 @@ def main():
     steps.append(("Read the bundled game version", [node, "scripts/launcher/GameMetadata.mjs"]))
     steps.append(("Refresh save-editor catalog from the new assets",
                   [node, "scripts/launcher/SaveCatalog.mjs"]))
+    steps.append(("Bundle the built-in Aurum package", [node, "scripts/aurum/Bundle.mjs"]))
     if not args.skip_png:
         steps.append(("Losslessly optimize PNGs and verify decoded pixels",
                       [sys.executable, "scripts/assets/optimize-pngs.py", "--oxipng", args.oxipng,

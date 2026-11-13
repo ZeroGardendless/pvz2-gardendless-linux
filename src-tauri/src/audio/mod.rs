@@ -13,7 +13,7 @@ use symphonia::core::{
 };
 use tauri::{Emitter, Manager, WebviewWindow};
 mod output;
-const CACHE_LIMIT: usize = 256 * 1024 * 1024;
+const CACHE_LIMIT: usize = 96 * 1024 * 1024;
 const CLIP_LIMIT: usize = 256 * 1024 * 1024;
 const RATE: u32 = 48000;
 #[derive(Clone)]
@@ -106,6 +106,9 @@ fn decode(bytes: Vec<u8>) -> Result<Clip, String> {
 #[derive(Default)]
 struct Assets {
     cache: HashMap<String, (Arc<Clip>, u64)>,
+    live: HashMap<String, Weak<Clip>>,
+    hits: u64,
+    misses: u64,
     bytes: usize,
     clock: u64,
     next: u64,
@@ -130,7 +133,7 @@ pub struct Update {
     remove: bool,
 }
 enum Command {
-    Clip(u64, Weak<Clip>),
+    Clip(u64, Weak<Clip>, Option<Arc<Clip>>),
     Release(u64),
     Update(Vec<Update>),
 }
@@ -213,8 +216,8 @@ impl NativeAudio {
                     let mut disconnected = false;
                     for _ in 0..1024 {
                         match receiver.try_recv() {
-                            Ok(Command::Clip(id, clip)) => {
-                                clips.insert(id, clip);
+                            Ok(Command::Clip(id, weak, pending)) => {
+                                clips.insert(id, (weak, pending));
                             }
                             Ok(Command::Release(id)) => {
                                 clips.remove(&id);
@@ -229,7 +232,9 @@ impl NativeAudio {
                                         continue;
                                     }
                                     let Some(clip) =
-                                        clips.get(&update.clip).and_then(Weak::upgrade)
+                                        clips.get_mut(&update.clip).and_then(|(weak, pending)| {
+                                            pending.take().or_else(|| weak.upgrade())
+                                        })
                                     else {
                                         continue;
                                     };
@@ -319,12 +324,87 @@ pub fn native_audio_ready(window: WebviewWindow, app: tauri::AppHandle) -> Resul
     }
     Ok(())
 }
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AudioMetadata {
+    duration: f64,
+    sample_rate: u32,
+}
+fn inspect_audio(bytes: Vec<u8>) -> Result<AudioMetadata, String> {
+    let source = MediaSourceStream::new(Box::new(Cursor::new(bytes)), Default::default());
+    let format = symphonia::default::get_probe()
+        .format(
+            &Hint::new(),
+            source,
+            &FormatOptions::default(),
+            &MetadataOptions::default(),
+        )
+        .map_err(|e| e.to_string())?
+        .format;
+    let params = &format.default_track().ok_or("No audio track")?.codec_params;
+    let sample_rate = params.sample_rate.ok_or("Unknown sample rate")?;
+    let frames = params.n_frames.ok_or("Unknown audio duration")?;
+    let duration = if let Some(base) = params.time_base {
+        let time = base.calc_time(frames);
+        time.seconds as f64 + time.frac
+    } else {
+        frames as f64 / sample_rate as f64
+    };
+    if !duration.is_finite() || duration <= 0.0 || sample_rate == 0 {
+        return Err("Invalid audio metadata".into());
+    }
+    Ok(AudioMetadata {
+        duration,
+        sample_rate,
+    })
+}
+#[tauri::command]
+pub async fn native_audio_metadata(
+    window: WebviewWindow,
+    app: tauri::AppHandle,
+    path: String,
+) -> Result<AudioMetadata, String> {
+    require_game(&window)?;
+    tauri::async_runtime::spawn_blocking(move || {
+        if !path.starts_with("assets/")
+            || !(path.ends_with(".m4a") || path.ends_with(".mp3"))
+            || path.split('/').any(|part| part == "..")
+        {
+            return Err("Invalid embedded audio path".into());
+        }
+        let bytes = app
+            .asset_resolver()
+            .get(path)
+            .ok_or("Embedded audio not found")?
+            .bytes;
+        inspect_audio(bytes)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+pub fn native_audio_cache_stats(
+    window: WebviewWindow,
+    app: tauri::AppHandle,
+) -> Result<serde_json::Value, String> {
+    require_game(&window)?;
+    let audio = app
+        .try_state::<NativeAudio>()
+        .ok_or("Native audio unavailable")?;
+    let assets = audio.assets.lock().map_err(|e| e.to_string())?;
+    Ok(
+        serde_json::json!({"decodedCacheBytes":assets.bytes,"decodedCacheBudgetBytes":CACHE_LIMIT,"cachedClips":assets.cache.len(),"cacheHits":assets.hits,"decodes":assets.misses}),
+    )
+}
+
 #[tauri::command]
 pub async fn native_audio_prepare(
     window: WebviewWindow,
     app: tauri::AppHandle,
     path: String,
     bytes: Option<Vec<u8>>,
+    retain_until_play: Option<bool>,
 ) -> Result<Prepared, String> {
     require_game(&window)?;
     tauri::async_runtime::spawn_blocking(move || {
@@ -336,8 +416,14 @@ pub async fn native_audio_prepare(
         let clock = assets.clock;
         let clip = if let Some((clip, used)) = assets.cache.get_mut(&path) {
             *used = clock;
-            clip.clone()
+            let clip = clip.clone();
+            assets.hits += 1;
+            clip
+        } else if let Some(clip) = assets.live.get(&path).and_then(Weak::upgrade) {
+            assets.hits += 1;
+            clip
         } else {
+            assets.misses += 1;
             let bytes = match bytes {
                 Some(value) if value.len() <= CLIP_LIMIT => value,
                 Some(_) => return Err("Compressed audio exceeds 256 MiB".into()),
@@ -365,15 +451,25 @@ pub async fn native_audio_prepare(
                 let removed = assets.cache.remove(&oldest).unwrap();
                 assets.bytes -= removed.0.samples.len() * 4;
             }
-            assets.bytes += size;
-            assets.cache.insert(path, (clip.clone(), clock));
+            if assets.clock % 32 == 0 {
+                assets.live.retain(|_, clip| clip.strong_count() > 0);
+            }
+            assets.live.insert(path.clone(), Arc::downgrade(&clip));
+            if size <= CACHE_LIMIT {
+                assets.bytes += size;
+                assets.cache.insert(path, (clip.clone(), clock));
+            }
             clip
         };
         assets.next += 1;
         let id = assets.next;
         audio
             .sender
-            .try_send(Command::Clip(id, Arc::downgrade(&clip)))
+            .try_send(Command::Clip(
+                id,
+                Arc::downgrade(&clip),
+                retain_until_play.unwrap_or(true).then(|| clip.clone()),
+            ))
             .map_err(|e| e.to_string())?;
         Ok(Prepared {
             clip: id,
@@ -533,6 +629,31 @@ mod tests {
             "Decoded {} bundled audio files; {fallback} oversized clips use media fallback",
             files.len()
         );
+    }
+    #[test]
+    #[ignore = "reads bundled media; run for a media-source migration"]
+    fn inspect_bundled_audio_headers() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../public/assets");
+        let mut directories = vec![root];
+        let mut count = 0;
+        while let Some(directory) = directories.pop() {
+            for entry in std::fs::read_dir(directory).unwrap().flatten() {
+                let path = entry.path();
+                if path.is_dir() {
+                    directories.push(path);
+                } else if path
+                    .extension()
+                    .is_some_and(|ext| ext == "mp3" || ext == "m4a")
+                {
+                    let metadata = inspect_audio(std::fs::read(&path).unwrap())
+                        .unwrap_or_else(|error| panic!("{}: {error}", path.display()));
+                    assert!(metadata.duration > 0.0 && metadata.sample_rate > 0);
+                    count += 1;
+                }
+            }
+        }
+        assert!(count > 0);
+        println!("Validated {count} bundled audio headers without decoding PCM");
     }
     #[test]
     fn sound_heavy_mixing_keeps_every_voice() {

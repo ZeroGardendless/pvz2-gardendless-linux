@@ -1,9 +1,9 @@
 import { r as e } from "../vendor/ModuleHelpers.js";
 import { r as t, s as n } from "./GameConfiguration.js";
 import { r } from "./ModOperationPlan.js";
-import { i } from "./ConfigurationModSettings.js";
+import { a as i } from "./ConfigurationModSettings.js";
 import { n as a } from "./ModConfigurationState.js";
-import { i as o } from "./PackSnapshot.js";
+import { a as o } from "./PackSnapshot.js";
 import { a as s, h as c, i as l } from "./FileLoader.js";
 import { i as u } from "./PackPreparation.js";
 import { i as d } from "./ModSettingsRegistry.js";

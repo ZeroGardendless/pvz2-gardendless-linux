@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="/launcher/Styles.css"><title>UI stability check</title><div id="fixture"><label>Choice<select><option>A</option><option>B</option></select></label></div>
+<script type="module">
+import{installControls}from'/launcher/Controls.js';
+import{n as createOverlay}from'/gpnext/ui/Overlay.js';
+const frame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
+async function stable(menu,frames=35){const initial=menu.getBoundingClientRect();for(let i=0;i<frames;i++){await frame();const current=menu.getBoundingClientRect();if(!menu.isConnected||getComputedStyle(menu).opacity!=='1'||Math.abs(current.top-initial.top)>1)throw Error('Menu disappeared, faded or moved after opening');}}
+try{
+const fixture=document.querySelector('#fixture');installControls(fixture);fixture.querySelector('button').click();await stable(document.querySelector('.select-menu'));fixture.querySelector('button').click();
+const overlay=createOverlay();overlay.registerTab({id:'proof',labelKey:'tab.tools',render(container){const select=document.createElement('select');select.innerHTML='<option>A</option><option>B</option>';container.append(select);}});overlay.show();await frame();await frame();
+const root=document.getElementById('gp-overlay');root.querySelector('.gp-select-control').click();await stable(document.querySelector('.gp-select-menu'));
+const drawer=document.createElement('div');drawer.className='gp-drawer gp-drawer-open';drawer.style.cssText='visibility:visible;position:fixed;left:0;top:0;width:300px;height:300px';root.append(drawer);
+overlay.hide();await frame();if(!root.hidden||!root.inert||getComputedStyle(root).display!=='none'||drawer.getClientRects().length||document.querySelector('.gp-select-menu'))throw Error('Closed overlay retained drawable UI');
+const hint=document.querySelector('.gp-f1-hint');if(!hint||getComputedStyle(hint).display==='none')throw Error('Shortcut hint disappeared');
+overlay.show();await frame();if(root.hidden||root.inert||getComputedStyle(root).display==='none')throw Error('Overlay failed to reopen');overlay.hide();
+document.title='RESULT: PASS stable launcher/GP-Next menus, fully hidden panel/drawer, preserved shortcut hint and reopening';
+}catch(error){document.title='RESULT: FAIL '+error.stack;}
+</script>

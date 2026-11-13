@@ -1,5 +1,5 @@
 import { f as e, i as t, n, r, t as i } from "./CloudJson.js";
-import { n as a, u as o } from "../GameBootstrap.js";
+import { n as a, d as o } from "../GameBootstrap.js";
 import { i as s } from "./Events.js";
 import { a as c, c as l, d as u, i as d, l as f, o as p, r as m, u as h } from "./CloudSelection.js";
 import { t as g } from "./CloudPortablePreferences.js";

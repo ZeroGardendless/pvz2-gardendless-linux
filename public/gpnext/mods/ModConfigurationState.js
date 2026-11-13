@@ -1,7 +1,7 @@
 import { n as e } from "../vendor/ModuleHelpers.js";
 import { t } from "../core/Logger.js";
 import { i as n, r, t as i } from "./ModOperationPlan.js";
-import { i as a, n as o, r as s, t as c } from "./ConfigurationModSettings.js";
+import { a, i as o, n as s, r as c } from "./ConfigurationModSettings.js";
 var l = e({ createConfigurationState: () => D, createLegacyConfigurationRecord: () => E }), u = new t(`configuration-state`), d = [`restored`, `restart-required`, `unknown`], f = [`unchanged`, `changed`, `unknown`], p = [`immediate`, `scene-boundary`, `restart-required`], m = (e2, t2) => JSON.stringify(e2) === JSON.stringify(t2), h = (e2) => e2 === null || typeof e2 == `string` && /^[a-f0-9]{64}$/.test(e2);
 function g(e2) {
   if (e2 === null) return;
@@ -59,7 +59,7 @@ function w(e2, t2 = false) {
       }
     }
     if (n2.settingsNamespaces !== void 0) {
-      let e3 = new Set(n2.target.configuration.mods.filter((e4) => e4.enabled).map(o));
+      let e3 = new Set(n2.target.configuration.mods.filter((e4) => e4.enabled).map(c));
       if (!Array.isArray(n2.settingsNamespaces) || new Set(n2.settingsNamespaces).size !== n2.settingsNamespaces.length || n2.settingsNamespaces.some((t3) => !e3.has(t3))) throw Error(`Invalid staged settings ownership`);
     }
     if (!p.includes(n2.level) || !Number.isSafeInteger(n2.desiredRevision) || n2.desiredRevision !== e2.desired.revision || n2.desiredRevision !== n2.target.configuration.revision || !m(n2.previousActive, e2.active) || !m(n2.target.configuration, e2.desired) || e2.sequence < 1 || n2.token !== `${e2.active.generation}:${n2.desiredRevision}:${e2.sequence}`) throw Error(`Invalid journal binding`);
@@ -126,7 +126,7 @@ function D({ storage: e2, initial: t2 }) {
   }, load: () => C2(async () => {
     if (p2) return p2;
     let n2 = await e2.read(), i2 = n2?.formatVersion === 1 ? T(n2) : n2 ?? { formatVersion: 2, sequence: 0, desired: t2.configuration, active: v(t2), journal: null, recovery: null, failedEntityTargets: [] };
-    return w(i2), i2.journal ? E2({ ...i2, desired: i2.journal.kind === `cold-start` ? i2.desired : { ...i2.journal.previousActive.configuration, revision: i2.desired.revision + 1 }, active: i2.journal.previousActive, journal: null, failedEntityTargets: [...i2.failedEntityTargets, y(i2.journal)], recovery: { required: true, reason: `interrupted-application`, failedTarget: i2.journal.target, failedToken: i2.journal.token, session: `restart-required`, persistent: `unknown`, saveRestored: false } }) : (p2 = r(i2), p2);
+    return w(i2), i2.journal ? E2({ ...i2, desired: i2.desired, active: i2.journal.previousActive, journal: null, failedEntityTargets: [...i2.failedEntityTargets, y(i2.journal)], recovery: { required: true, reason: `interrupted-application`, failedTarget: i2.journal.target, failedToken: i2.journal.token, session: `restart-required`, persistent: `unknown`, saveRestored: false } }) : (p2 = r(i2), p2);
   }), prepareFreshStartup: ({ isFresh: e3 }) => C2(async () => {
     if (D2(), !e3() || p2.journal) throw Error(`A fresh document is required to retry startup`);
     if (!p2.recovery?.required) return p2;
@@ -147,8 +147,8 @@ function D({ storage: e2, initial: t2 }) {
       if (i(e4, { ...t4, desired: p2.desired, active: p2.active }), e4.level === `blocked` || e4.noChanges) throw Error(`Plan cannot be applied`);
       let r2 = Object.hasOwn(n3, `runtimeBackupId`);
       if (r2 && (!h(n3.runtimeBackupId) || n3.runtimeBackupId === null || p2.active.entityLedger === null || ![`immediate`, `scene-boundary`].includes(e4.level))) throw Error(`Runtime application requires a current backup and known entity ledger`);
-      let s2 = p2.sequence + 1, c2 = `${p2.active.generation}:${p2.desired.revision}:${s2}`;
-      return await E2({ ...p2, sequence: s2, journal: { token: c2, kind: `operation`, level: e4.level, previousActive: p2.active, target: { ...e4.target, entityLedger: p2.active.entityLedger, backupId: r2 ? n3.runtimeBackupId : p2.active.backupId }, desiredRevision: p2.desired.revision, ...r2 ? { runtimeBackupId: n3.runtimeBackupId } : {}, settingsNamespaces: e4.target.configuration.mods.filter((t5) => t5.enabled && e4.affected.includes(t5.id)).map(o) } }), c2;
+      let o2 = p2.sequence + 1, s2 = `${p2.active.generation}:${p2.desired.revision}:${o2}`;
+      return await E2({ ...p2, sequence: o2, journal: { token: s2, kind: `operation`, level: e4.level, previousActive: p2.active, target: { ...e4.target, entityLedger: p2.active.entityLedger, backupId: r2 ? n3.runtimeBackupId : p2.active.backupId }, desiredRevision: p2.desired.revision, ...r2 ? { runtimeBackupId: n3.runtimeBackupId } : {}, settingsNamespaces: e4.target.configuration.mods.filter((t5) => t5.enabled && e4.affected.includes(t5.id)).map(c) } }), s2;
     });
   }, beginColdStart: (e3) => {
     let t3 = r(e3);
@@ -165,11 +165,8 @@ function D({ storage: e2, initial: t2 }) {
       if (o2 !== void 0) {
         if (i(o2, { ...s2, desired: p2.desired, active: p2.active }), o2.level === `blocked`) throw Error(`Plan cannot be applied`);
         u2 = o2.target;
-      } else {
-        if (!l3) throw Error(`Changed cold-start configuration requires a verified operation plan`);
-        u2 = { configuration: p2.desired, packages: p2.active.packages, ...p2.active.ordered === void 0 ? {} : { ordered: p2.active.ordered } };
-      }
-      if (!l3 && o2.noChanges) throw Error(`Changed configuration cannot use a noChanges plan`);
+      } else u2 = { configuration: p2.desired, packages: p2.desired.mods.filter((e5) => e5.enabled) };
+      if (!l3 && o2?.noChanges) throw Error(`Changed configuration cannot use a noChanges plan`);
       let d2 = p2.sequence + 1, f2 = `${p2.active.generation}:${p2.desired.revision}:${d2}`;
       return await E2({ ...p2, active: c2, sequence: d2, journal: { token: f2, kind: `cold-start`, level: `restart-required`, previousActive: c2, target: { ...u2, entityLedger: e4, backupId: a2 }, desiredRevision: p2.desired.revision } }), f2;
     });
@@ -191,8 +188,8 @@ function D({ storage: e2, initial: t2 }) {
       let i2 = r2.target.configuration;
       if (Object.hasOwn(t3, `modSettings`)) {
         if (r2.kind !== `cold-start`) {
-          let e4 = s(i2.modSettings), n3 = s(t3.modSettings), { mods: a2, ...o2 } = e4, { mods: c2, ...l3 } = n3;
-          if (!m(o2, l3)) throw Error(`Staged mod settings metadata changed`);
+          let e4 = o(i2.modSettings), n3 = o(t3.modSettings), { mods: a2, ...s2 } = e4, { mods: c2, ...l3 } = n3;
+          if (!m(s2, l3)) throw Error(`Staged mod settings metadata changed`);
           let u2 = new Set(r2.settingsNamespaces || []);
           for (let e5 of /* @__PURE__ */ new Set([...Object.keys(a2), ...Object.keys(c2)])) if (!m(a2[e5], c2[e5]) && !u2.has(e5)) throw Error(`Staged mod settings cross operation ownership`);
         }
@@ -204,11 +201,11 @@ function D({ storage: e2, initial: t2 }) {
     let t3 = r(e3);
     return C2(async () => {
       if (D2(), p2.journal || p2.recovery?.required) throw Error(`Cannot write active settings during application or recovery`);
-      return E2(c(p2, t3));
+      return E2(s(p2, t3));
     });
   }, fail: (e3, t3 = {}) => C2(async () => {
     let n2 = O(e3), r2 = d.includes(t3.session) ? t3.session : `unknown`, i2 = f.includes(t3.persistent) ? t3.persistent : `unknown`;
-    return E2({ ...p2, desired: n2.kind === `cold-start` ? p2.desired : { ...n2.previousActive.configuration, revision: p2.desired.revision + 1 }, active: n2.previousActive, journal: null, failedEntityTargets: [...p2.failedEntityTargets, y(n2)], recovery: { required: true, reason: String(t3.reason || `activation-failed`), failedTarget: n2.target, failedToken: n2.token, session: r2, persistent: i2, saveRestored: false } });
+    return E2({ ...p2, desired: p2.desired, active: n2.previousActive, journal: null, failedEntityTargets: [...p2.failedEntityTargets, y(n2)], recovery: { required: true, reason: String(t3.reason || `activation-failed`), failedTarget: n2.target, failedToken: n2.token, session: r2, persistent: i2, saveRestored: false } });
   }), suspendForRecovery: (e3, t3) => {
     let i2 = r(e3);
     return C2(async () => {

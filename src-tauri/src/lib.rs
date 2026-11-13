@@ -51,6 +51,11 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             gpnext::cloud_journal_read,
+            gpnext::game_windows::game_http_get,
+            gpnext::packages::gp_next_read_installed_pack,
+            gpnext::packages::gp_next_install_pack,
+            gpnext::packages::gp_next_capture_local_pack,
+            gpnext::packages::gp_next_local_package_inventory,
             gpnext::cloud_open,
             gpnext::ui_log,
             launcher::nest::launcher_nest_catalog,
@@ -64,7 +69,14 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
             #[cfg(target_os = "linux")]
             audio::native_audio_prepare,
             #[cfg(target_os = "linux")]
+            audio::native_audio_metadata,
+            #[cfg(target_os = "linux")]
+            audio::native_audio_cache_stats,
+            #[cfg(target_os = "linux")]
             audio::native_audio_update,
+            launcher::renders::launcher_render_export,
+            launcher::renders::render_export_png,
+            launcher::renders::render_export_finish,
             launcher::launcher_state,
             launcher::launcher_running,
             launcher::launcher_diagnostics,
@@ -95,6 +107,7 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
             launcher::releases::launcher_cancel_download,
             launcher::releases::launcher_download_status,
         ])
+        .manage(launcher::renders::RenderExports::default())
         .setup(move |app| {
             let mut builder = tauri::WebviewWindowBuilder::from_config(app, &window_config)?;
             if game_mode {
@@ -119,6 +132,10 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
                     Err(error) => eprintln!("[Audio] Native mixer unavailable: {error}"),
                 }
             }
+            #[cfg(debug_assertions)]
+            if let Ok(path) = std::env::var("GARDENDLESS_PROBE_SCRIPT") {
+                builder = builder.initialization_script(std::fs::read_to_string(path)?);
+            }
             let _window = builder.build()?;
             #[cfg(target_os = "linux")]
             {
@@ -133,6 +150,10 @@ pub fn run(mut context: tauri::Context<tauri::Wry>) {
             Ok(())
         })
         .on_window_event(|window, event| {
+            if window.label() == "render-export" && matches!(event, tauri::WindowEvent::Destroyed) {
+                launcher::renders::abort(window.app_handle());
+            }
+
             if window.label() == "launcher" {
                 if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                     if window

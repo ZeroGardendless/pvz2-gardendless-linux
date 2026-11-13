@@ -1313,7 +1313,7 @@ dependencies = [
 
 [[package]]
 name = "gardendless"
-version = "0.16.1"
+version = "0.16.24"
 dependencies = [
  "base64 0.22.1",
  "json5",

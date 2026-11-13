@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {readAurumSelection,aurumKnobMarkup,AURUM_ID} from '../../public/launcher/Aurum.js';
+const empty=await readAurumSelection({exists:async()=>false});assert.equal(empty.installed,false);
+const fs={exists:async()=>true,readTextFile:async()=>JSON.stringify({desired:{mods:[{id:AURUM_ID,enabled:true}]}})};
+assert.equal((await readAurumSelection(fs)).enabled,true);
+await assert.rejects(readAurumSelection({...fs,readTextFile:async()=>'{}'}),/needs review/);
+await assert.rejects(readAurumSelection({...fs,readTextFile:async()=>{throw Error('read failure');}}),/read failure/);
+assert.match(aurumKnobMarkup({status:'ready',installed:true,enabled:true}),/aria-checked="true"/);
+assert.match(aurumKnobMarkup(empty),/Set up/);
+for(const options of [{running:true},{busy:true},{available:false}])assert.match(aurumKnobMarkup(empty,options),/ disabled/);
+assert.match(aurumKnobMarkup({status:'loading'}),/ disabled/);
+assert.match(aurumKnobMarkup({status:'error',error:'<script>'}),/&lt;script&gt;/);
+console.log('Aurum launcher switch: canonical desired state, missing/error handling, escaping and launch locks passed.');

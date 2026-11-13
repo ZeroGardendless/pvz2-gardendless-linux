@@ -60,7 +60,7 @@ assert.equal(eventKeyCode({ code: 'Backquote' }), 'BACK_QUOTE');
 assert.equal(eventKeyCode({ code: 'F12' }), 'F12');
 assert.equal(eventKeyCode({ code: 'MetaLeft' }), null);
 assert.equal(eventKeyCode({ code: 'F99' }), null);
-assert.ok(sharedBindings(DEFAULT_KEYBINDS).some(group => group.includes('Game_BananaLauncher') && group.includes('Game_MissileToe')));
+assert.ok(sharedBindings({...DEFAULT_KEYBINDS, Game_Pause: 'KEY_B', Game_SpeedUp: 'KEY_B'}).some(group => group.includes('Game_Pause') && group.includes('Game_SpeedUp')));
 assert.ok(sharedBindings(DEFAULT_KEYBINDS).every(group => group.every(action => action.split('_')[0] === group[0].split('_')[0])), 'Bindings in different game modes are not conflicts.');
 
 // The official online editor targets an older release; verify our defaults against the bundled game.

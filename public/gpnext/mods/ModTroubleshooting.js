@@ -1,14 +1,14 @@
 import { d as e } from "../platform/FileSystem.js";
-import { c } from "./GameConfiguration.js";
+import { c as t } from "./GameConfiguration.js";
 import { n } from "../core/Logger.js";
-import { setSettings, getSettings } from "../core/SettingsStore.js";
+import { l as r, r as i } from "../core/SettingsStore.js";
 import { o as a } from "../ui/Translations.js";
-import { f as o, n as s, r } from "../ui/Components.js";
+import { f as o, n as s, r as c } from "../ui/Components.js";
 import { n as l } from "../ui/Toast.js";
 import { n as u } from "../platform/Dialog.js";
 import { t as d } from "./ModDiagnosticReport.js";
 import { t as f } from "../core/ClientEdition.js";
-var p = () => ({ status: { errors: n().filter((e2) => e2.level === `error`).map((e2) => e2.msg) }, diagnostics: {} }), m = () => d({ version: c, clientEdition: f, patchStatus: p().status, redact: getSettings().redactDiagnostics });
+var p = () => ({ status: { errors: n().filter((e2) => e2.level === `error`).map((e2) => e2.msg) }, diagnostics: {} }), m = () => d({ version: t, clientEdition: f, patchStatus: p().status, redact: i().redactDiagnostics });
 function getTroubleshootingReport() {
   return m();
 }
@@ -55,7 +55,7 @@ function renderTroubleshooting(t2) {
       h2.disabled = false;
     }
   });
-  t2.append(o(a(`diagnostics.redact`), getSettings().redactDiagnostics, (e2) => setSettings({ redactDiagnostics: e2 })), r(s(a(`diagnostics.refresh`), f2), h2), n2), f2();
+  t2.append(o(a(`diagnostics.redact`), i().redactDiagnostics, (e2) => r({ redactDiagnostics: e2 })), c(s(a(`diagnostics.refresh`), f2), h2), n2), f2();
 }
 export {
   bindTroubleshooting,

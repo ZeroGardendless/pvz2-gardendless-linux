@@ -1,4 +1,6 @@
 //! Native services required by the bundled GP-Next startup/window bridge.
+pub mod game_windows;
+pub mod packages;
 use std::fs;
 use tauri::{Manager, WebviewWindow};
 

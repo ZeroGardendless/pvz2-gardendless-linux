@@ -4,7 +4,7 @@ import { initWidescreen } from "./runtime/Widescreen.js";
 const __vite__mapDeps = (i2, m2 = __vite__mapDeps, d2 = m2.f || (m2.f = ["gpnext/platform/DeepLink.js", "gpnext/platform/CloudJson.js", "gpnext/platform/Events.js", "gpnext/ui/tabs/Diagnostics.js", "gpnext/ui/Translations.js", "gpnext/vendor/ModuleHelpers.js", "gpnext/core/SettingsStore.js", "gpnext/platform/CloudPortablePreferences.js", "gpnext/runtime/TrainerShortcuts.js", "gpnext/core/Logger.js", "gpnext/ui/Components.js", "gpnext/ui/tabs/Pages.js", "gpnext/mods/ModTroubleshooting.js", "gpnext/platform/FileSystem.js", "gpnext/platform/Dialog.js", "gpnext/core/ClientEdition.js", "gpnext/mods/GameConfiguration.js", "gpnext/mods/ModDiagnosticReport.js", "gpnext/ui/Toast.js", "gpnext/ui/tabs/Log.js", "gpnext/runtime/ScrollSensitivity.js", "gpnext/ui/tabs/Tools.js", "gpnext/ui/tabs/Settings.js", "gpnext/runtime/HpOverlay.js", "gpnext/data/EntityInspector.js", "gpnext/mods/ModSettingsRegistry.js", "gpnext/ui/Overlay.js", "gpnext/data/DataDrawer.js", "gpnext/mods/FileLoader.js", "gpnext/mods/PackSnapshot.js", "gpnext/ui/tabs/Cheats.js", "gpnext/ui/tabs/Preferences.js", "gpnext/platform/Opener.js", "gpnext/ui/tabs/Experimental.js", "gpnext/runtime/FrameSettings.js", "gpnext/ui/tabs/PerformanceSection.js", "gpnext/mods/Patcher.js", "gpnext/mods/PackPreparation.js", "gpnext/mods/ModOperationPlan.js", "gpnext/mods/ModPackPreflight.js", "gpnext/mods/ModVersion.js", "gpnext/data/DataEntityLedger.js", "gpnext/mods/Isolation.js", "gpnext/runtime/PlantLevelState.js", "gpnext/mods/RestoreUtils.js", "gpnext/data/DataStore.js", "gpnext/mods/JsModLoader.js", "gpnext/GameBootstrap.js", "gpnext/mods/ModApi.js", "gpnext/mods/ModControlsRegistry.js", "gpnext/mods/ModOwnedDataStorage.js", "gpnext/mods/ModOwnedData.js", "gpnext/mods/ModSaveProtection.js", "gpnext/runtime/WorldmapJsonPatcher.js", "gpnext/ui/tabs/Patcher.js", "gpnext/ui/tabs/Mods.js", "gpnext/ui/tabs/ModManager.js", "gpnext/mods/LegacyRuntimeMigration.js", "gpnext/mods/ConfigurationModSettings.js", "gpnext/mods/ModConfigurationState.js", "gpnext/mods/PackInstallStore.js", "gpnext/mods/ModConfigurationStorage.js", "gpnext/mods/ModPackagePicker.js", "gpnext/ui/tabs/Data.js", "gpnext/platform/CloudSaveRequest.js", "gpnext/core/BuildIdentity.js", "gpnext/platform/CloudSelection.js", "gpnext/platform/CloudEnvironment.js", "gpnext/platform/DiscordPresence.js", "gpnext/platform/WindowBridge.js", "gpnext/platform/CloudColdHost.js"])) => i2.map((i3) => d2[i3]);
 import { r as e } from "./vendor/ModuleHelpers.js";
 import { f } from "./platform/CloudJson.js";
-import { l as n, n as r, t as i } from "./GameBootstrap.js";
+import { a as n, n as r, t as i } from "./GameBootstrap.js";
 import { i as a } from "./platform/Events.js";
 import { u } from "./platform/FileSystem.js";
 import { c as s } from "./mods/GameConfiguration.js";
@@ -771,7 +771,7 @@ var $ = `phase-2:engine-import`;
 })().catch(async (e2) => {
   if (r()) {
     let t3 = await i(e2), { showStartupFailure: r2 } = await n(async () => {
-      let { showStartupFailure: e3 } = await import("./GameBootstrap.js").then((e4) => e4.r);
+      let { showStartupFailure: e3 } = await import("./GameBootstrap.js").then((e4) => e4.i);
       return { showStartupFailure: e3 };
     }, __vite__mapDeps([47, 5, 1]));
     window.cc?.game?.pause(), r2(t3);

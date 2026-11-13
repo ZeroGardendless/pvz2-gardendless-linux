@@ -1,0 +1,11 @@
+{
+  "identifier": "render-export",
+  "description": "Dedicated, save-independent PNG renderer window",
+  "windows": [
+    "render-export"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close"
+  ]
+}

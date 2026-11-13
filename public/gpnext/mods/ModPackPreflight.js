@@ -1,6 +1,6 @@
 import { c as e } from "./GameConfiguration.js";
 import { o as t } from "../ui/Translations.js";
-import { i as n } from "./PackSnapshot.js";
+import { a as n } from "./PackSnapshot.js";
 import { t as r } from "./ModVersion.js";
 var i = /* @__PURE__ */ new WeakMap();
 function a(e2) {

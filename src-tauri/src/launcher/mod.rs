@@ -5,6 +5,7 @@ mod models;
 pub mod nest;
 pub mod packages;
 pub mod releases;
+pub mod renders;
 pub mod saves;
 pub use models::*;
 use std::{

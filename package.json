@@ -1,7 +1,7 @@
 {
   "name": "gardendless",
   "private": true,
-  "version": "0.16.1",
+  "version": "0.16.24",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "gpnext:readable": "node scripts/gpnext/Format.mjs && node scripts/gpnext/NameExports.mjs",
     "gpnext:readable:check": "node scripts/gpnext/Format.mjs --check && node scripts/gpnext/NameExports.mjs --check && node scripts/checks/ModuleGraph.mjs",
     "tauri": "node scripts/assets/PatchCocos.mjs && tauri",
-    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs && node scripts/checks/UpdateIntegration.mjs && node scripts/checks/Gardenest.mjs && node scripts/checks/DropImports.mjs && npm run check:launcher",
+    "check": "node scripts/assets/PatchCocos.mjs && node scripts/checks/AssetRevision.mjs && node scripts/checks/RenderStates.mjs && node scripts/checks/AurumLauncher.mjs && node scripts/checks/NativeCommands.mjs && node scripts/checks/GameWindows.mjs && node scripts/checks/EngineBinding.mjs && node scripts/checks/DeferredAudio.mjs && node scripts/checks/AurumRendering.mjs && node scripts/checks/AurumOcclusion.mjs && node scripts/checks/AurumStartup.mjs && node scripts/checks/AurumNeutralVisuals.mjs && node scripts/checks/AurumHotspots.mjs && node scripts/checks/AurumDataLookup.mjs && node scripts/checks/Aurum.mjs && node scripts/checks/RecoveryBridge.mjs && node scripts/checks/ReadableNames.mjs && node scripts/checks/ModuleGraph.mjs && node scripts/checks/FrameRate.mjs && node scripts/checks/Display.mjs && node scripts/checks/Audio.mjs && node scripts/checks/Features.mjs && node scripts/checks/UpdateIntegration.mjs && node scripts/checks/Gardenest.mjs && node scripts/checks/DropImports.mjs && npm run check:launcher",
     "assets:optimize": "python scripts/assets/optimize-pngs.py",
     "build:binary": "npm run check && node scripts/native/Build.mjs",
     "assets:bundle": "python scripts/assets/game-bundle.py pack",

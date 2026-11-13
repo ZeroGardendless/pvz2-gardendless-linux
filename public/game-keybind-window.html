@@ -1,0 +1,509 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <title>Key Binds</title>
+    <style nonce="__TAURI_STYLE_NONCE__">
+        @font-face {
+            font-family: 'Default';
+            src: url('./fonts/Default.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-stretch: 125%;
+            font-family: 'Default', system-ui, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            overflow: hidden;
+        }
+
+        .fixed-header {
+            padding: 20px 20px 0;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            color: #4CAF50;
+            font-size: 25px;
+            margin: 0 0 12px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        button {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #2196F3;
+            color: #fff;
+            cursor: pointer;
+            font-size: 20px;
+            font-family: inherit;
+        }
+
+        button.secondary {
+            background: #555;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: #1e1e1e;
+            color: #FF9800;
+            font-weight: 600;
+            font-size: 20px;
+            z-index: 1;
+            border-bottom: none;
+            box-shadow: inset 0 -2px 0 #FF9800;
+        }
+
+        tr.group-header td {
+            background: #2a2a2a;
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 25px;
+            padding: 12px 10px 8px;
+            text-align: center;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        tr:hover td {
+            background: #252526;
+        }
+
+        tr.group-header:hover td {
+            background: #2a2a2a;
+            /* 副标题行不参与 hover 变色 */
+        }
+
+        .key-btn {
+            background: #2c3e50;
+            color: #fff;
+            border-radius: 4px;
+            padding: 2px 10px;
+            font-family: inherit;
+            font-size: 20px;
+            border-bottom: 2px solid #1a252f;
+            cursor: pointer;
+            min-width: 70px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .key-btn.listening {
+            background: #FF9800;
+            color: #1e1e1e;
+            animation: pulse 1s infinite;
+        }
+
+        .key-btn.changed {
+            border-bottom-color: #4CAF50;
+        }
+
+        @keyframes pulse {
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .action-name {
+            color: #d4d4d4;
+            font-size: 24px;
+        }
+
+        .status {
+            padding: 8px 20px;
+            color: #6a9955;
+            font-size: 16px;
+            flex-shrink: 0;
+            border-top: 1px solid #333;
+            min-height: 20px;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #4a4a4a #1e1e1e;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+            border-left: 1px solid #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #3a3a3a;
+            border-radius: 5px;
+            border: 2px solid #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #555555;
+        }
+
+        ::-webkit-scrollbar-button {
+            display: none;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: #1e1e1e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="fixed-header">
+        <h1 id="title">Key Binds</h1>
+        <div class="toolbar">
+            <button id="apply-btn">应用 (Apply)</button>
+            <button id="cancel-btn" class="secondary">取消 (Cancel)</button>
+        </div>
+    </div>
+
+    <div class="scroll-area">
+        <table>
+            <thead>
+                <tr>
+                    <th id="th-action">Action</th>
+                    <th id="th-key">Key</th>
+                </tr>
+            </thead>
+            <tbody id="bind-list"></tbody>
+        </table>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        // ============ 动作名中英对照 ============
+        const ACTION_DISPLAY = {
+            Game_Pause: { zh: '暂停', en: 'Pause' },
+            Game_SpeedUp: { zh: '加速', en: 'Speed Up' },
+            Game_Card1: { zh: '卡槽 1', en: 'Card Slot 1' },
+            Game_Card2: { zh: '卡槽 2', en: 'Card Slot 2' },
+            Game_Card3: { zh: '卡槽 3', en: 'Card Slot 3' },
+            Game_Card4: { zh: '卡槽 4', en: 'Card Slot 4' },
+            Game_Card5: { zh: '卡槽 5', en: 'Card Slot 5' },
+            Game_Card6: { zh: '卡槽 6', en: 'Card Slot 6' },
+            Game_Card7: { zh: '卡槽 7', en: 'Card Slot 7' },
+            Game_Card8: { zh: '卡槽 8', en: 'Card Slot 8' },
+            Game_Plantfood: { zh: '叶绿素', en: 'Plant Food' },
+            Game_Shovel: { zh: '铲子', en: 'Shovel' },
+            Game_CollectAll: { zh: '一键收集', en: 'Collect All' },
+            Game_Conveyor_Card1: { zh: '传送带卡槽 1', en: 'Conveyor Slot 1' },
+            Game_Conveyor_Card2: { zh: '传送带卡槽 2', en: 'Conveyor Slot 2' },
+            Game_Conveyor_Card3: { zh: '传送带卡槽 3', en: 'Conveyor Slot 3' },
+            Game_Conveyor_Card4: { zh: '传送带卡槽 4', en: 'Conveyor Slot 4' },
+            Game_Conveyor_Card5: { zh: '传送带卡槽 5', en: 'Conveyor Slot 5' },
+            Game_Conveyor_Card6: { zh: '传送带卡槽 6', en: 'Conveyor Slot 6' },
+            Game_Conveyor_Card7: { zh: '传送带卡槽 7', en: 'Conveyor Slot 7' },
+            Game_Conveyor_Card8: { zh: '传送带卡槽 8', en: 'Conveyor Slot 8' },
+            Game_Conveyor_Card9: { zh: '传送带卡槽 9', en: 'Conveyor Slot 9' },
+            Game_Conveyor_Card10: { zh: '传送带卡槽 10', en: 'Conveyor Slot 10' },
+            Game_ConveyorForward: { zh: '传送带前选', en: 'Conveyor Choose Forward' },
+            Game_ConveyorBackward: { zh: '传送带后选', en: 'Conveyor Choose Backward' },
+            Game_HideUI: { zh: '隐藏界面', en: 'Hide UI' },
+            Game_UIUpper: { zh: '界面置顶', en: 'UI On Top' },
+            Plant_BananaLauncher: { zh: '香蕉火箭炮', en: 'Banana Launcher' },
+            Plant_MissileToe: { zh: '槲寄冰仙子', en: 'Missile Toe' },
+            Plant_Bamboozle: { zh: '整人竹', en: 'Bamboozle' },
+            Plant_HollyKnight: { zh: '冬青骑士', en: 'Holly Knight' },
+            Plant_IceShroom: { zh: '寒冰菇', en: 'Ice Shroom' },
+            AirRaid_W: { zh: '移动 上', en: 'Move Up' },
+            AirRaid_S: { zh: '移动 下', en: 'Move Down' },
+            AirRaid_A: { zh: '移动 左', en: 'Move Left' },
+            AirRaid_D: { zh: '移动 右', en: 'Move Right' },
+            ZenGarden_Glove: { zh: '手套', en: 'Glove' },
+            ZenGarden_Shovel: { zh: '铲子', en: 'Shovel' },
+            ZenGarden_Cart: { zh: '推车', en: 'Cart' },
+            ZenGarden_DealWithAll: { zh: '一键处理', en: 'Deal With All' },
+            ZenGarden_HideUI: { zh: '隐藏界面', en: 'Hide UI' },
+            ZenGarden_Next: { zh: '下一个', en: 'Next' },
+            Sandbox_PushTide: { zh: '涨潮', en: 'Push Tide' },
+            Sandbox_PullTide: { zh: '退潮', en: 'Pull Tide' },
+            Sandbox_PushTideBy1Square: { zh: '涨潮一格', en: 'Push Tide by 1' },
+            Sandbox_PullTideBy1Square: { zh: '退潮一格', en: 'Pull Tide by 1' },
+            Sandbox_ChangeJam: { zh: '切换舞台模式', en: 'Change Jam' },
+            Sandbox_SummonZombies: { zh: '召唤僵尸', en: 'Summon Zombies' },
+            Sandbox_ChangeLawn: { zh: '切换草坪', en: 'Change Lawn' },
+            Sandbox_TimeFreeze: { zh: '时间冻结', en: 'Time Freeze' },
+            Sandbox_SwitchMusic: { zh: '切换音乐', en: 'Switch Music' },
+            Sandbox_Settings: { zh: '设置', en: 'Settings' },
+            Rhythm_PhatBeet1: { zh: '甜菜 1', en: 'Phat Beet 1' },
+            Rhythm_PhatBeet2: { zh: '甜菜 2', en: 'Phat Beet 2' },
+            Rhythm_PhatBeet3: { zh: '甜菜 3', en: 'Phat Beet 3' },
+            Rhythm_PhatBeet4: { zh: '甜菜 4', en: 'Phat Beet 4' },
+            Rhythm_PhatBeet5: { zh: '甜菜 5', en: 'Phat Beet 5' },
+        };
+
+        // ============ 键位显示名 ============
+        const KEY_DISPLAY = {
+            ESCAPE: { zh: 'Esc', en: 'Esc' },
+            F1: { zh: 'F1', en: 'F1' }, F2: { zh: 'F2', en: 'F2' }, F3: { zh: 'F3', en: 'F3' },
+            F4: { zh: 'F4', en: 'F4' }, F5: { zh: 'F5', en: 'F5' }, F6: { zh: 'F6', en: 'F6' },
+            F7: { zh: 'F7', en: 'F7' }, F8: { zh: 'F8', en: 'F8' }, F9: { zh: 'F9', en: 'F9' },
+            F10: { zh: 'F10', en: 'F10' }, F11: { zh: 'F11', en: 'F11' }, F12: { zh: 'F12', en: 'F12' },
+            INSERT: { zh: '插入', en: 'Insert' },
+            DELETE: { zh: '删除', en: 'Delete' },
+            HOME: { zh: 'Home', en: 'Home' },
+            END: { zh: 'End', en: 'End' },
+            PAGE_UP: { zh: '上翻页', en: 'PgUp' },
+            PAGE_DOWN: { zh: '下翻页', en: 'PgDn' },
+            DIGIT_0: { zh: '0', en: '0' }, DIGIT_1: { zh: '1', en: '1' },
+            DIGIT_2: { zh: '2', en: '2' }, DIGIT_3: { zh: '3', en: '3' },
+            DIGIT_4: { zh: '4', en: '4' }, DIGIT_5: { zh: '5', en: '5' },
+            DIGIT_6: { zh: '6', en: '6' }, DIGIT_7: { zh: '7', en: '7' },
+            DIGIT_8: { zh: '8', en: '8' }, DIGIT_9: { zh: '9', en: '9' },
+            EQUAL: { zh: '=', en: '=' },
+            MINUS: { zh: '-', en: '-' },
+            BACKSPACE: { zh: '退格', en: 'Backspace' },
+            TAB: { zh: 'Tab', en: 'Tab' },
+            CAPS_LOCK: { zh: '大写锁定', en: 'CapsLk' },
+            SHIFT_LEFT: { zh: '左Shift', en: 'L-Shift' },
+            SHIFT_RIGHT: { zh: '右Shift', en: 'R-Shift' },
+            CTRL_LEFT: { zh: '左Ctrl', en: 'L-Ctrl' },
+            CTRL_RIGHT: { zh: '右Ctrl', en: 'R-Ctrl' },
+            ALT_LEFT: { zh: '左Alt', en: 'L-Alt' },
+            ALT_RIGHT: { zh: '右Alt', en: 'R-Alt' },
+            SPACE: { zh: '空格', en: 'Space' },
+            ARROW_LEFT: { zh: '左', en: 'Left' },
+            ARROW_RIGHT: { zh: '右', en: 'Right' },
+            ARROW_UP: { zh: '上', en: 'Up' },
+            ARROW_DOWN: { zh: '下', en: 'Down' },
+            ENTER: { zh: '回车', en: 'Enter' },
+            BRACKET_LEFT: { zh: '[', en: '[' },
+            BRACKET_RIGHT: { zh: ']', en: ']' },
+            BACKSLASH: { zh: '\\', en: '\\' },
+            SEMICOLON: { zh: ';', en: ';' },
+            QUOTE: { zh: "'", en: "'" },
+            COMMA: { zh: ',', en: ',' },
+            PERIOD: { zh: '.', en: '.' },
+            SLASH: { zh: '/', en: '/' },
+            BACK_QUOTE: { zh: '`', en: '`' },
+            NUM_LOCK: { zh: '小键盘锁', en: 'NumLk' },
+            NUM_DIVIDE: { zh: '小键盘 /', en: 'Num /' },
+            NUM_PLUS: { zh: '小键盘 +', en: 'Num +' },
+            NUM_MULTIPLY: { zh: '小键盘 *', en: 'Num *' },
+            NUM_SUBTRACT: { zh: '小键盘 -', en: 'Num -' },
+            NUM_DECIMAL: { zh: '小键盘 .', en: 'Num .' },
+            NUM_ENTER: { zh: '小键盘回车', en: 'Num Enter' },
+            NUM_0: { zh: '小键盘 0', en: 'Num 0' }, NUM_1: { zh: '小键盘 1', en: 'Num 1' },
+            NUM_2: { zh: '小键盘 2', en: 'Num 2' }, NUM_3: { zh: '小键盘 3', en: 'Num 3' },
+            NUM_4: { zh: '小键盘 4', en: 'Num 4' }, NUM_5: { zh: '小键盘 5', en: 'Num 5' },
+            NUM_6: { zh: '小键盘 6', en: 'Num 6' }, NUM_7: { zh: '小键盘 7', en: 'Num 7' },
+            NUM_8: { zh: '小键盘 8', en: 'Num 8' }, NUM_9: { zh: '小键盘 9', en: 'Num 9' },
+        };
+        for (const c of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+            KEY_DISPLAY['KEY_' + c] = { zh: c, en: c };
+        }
+
+        // ============ 状态 ============
+        let originalBinds = {};
+        let binds = {};
+        let listeningAction = null;
+        const lang = new URLSearchParams(location.search).get('lang') || 'zh';
+
+        const listEl = document.getElementById('bind-list');
+        const statusEl = document.getElementById('status');
+
+        // 设置界面语言
+        document.getElementById('title').textContent = lang === 'zh' ? '键位绑定' : 'Key Binds';
+        document.getElementById('apply-btn').textContent = lang === 'zh' ? '应用' : 'Apply';
+        document.getElementById('cancel-btn').textContent = lang === 'zh' ? '取消' : 'Cancel';
+        document.getElementById('th-action').textContent = lang === 'zh' ? '动作' : 'Action';
+        document.getElementById('th-key').textContent = lang === 'zh' ? '按键' : 'Key';
+        document.title = lang === 'zh' ? '键位绑定' : 'Key Binds';
+
+        function prettyAction(action) {
+            if (!action) return lang === 'zh' ? '未知' : 'Unknown';
+            const entry = ACTION_DISPLAY[action];
+            return entry ? (entry[lang] || entry.en) : action;
+        }
+
+        function prettyKey(code) {
+            if (!code) return lang === 'zh' ? '（无）' : '(none)';
+            const entry = KEY_DISPLAY[code];
+            return entry ? (entry[lang] || entry.en) : code;
+        }
+
+        function render() {
+            const GROUP_LABEL = {
+                'Game_': { zh: '游戏', en: 'Game' },
+                'Plant_': { zh: '植物', en: 'Plants' },
+                'AirRaid_': { zh: '壮植凌云', en: 'Air Raid' },
+                'ZenGarden_': { zh: '禅境花园', en: 'Zen Garden' },
+                'Sandbox_': { zh: '沙盒', en: 'Sandbox' },
+                'Rhythm_': { zh: '音乐游戏', en: 'Rhythm' },
+                'Other': { zh: '其他', en: 'Other' },
+            };
+            const groups = {};
+            const order = ['Game_', 'Plant_', 'AirRaid_', 'ZenGarden_', 'Sandbox_', 'Rhythm_'];
+
+            for (const action of Object.keys(binds)) {
+                if (action === '__KeyCodeList__') continue;
+                if (!ACTION_DISPLAY[action]) continue;   // 没有动作名的不渲染
+                const prefix = order
+                    .filter(p => action.startsWith(p))
+                    .sort((a, b) => b.length - a.length)[0] || 'Other';
+                if (!groups[prefix]) groups[prefix] = [];
+                groups[prefix].push(action);
+            }
+
+            // 组内排序：数字自然顺序
+            for (const p of Object.keys(groups)) {
+                groups[p].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+            }
+
+            listEl.innerHTML = '';
+
+            // 按固定顺序渲染各组
+            const renderOrder = [...order, 'Other'];
+            for (const prefix of renderOrder) {
+                if (!groups[prefix] || groups[prefix].length === 0) continue;
+
+                // 副标题行
+                const headerTr = document.createElement('tr');
+                headerTr.className = 'group-header';
+                const headerTd = document.createElement('td');
+                headerTd.colSpan = 2;
+                headerTd.textContent = GROUP_LABEL[prefix]?.[lang] || GROUP_LABEL[prefix]?.en || prefix;
+                headerTr.appendChild(headerTd);
+                listEl.appendChild(headerTr);
+
+                // 组内动作行
+                for (const action of groups[prefix]) {
+                    const changed = binds[action] !== originalBinds[action];
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td class="action-name">${prettyAction(action)}</td>
+                <td><div class="key-btn ${changed ? 'changed' : ''}" data-action="${action}">${prettyKey(binds[action])}</div></td>
+            `;
+                    listEl.appendChild(tr);
+                }
+            }
+
+            document.querySelectorAll('.key-btn').forEach(btn => {
+                btn.addEventListener('click', () => startListening(btn.dataset.action, btn));
+            });
+        }
+
+        function startListening(action, btn) {
+            if (listeningAction) return;
+            listeningAction = action;
+            btn.classList.add('listening');
+            btn.textContent = lang === 'zh' ? '请按键...' : 'Press...';
+        }
+
+        function stopListening() {
+            if (!listeningAction) return;
+            const btn = document.querySelector(`.key-btn[data-action="${listeningAction}"]`);
+            if (btn) {
+                btn.classList.remove('listening');
+                btn.textContent = prettyKey(binds[listeningAction]);
+            }
+            listeningAction = null;
+        }
+
+        function toCocosKeyCode(e) {
+            const code = e.code;
+            if (/^Digit\d$/.test(code)) return 'DIGIT_' + code.slice(5);
+            if (/^Key[A-Z]$/.test(code)) return 'KEY_' + code.slice(3);
+            if (/^F\d{1,2}$/.test(code)) return code;
+            if (/^Numpad\d$/.test(code)) return 'NUM_' + code.slice(6);
+            const map = {
+                Escape: 'ESCAPE', Backspace: 'BACKSPACE', Tab: 'TAB', Enter: 'ENTER',
+                CapsLock: 'CAPS_LOCK', Space: 'SPACE',
+                ArrowLeft: 'ARROW_LEFT', ArrowRight: 'ARROW_RIGHT', ArrowUp: 'ARROW_UP', ArrowDown: 'ARROW_DOWN',
+                Insert: 'INSERT', Delete: 'DELETE', Home: 'HOME', End: 'END',
+                PageUp: 'PAGE_UP', PageDown: 'PAGE_DOWN',
+                ShiftLeft: 'SHIFT_LEFT', ShiftRight: 'SHIFT_RIGHT',
+                ControlLeft: 'CTRL_LEFT', ControlRight: 'CTRL_RIGHT',
+                AltLeft: 'ALT_LEFT', AltRight: 'ALT_RIGHT',
+                Backquote: 'BACK_QUOTE', Minus: 'MINUS', Equal: 'EQUAL',
+                BracketLeft: 'BRACKET_LEFT', BracketRight: 'BRACKET_RIGHT',
+                Backslash: 'BACKSLASH', Semicolon: 'SEMICOLON', Quote: 'QUOTE',
+                Comma: 'COMMA', Period: 'PERIOD', Slash: 'SLASH',
+                NumLock: 'NUM_LOCK', NumpadAdd: 'NUM_PLUS', NumpadSubtract: 'NUM_SUBTRACT',
+                NumpadMultiply: 'NUM_MULTIPLY', NumpadDivide: 'NUM_DIVIDE',
+                NumpadDecimal: 'NUM_DECIMAL', NumpadEnter: 'NUM_ENTER',
+            };
+            return map[code] || '';
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!listeningAction) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.code === 'Escape') { stopListening(); return; }
+
+            const newKey = toCocosKeyCode(e);
+            if (!newKey) return;
+
+            const action = listeningAction;
+            binds[action] = newKey;
+            stopListening();
+            render();
+
+            statusEl.textContent = lang === 'zh'
+                ? `已将「${prettyAction(action)}」绑定到 ${prettyKey(newKey)}（未应用）`
+                : `Bound "${prettyAction(action)}" to ${prettyKey(newKey)} (unsaved)`;
+        });
+
+        document.getElementById('apply-btn').addEventListener('click', async () => {
+            await window.keybindAPI.apply(binds);
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', async () => {
+            await window.keybindAPI.cancel();
+        });
+
+        (async () => {
+            binds = await window.keybindAPI.get();
+            originalBinds = { ...binds };
+            render();
+        })();
+
+    </script>
+
+
+</body></html>

@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {hiddenBounds} from '../../mods/aurum/src/Occlusion.js';
+const view={left:0,right:100,top:0,bottom:100},cover={left:20,right:80,top:20,bottom:80};
+assert.equal(hiddenBounds({left:-30,right:-3,top:10,bottom:20},view,[]),'offscreen');
+assert.equal(hiddenBounds({left:103,right:130,top:10,bottom:20},view,[]),'offscreen');
+assert.equal(hiddenBounds({left:0,right:10,top:-20,bottom:-3},view,[]),'offscreen');
+assert.equal(hiddenBounds({left:10,right:20,top:103,bottom:120},view,[]),'offscreen');
+for(const bounds of [{left:-5,right:5,top:0,bottom:10},{left:95,right:105,top:90,bottom:110},{left:-50,right:150,top:-50,bottom:150},{left:NaN,right:80,top:20,bottom:80}]) assert.equal(hiddenBounds(bounds,view,[]),null,'Partially visible or invalid geometry must retain its draw');
+assert.equal(hiddenBounds({left:25,right:75,top:25,bottom:75},view,[cover]),'occluded');
+assert.equal(hiddenBounds({left:19,right:75,top:25,bottom:75},view,[cover]),null);
+assert.equal(hiddenBounds({left:22,right:78,top:22,bottom:78},view,[cover]),null,'Retain a conservative edge margin');
+assert.equal(hiddenBounds({left:10,right:90,top:30,bottom:70},view,[{left:0,right:49,top:0,bottom:100},{left:51,right:100,top:0,bottom:100}]),null,'Do not bridge gaps between occluders');
+console.log('Draw culling: complete coverage, viewport crossings, padding, nonfinite coordinates and occluder gaps passed.');

@@ -1,3 +1,6 @@
+import { installGameFilePicker } from "./GameFiles.js";
+import { initializeMusicPacks } from "../../game-music-packs.js";
+import { initializeGamePlatform } from "../../game-platform.js";
 import { updatePresence } from "./Presence.js";
 import { d as e, f as t, p as n, u as r } from "./CloudJson.js";
 import { a as i, i as a, n as o, r as s, t as c } from "./Events.js";
@@ -534,6 +537,9 @@ if (W) {
     };
   };
   window.electronAPI = { center: q.center, isFullScreen: () => G.isFullscreen(), fullScreen: q.enterFullscreen, window: q.exitFullscreen, setSize: q.setSize, quit: () => G.close(), openUrl: q.shell.openExternal, openDevTools: q.openDevTools, closeDevTools: () => t(`close_devtools`), toggleDevTools: () => t(`toggle_devtools`), getCurrentResolutionSync: () => ``, onWindowFocused: (t2) => e3(true, t2), onWindowUnfocused: (t2) => e3(false, t2), saveLevel: B, loadLevel: V, removeLevel: H, listLevels: U };
+  installGameFilePicker(window.electronAPI);
+  initializeGamePlatform(window.electronAPI);
+  initializeMusicPacks(window);
 }
 updateActivity(`Playing PvZ2 Gardendless`);
 export {

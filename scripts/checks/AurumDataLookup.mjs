@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {createRtidParser} from '../../mods/aurum/src/DataLookup.js';
+const parser=createRtidParser();
+const first=parser.parse('RTID(pea@PlantTypes)');
+assert.equal(parser.parse('RTID(pea@PlantTypes)'),first);
+assert.deepEqual(parser.parse('RTID(pea@.)'),{alias:'pea',namespace:'CurrentLevel'});
+for(const reference of ['none','RTID(nope)','RTID(a@b@c)'])assert.equal(parser.parse(reference),null);
+for(let i=0;i<3000;i++)parser.parse(`RTID(plant${i}@PlantTypes)`);
+assert.equal(parser.size,256,'Untrusted/missing mod identifiers must not grow the cache indefinitely');
+assert.notEqual(parser.parse('RTID(pea@PlantTypes)'),first,'Eviction releases old parsed values');
+assert.equal(Object.isFrozen(first),true);parser.clear();assert.equal(parser.size,0);
+console.log('Aurum lookup cache: bounded storage, eviction, immutable parse records, current-level aliases and cleanup passed.');

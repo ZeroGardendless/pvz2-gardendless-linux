@@ -299,10 +299,10 @@ button:focus-visible { outline-offset: 3px; }
 .press-ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: 0; pointer-events: none; animation: press-ripple 550ms var(--motion) forwards; }
 @keyframes press-ripple { from { transform: scale(.05); opacity: .18; } to { transform: scale(1); opacity: 0; } }
 .page-enter { animation: page-enter 240ms var(--motion) both; }
-@keyframes page-enter { from { opacity: .35; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes page-enter { from { transform: translateY(6px); } to { transform: translateY(0); } }
 /* Fixed dropdowns must not inherit an animated transform from a modal:
    that creates a temporary containing block and makes them jump at animation end. */
-dialog[open], .select-menu, .mobile-menu[open] nav { animation: menu-enter 140ms var(--motion); }
+dialog[open], .select-menu, .mobile-menu[open] nav { animation: none; }
 @keyframes menu-enter { from { opacity: 0; } to { opacity: 1; } }
 .notification { animation: page-enter 200ms var(--motion) both; }
 .hero .badge.green { background: transparent; color: inherit; padding: 0; gap: 8px; }
@@ -367,7 +367,7 @@ body:has(dialog[open]) { overflow: hidden; }
 .select-control[aria-expanded=true] { border-radius: 18px 18px 10px 10px; }
 .select-option { transition: background 120ms var(--motion); }
 .page-enter { animation-duration: 220ms; }
-@keyframes page-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes page-enter { from { transform: translateY(6px); } to { transform: translateY(0); } }
 @media (max-width: 1100px) {
   .sidebar .nav-item { gap: 2px; }
   .sidebar .nav-item > .icon { padding: 5px 12px; }
@@ -462,3 +462,22 @@ main { overflow-wrap: anywhere; }
 
 .select-control { padding-inline: 18px; }
 .select-option { padding-inline: 18px; }
+
+/* Compact vertical Aurum switch beside Play; loading updates never rerender menus. */
+.aurum-launch-control { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.aurum-knob { position: relative; display: grid; place-items: center; width: 44px; height: 64px; padding: 4px; border: 0; border-radius: 24px; background: transparent; color: var(--md-primary); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.aurum-track { display: block; position: relative; width: 32px; height: 56px; border: 2px solid var(--md-outline); border-radius: 20px; background: var(--md-surface-container-highest); transition: background 180ms ease, border-color 180ms ease; }
+.aurum-thumb { position: absolute; width: 20px; height: 20px; left: 4px; bottom: 4px; border-radius: 50%; background: var(--md-outline); transition: transform 220ms cubic-bezier(.2,.8,.2,1), background 180ms ease, scale 140ms ease; }
+.aurum-knob[aria-checked=true] .aurum-track { background: var(--md-primary); border-color: var(--md-primary); }
+.aurum-knob[aria-checked=true] .aurum-thumb { transform: translateY(-24px); background: var(--md-on-primary); }
+.aurum-knob:not(:disabled):hover { background: var(--md-secondary-container); }
+.aurum-knob:not(:disabled):active .aurum-thumb { scale: .88; }
+.aurum-knob:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
+.aurum-knob:disabled { opacity: .45; cursor: default; }
+.aurum-caption { display: grid; gap: 4px; color: var(--md-on-surface); font-size: 12px; font-weight: 500; }
+.aurum-caption small { font-size: 11px; font-weight: 400; color: var(--muted); max-width: 90px; }
+@media(prefers-reduced-motion:reduce) { .aurum-track,.aurum-thumb { transition: none; } }
+.play-actions { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; min-width: 0; }
+.aurum-caption small { max-width: 56px; }
+@media(max-width:900px) { .play-actions { flex: 1 1 250px; justify-content: flex-end; } }
+@media(max-width:479px) { .play-actions { flex-basis: 100%; } .play-actions .play-button { min-width: 120px; } }

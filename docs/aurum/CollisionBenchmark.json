@@ -1,0 +1,22 @@
+{
+  "kind": "Actual bundled collision narrow phase vs guarded broad phase through actual GP-Next hook dispatcher; Node query benchmark, not gameplay FPS",
+  "oraclePairs": 30025,
+  "queries": 200000,
+  "baselineMs": [
+    145.8555839999999,
+    148.81145399999969,
+    144.4934229999999,
+    144.28050799999983,
+    144.95085599999993
+  ],
+  "optimizedMs": [
+    13.573601000000053,
+    18.598773000000165,
+    13.81897600000002,
+    14.791482999999971,
+    12.849034000000302
+  ],
+  "baselineMedianMs": 144.95085599999993,
+  "optimizedMedianMs": 13.81897600000002,
+  "hits": 4004
+}

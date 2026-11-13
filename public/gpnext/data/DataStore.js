@@ -1,6 +1,6 @@
 import { d as e } from "../platform/FileSystem.js";
 import { t } from "../core/Logger.js";
-import { S, l as r, o as i, w } from "../ui/Translations.js";
+import { S as n, l as r, o as i, w as a } from "../ui/Translations.js";
 import { n as o } from "../ui/Toast.js";
 import { n as s } from "../platform/Dialog.js";
 import { n as c, t as l } from "../mods/RestoreUtils.js";
@@ -61,12 +61,12 @@ var DataStore = class {
     if (!r2) return u.error(`Invalid level ID: ${String(e2)}`), null;
     let i2 = null, o2;
     try {
-      if (i2 = await S(`levels/${r2}`), !i2?.json || typeof i2.json != `object`) throw Error(`loaded asset has no JSON data`);
+      if (i2 = await n(`levels/${r2}`), !i2?.json || typeof i2.json != `object`) throw Error(`loaded asset has no JSON data`);
       o2 = JSON.stringify(i2.json, null, 2);
     } catch (e3) {
       return u.error(`Failed to export level '${r2}': ${e3}`), null;
     } finally {
-      i2 && w(i2);
+      i2 && a(i2);
     }
     return await d(`Level:${r2}`, `${r2}.json`, o2, t2), o2;
   }

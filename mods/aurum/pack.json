@@ -1,0 +1,22 @@
+{
+  "uuid": "gardendless.aurum",
+  "name": "Aurum",
+  "version": "0.5.0-alpha",
+  "description": "Guarded draw culling, reduced shader work, bounded reference parsing and collision checks. Keeps full simulation, animation and sound.",
+  "author": "Gardendless Linux project",
+  "packFormatVersion": 1,
+  "apiVersion": 2,
+  "gpNextVersion": ">=1.5.10",
+  "capabilities": [
+    "js"
+  ],
+  "requiredGpNextFeatures": [
+    "experimental.jsModding"
+  ],
+  "js": {
+    "entry": "Aurum.js",
+    "reloadable": false,
+    "requiresTrustedExecution": true,
+    "startup": true
+  }
+}

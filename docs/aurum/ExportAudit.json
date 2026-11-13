@@ -1,0 +1,87 @@
+{
+  "brokenStage": [],
+  "adapterReview": [
+    {
+      "module": "mods/FileLoader.js",
+      "target": "mods/PackSnapshot.js",
+      "missing": [
+        "o"
+      ]
+    },
+    {
+      "module": "mods/LegacyRuntimeMigration.js",
+      "target": "mods/ConfigurationModSettings.js",
+      "missing": [
+        "a"
+      ]
+    },
+    {
+      "module": "mods/LocalPackSync.js",
+      "target": "mods/ConfigurationModSettings.js",
+      "missing": [
+        "a"
+      ]
+    },
+    {
+      "module": "mods/LocalPackSync.js",
+      "target": "mods/ModRequirements.js",
+      "reason": "New module"
+    },
+    {
+      "module": "mods/LocalPackSync.js",
+      "target": "mods/JsModdingSelection.js",
+      "missing": [
+        "n"
+      ]
+    },
+    {
+      "module": "mods/ModConfigurationState.js",
+      "target": "mods/ConfigurationModSettings.js",
+      "missing": [
+        "a"
+      ]
+    },
+    {
+      "module": "mods/ModSelection.js",
+      "target": "mods/PendingModSelection.js",
+      "reason": "New module"
+    },
+    {
+      "module": "mods/ModSelection.js",
+      "target": "mods/ModRequirements.js",
+      "reason": "New module"
+    },
+    {
+      "module": "mods/PendingModSelection.js",
+      "target": "mods/ConfigurationModSettings.js",
+      "missing": [
+        "a"
+      ]
+    },
+    {
+      "module": "platform/CloudSaveRequest.js",
+      "target": "GameBootstrap.js",
+      "missing": [
+        "d"
+      ]
+    },
+    {
+      "module": "runtime/ColdStartHost.js",
+      "target": "mods/ConfigurationModSettings.js",
+      "missing": [
+        "a"
+      ]
+    },
+    {
+      "module": "runtime/ColdStartHost.js",
+      "target": "mods/PendingModSelection.js",
+      "reason": "New module"
+    },
+    {
+      "module": "runtime/ColdStartHost.js",
+      "target": "mods/LocalPackSync.js",
+      "reason": "New module"
+    }
+  ],
+  "note": "Export names alone do not establish semantic compatibility."
+}

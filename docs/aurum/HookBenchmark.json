@@ -1,0 +1,21 @@
+{
+  "kind": "Node microbenchmark of real GP-Next 1.5.10 dispatch and actual Aurum host toggle; not WebKit or game FPS",
+  "iterations": 200000,
+  "hooks": 6,
+  "baselineMs": [
+    63.220346000000006,
+    63.30001299999998,
+    58.093366,
+    59.99886900000001,
+    58.854337999999984
+  ],
+  "cachedMs": [
+    24.547921000000002,
+    25.42462900000001,
+    21.40279800000002,
+    21.684810000000027,
+    21.848602000000028
+  ],
+  "baselineMedianMs": 59.99886900000001,
+  "cachedMedianMs": 21.848602000000028
+}

@@ -69,6 +69,13 @@ if (process.env.GARDENDLESS_TEST_ZIP) {
  files.set('gp-next/packs/public-test.zip', readFileSync(process.env.GARDENDLESS_TEST_ZIP));
  const imported = await prepareLocalInstall(profile,'public-test.zip');
  await imported.commit();
+ if (imported.preview.id === 'gardendless.aurum') {
+  assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id===imported.preview.id).enabled,false);
+  await setPackageEnabled({...profile,applySettings:true,jsModding:true},imported.preview.id,true);
+  assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id===imported.preview.id).enabled,true);
+  await setPackageEnabled(profile,imported.preview.id,false);
+  assert.equal(JSON.parse(files.get('gp-next/configuration-state.json')).desired.mods.find(mod=>mod.id===imported.preview.id).enabled,false);
+ }
  console.log('Verified real archive inspection/install into isolated fixture storage:', imported.preview.name);
 }
 
@@ -92,4 +99,18 @@ if (process.env.GARDENDLESS_TEST_PROFILE) {
  if(existing)assert.equal(result.preview.enabled,existing.enabled,'Updating a dependency retains its enabled state.');
  assert.equal(globalThis.__mustNeverExecute,undefined);
  console.log('Passed real-profile copy inspection, without writing user files or executing mods:',result.preview.name);
+}
+
+// Explicit developer fixture export: never writes the real profile.
+if (process.env.GARDENDLESS_TEST_EXPORT) {
+ const {mkdirSync,writeFileSync}=await import('node:fs');
+ const output=pathModule.resolve(process.env.GARDENDLESS_TEST_EXPORT);
+ if (!output.includes('/src-tauri/target/aurum/')) throw Error('Fixture export must stay in the Aurum test directory');
+ files.clear();dirs.clear();
+ files.set('gp-next/packs/aurum.zip',readFileSync('public/builtin/Aurum.zip'));
+ const fresh=await prepareLocalInstall({...profile,jsModding:true},'aurum.zip');await fresh.commit();
+ await setPackageEnabled({...profile,jsModding:true},fresh.preview.id,true);
+ for(const name of dirs)mkdirSync(pathModule.join(output,name),{recursive:true});
+ for(const [name,bytes] of files){const target=pathModule.join(output,name);mkdirSync(pathModule.dirname(target),{recursive:true});writeFileSync(target,bytes);}
+ console.log('Exported isolated native Aurum fixture:',output);
 }

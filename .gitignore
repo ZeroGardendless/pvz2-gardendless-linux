@@ -44,3 +44,21 @@ __pycache__/
 
 # Embedded launcher UI
 !public/launcher/
+
+# Version-matched upstream host helpers (game content remains separately ignored)
+!public/game-platform.js
+!public/game-music-packs.js
+!public/app-info.json
+!public/docs/
+
+# Generated downloadable render archives
+/exports/
+
+!public/GameAssetRevision.js
+
+# Version-matched game windows and their upstream Markdown vendors
+!public/game-http.js
+!public/game-github-window.js
+!public/game-keybinds.js
+!public/game-keybind-window.html
+!public/vendor/

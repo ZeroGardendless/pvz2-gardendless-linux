@@ -100,26 +100,28 @@ function z(e2) {
   e2 !== _ || !O || (T.textContent = e2.error, E && (E.textContent = e2.draft === e2.savedDraft ? `` : r(`data.detail.unsaved`)), D && (D.disabled = e2.saving));
 }
 function B() {
-  let e2 = _, t2 = y, n2 = b.id;
+  let e2 = _, t2 = y, n2 = b.id, s2 = Array.isArray(A());
   E = document.createElement(`span`), E.className = `gp-data-dirty`, w = document.createElement(`textarea`), w.className = `gp-textarea-edit`, w.value = e2.draft, w.spellcheck = false, w.setAttribute(`aria-label`, r(`data.detail.sourceDraft`));
-  let s2 = w;
+  let l2 = w;
   w.addEventListener(`input`, () => {
-    e2.draft = s2.value, z(e2);
+    e2.draft = l2.value, z(e2);
   }), D = i(r(`data.drawer.save`), async () => {
     if (e2.saving) return;
     let i2 = e2.draft, a2;
     try {
-      if (a2 = JSON.parse(i2), !a2 || typeof a2 != `object` || Array.isArray(a2)) throw Error(r(`data.detail.objectRequired`));
+      if (a2 = JSON.parse(i2), s2) {
+        if (!Array.isArray(a2)) throw Error(r(`data.detail.arrayRequired`));
+      } else if (!a2 || typeof a2 != `object` || Array.isArray(a2)) throw Error(r(`data.detail.objectRequired`));
     } catch (t3) {
       e2.error = `${r(`data.detail.invalidJson`)}: ${t3.message}`, z(e2);
       return;
     }
     e2.error = ``, e2.saving = true, e2.readVersion = (e2.readVersion || 0) + 1, z(e2);
-    let s3 = await c(t2, n2, a2);
-    e2.saving = false, s3 ? (e2.saved = a2, e2.savedLoaded = true, e2.savedDraft = i2) : e2.error = r(`data.drawer.saveFail`), z(e2), L(e2), s3 && o(r(`data.drawer.saveSuccess`), `success`);
+    let l3 = await c(t2, n2, a2);
+    e2.saving = false, l3 ? (e2.saved = a2, e2.savedLoaded = true, e2.savedDraft = i2) : e2.error = r(`data.drawer.saveFail`), z(e2), L(e2), l3 && o(r(`data.drawer.saveSuccess`), `success`);
   }, { variant: `success` });
-  let l2 = document.createElement(`div`);
-  l2.className = `gp-text-muted`, l2.textContent = r(`data.drawer.editHint`), C.append(l2, E, w, a(D)), w.setSelectionRange(e2.selectionStart, e2.selectionEnd, e2.selectionDirection), w.scrollTop = e2.editorScrollTop, w.scrollLeft = e2.editorScrollLeft, z(e2);
+  let u2 = document.createElement(`div`);
+  u2.className = `gp-text-muted`, u2.textContent = r(`data.drawer.editHint`), C.append(u2, E, w, a(D)), w.setSelectionRange(e2.selectionStart, e2.selectionEnd, e2.selectionDirection), w.scrollTop = e2.editorScrollTop, w.scrollLeft = e2.editorScrollLeft, z(e2);
 }
 function V() {
   let e2 = _, t2 = y, n2 = b.id, a2 = document.createElement(`div`);

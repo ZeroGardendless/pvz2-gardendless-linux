@@ -350,7 +350,7 @@ const native = new NativeAudioEngine({...host, performance: {now: () => mediaTim
   commands.push({command, args});
 }, async (name, callback) => { nativeEvents.set(name, callback); return () => {}; });
 await native.ready;
-const nativePlayer = await native.load('/assets/sound.mp3');
+const nativePlayer = await native.loadPrepared('/assets/sound.mp3');
 nativePlayer.volume = .8;
 await nativePlayer.play();
 await nativePlayer.seek(.25);
@@ -386,7 +386,7 @@ assert.equal(native.players.size, 0);
 console.log('Passed: native player events, seeks, stop/replay, clip release and coalesced gain updates.');
 
 // Out-of-order preparation must not stop a newer play after a quick pause/resume.
-const racingPlayer = await native.load('/assets/race.mp3');
+const racingPlayer = await native.loadPrepared('/assets/race.mp3');
 const prepare = native.prepare.bind(native), pending = [];
 native.prepare = () => new Promise(resolve => pending.push(resolve));
 const oldPlay = racingPlayer.play();

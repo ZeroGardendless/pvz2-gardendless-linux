@@ -1,0 +1,800 @@
+{
+  "phase": "level-profile",
+  "scene": "inGameScene",
+  "spawned": 100,
+  "gaming": true,
+  "rounds": [
+    {
+      "round": 0,
+      "baseline": {
+        "profile": {
+          "kind": "Instrumented synchronous CPU time, including nested calls and profiler overhead. Do not sum inclusive rows or treat them as GPU time.",
+          "methods": [
+            {
+              "label": "Character.update",
+              "calls": 18786,
+              "inclusiveMs": 998,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.characterUpdate",
+              "calls": 18786,
+              "inclusiveMs": 806,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldMaterial",
+              "calls": 18786,
+              "inclusiveMs": 159,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.defaultDetectPlant",
+              "calls": 18600,
+              "inclusiveMs": 76,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.syncAttachedNode",
+              "calls": 54793,
+              "inclusiveMs": 61,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setPlantDetectorRec",
+              "calls": 18786,
+              "inclusiveMs": 40,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.correctDepth",
+              "calls": 18786,
+              "inclusiveMs": 34,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setBodyRec",
+              "calls": 18786,
+              "inclusiveMs": 26,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldColor",
+              "calls": 18786,
+              "inclusiveMs": 16,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.updateAnimation",
+              "calls": 54793,
+              "inclusiveMs": 11,
+              "maxMs": 1
+            },
+            {
+              "label": "Character.lateUpdate",
+              "calls": 18786,
+              "inclusiveMs": 5,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie Features.specialZombieUpdate",
+              "calls": 18600,
+              "inclusiveMs": 4,
+              "maxMs": 1
+            },
+            {
+              "label": "Rectangle.judgeCrossRec",
+              "calls": 47,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Rectangle.judgeInRec",
+              "calls": 373,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "PvZ2Object.getObjectsByRTID",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.characterUpdateOnDisplayed",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.characterUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.lateUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.shouldScale",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            }
+          ]
+        },
+        "frames": 186,
+        "cpuMeanMs": 26.236559139784948,
+        "cpuP95Ms": 33
+      },
+      "optimized": {
+        "profile": {
+          "kind": "Instrumented synchronous CPU time, including nested calls and profiler overhead. Do not sum inclusive rows or treat them as GPU time.",
+          "methods": [
+            {
+              "label": "Character.update",
+              "calls": 27270,
+              "inclusiveMs": 1286,
+              "maxMs": 5
+            },
+            {
+              "label": "Zombie.characterUpdate",
+              "calls": 27270,
+              "inclusiveMs": 1038,
+              "maxMs": 5
+            },
+            {
+              "label": "Zombie.defaultDetectPlant",
+              "calls": 27000,
+              "inclusiveMs": 105,
+              "maxMs": 5
+            },
+            {
+              "label": "DragonBones.syncAttachedNode",
+              "calls": 81084,
+              "inclusiveMs": 86,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldMaterial",
+              "calls": 27270,
+              "inclusiveMs": 85,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setPlantDetectorRec",
+              "calls": 27270,
+              "inclusiveMs": 63,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.correctDepth",
+              "calls": 27270,
+              "inclusiveMs": 46,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setBodyRec",
+              "calls": 27270,
+              "inclusiveMs": 36,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.updateAnimation",
+              "calls": 81084,
+              "inclusiveMs": 23,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldColor",
+              "calls": 27270,
+              "inclusiveMs": 22,
+              "maxMs": 1
+            },
+            {
+              "label": "Character.lateUpdate",
+              "calls": 27270,
+              "inclusiveMs": 10,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie Features.specialZombieUpdate",
+              "calls": 27000,
+              "inclusiveMs": 6,
+              "maxMs": 1
+            },
+            {
+              "label": "Rectangle.judgeCrossRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Rectangle.judgeInRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "PvZ2Object.getObjectsByRTID",
+              "calls": 4,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.characterUpdateOnDisplayed",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.characterUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.lateUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.shouldScale",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            }
+          ]
+        },
+        "frames": 270,
+        "cpuMeanMs": 17.833333333333332,
+        "cpuP95Ms": 24
+      },
+      "stats": {
+        "materialCalls": 27281,
+        "materialSkips": 27171,
+        "colorCalls": 27281,
+        "colorSkips": 27279
+      },
+      "oracleCases": 11
+    },
+    {
+      "round": 1,
+      "baseline": {
+        "profile": {
+          "kind": "Instrumented synchronous CPU time, including nested calls and profiler overhead. Do not sum inclusive rows or treat them as GPU time.",
+          "methods": [
+            {
+              "label": "Character.update",
+              "calls": 18483,
+              "inclusiveMs": 950,
+              "maxMs": 5
+            },
+            {
+              "label": "Zombie.characterUpdate",
+              "calls": 18483,
+              "inclusiveMs": 763,
+              "maxMs": 5
+            },
+            {
+              "label": "Zombie.shouldMaterial",
+              "calls": 18483,
+              "inclusiveMs": 167,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.defaultDetectPlant",
+              "calls": 18300,
+              "inclusiveMs": 65,
+              "maxMs": 5
+            },
+            {
+              "label": "DragonBones.syncAttachedNode",
+              "calls": 55274,
+              "inclusiveMs": 62,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.correctDepth",
+              "calls": 18483,
+              "inclusiveMs": 33,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setPlantDetectorRec",
+              "calls": 18483,
+              "inclusiveMs": 31,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setBodyRec",
+              "calls": 18483,
+              "inclusiveMs": 19,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.updateAnimation",
+              "calls": 55274,
+              "inclusiveMs": 17,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldColor",
+              "calls": 18483,
+              "inclusiveMs": 12,
+              "maxMs": 1
+            },
+            {
+              "label": "Character.lateUpdate",
+              "calls": 18483,
+              "inclusiveMs": 4,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie Features.specialZombieUpdate",
+              "calls": 18300,
+              "inclusiveMs": 4,
+              "maxMs": 1
+            },
+            {
+              "label": "Rectangle.judgeCrossRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Rectangle.judgeInRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "PvZ2Object.getObjectsByRTID",
+              "calls": 4,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.characterUpdateOnDisplayed",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.characterUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.lateUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.shouldScale",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            }
+          ]
+        },
+        "frames": 183,
+        "cpuMeanMs": 26.961748633879782,
+        "cpuP95Ms": 34
+      },
+      "optimized": {
+        "profile": {
+          "kind": "Instrumented synchronous CPU time, including nested calls and profiler overhead. Do not sum inclusive rows or treat them as GPU time.",
+          "methods": [
+            {
+              "label": "Character.update",
+              "calls": 30300,
+              "inclusiveMs": 1283,
+              "maxMs": 5
+            },
+            {
+              "label": "Zombie.characterUpdate",
+              "calls": 30300,
+              "inclusiveMs": 990,
+              "maxMs": 5
+            },
+            {
+              "label": "DragonBones.syncAttachedNode",
+              "calls": 93000,
+              "inclusiveMs": 95,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.defaultDetectPlant",
+              "calls": 30000,
+              "inclusiveMs": 70,
+              "maxMs": 4
+            },
+            {
+              "label": "Zombie.shouldMaterial",
+              "calls": 30300,
+              "inclusiveMs": 67,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setPlantDetectorRec",
+              "calls": 30300,
+              "inclusiveMs": 65,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.correctDepth",
+              "calls": 30300,
+              "inclusiveMs": 59,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setBodyRec",
+              "calls": 30300,
+              "inclusiveMs": 38,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.updateAnimation",
+              "calls": 93000,
+              "inclusiveMs": 20,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldColor",
+              "calls": 30300,
+              "inclusiveMs": 20,
+              "maxMs": 1
+            },
+            {
+              "label": "Character.lateUpdate",
+              "calls": 30300,
+              "inclusiveMs": 7,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie Features.specialZombieUpdate",
+              "calls": 30000,
+              "inclusiveMs": 7,
+              "maxMs": 1
+            },
+            {
+              "label": "Rectangle.judgeCrossRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Rectangle.judgeInRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "PvZ2Object.getObjectsByRTID",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.characterUpdateOnDisplayed",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.characterUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.lateUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.shouldScale",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            }
+          ]
+        },
+        "frames": 300,
+        "cpuMeanMs": 16.13,
+        "cpuP95Ms": 21
+      },
+      "stats": {
+        "materialCalls": 30311,
+        "materialSkips": 30201,
+        "colorCalls": 30311,
+        "colorSkips": 30309
+      },
+      "oracleCases": 11
+    },
+    {
+      "round": 2,
+      "baseline": {
+        "profile": {
+          "kind": "Instrumented synchronous CPU time, including nested calls and profiler overhead. Do not sum inclusive rows or treat them as GPU time.",
+          "methods": [
+            {
+              "label": "Character.update",
+              "calls": 18483,
+              "inclusiveMs": 930,
+              "maxMs": 4
+            },
+            {
+              "label": "Zombie.characterUpdate",
+              "calls": 18483,
+              "inclusiveMs": 755,
+              "maxMs": 4
+            },
+            {
+              "label": "Zombie.shouldMaterial",
+              "calls": 18483,
+              "inclusiveMs": 133,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.defaultDetectPlant",
+              "calls": 18300,
+              "inclusiveMs": 69,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.syncAttachedNode",
+              "calls": 56746,
+              "inclusiveMs": 58,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setPlantDetectorRec",
+              "calls": 18483,
+              "inclusiveMs": 31,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.correctDepth",
+              "calls": 18483,
+              "inclusiveMs": 31,
+              "maxMs": 4
+            },
+            {
+              "label": "Zombie.setBodyRec",
+              "calls": 18483,
+              "inclusiveMs": 24,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldColor",
+              "calls": 18483,
+              "inclusiveMs": 16,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.updateAnimation",
+              "calls": 56746,
+              "inclusiveMs": 8,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie Features.specialZombieUpdate",
+              "calls": 18300,
+              "inclusiveMs": 4,
+              "maxMs": 1
+            },
+            {
+              "label": "Character.lateUpdate",
+              "calls": 18483,
+              "inclusiveMs": 3,
+              "maxMs": 1
+            },
+            {
+              "label": "Rectangle.judgeCrossRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Rectangle.judgeInRec",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "PvZ2Object.getObjectsByRTID",
+              "calls": 4,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.characterUpdateOnDisplayed",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.characterUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.lateUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.shouldScale",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            }
+          ]
+        },
+        "frames": 183,
+        "cpuMeanMs": 26.863387978142075,
+        "cpuP95Ms": 34
+      },
+      "optimized": {
+        "profile": {
+          "kind": "Instrumented synchronous CPU time, including nested calls and profiler overhead. Do not sum inclusive rows or treat them as GPU time.",
+          "methods": [
+            {
+              "label": "Character.update",
+              "calls": 25338,
+              "inclusiveMs": 1170,
+              "maxMs": 3
+            },
+            {
+              "label": "Zombie.characterUpdate",
+              "calls": 25338,
+              "inclusiveMs": 947,
+              "maxMs": 3
+            },
+            {
+              "label": "Zombie.shouldMaterial",
+              "calls": 25338,
+              "inclusiveMs": 137,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.syncAttachedNode",
+              "calls": 79215,
+              "inclusiveMs": 80,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.defaultDetectPlant",
+              "calls": 24600,
+              "inclusiveMs": 69,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.correctDepth",
+              "calls": 25338,
+              "inclusiveMs": 44,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setBodyRec",
+              "calls": 25338,
+              "inclusiveMs": 42,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.setPlantDetectorRec",
+              "calls": 25338,
+              "inclusiveMs": 34,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie.shouldColor",
+              "calls": 25338,
+              "inclusiveMs": 20,
+              "maxMs": 1
+            },
+            {
+              "label": "DragonBones.updateAnimation",
+              "calls": 79215,
+              "inclusiveMs": 15,
+              "maxMs": 1
+            },
+            {
+              "label": "Character.lateUpdate",
+              "calls": 25338,
+              "inclusiveMs": 10,
+              "maxMs": 1
+            },
+            {
+              "label": "Zombie Features.specialZombieUpdate",
+              "calls": 24600,
+              "inclusiveMs": 4,
+              "maxMs": 1
+            },
+            {
+              "label": "Rectangle.judgeCrossRec",
+              "calls": 359,
+              "inclusiveMs": 3,
+              "maxMs": 1
+            },
+            {
+              "label": "Rectangle.judgeInRec",
+              "calls": 2866,
+              "inclusiveMs": 1,
+              "maxMs": 1
+            },
+            {
+              "label": "PvZ2Object.getObjectsByRTID",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.characterUpdateOnDisplayed",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.characterUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Plant.lateUpdate",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            },
+            {
+              "label": "Zombie.shouldScale",
+              "calls": 0,
+              "inclusiveMs": 0,
+              "maxMs": 0
+            }
+          ]
+        },
+        "frames": 246,
+        "cpuMeanMs": 19.752032520325205,
+        "cpuP95Ms": 23
+      },
+      "stats": {
+        "materialCalls": 25349,
+        "materialSkips": 18175,
+        "colorCalls": 25349,
+        "colorSkips": 25329
+      },
+      "oracleCases": 11
+    }
+  ],
+  "audioBefore": {
+    "cacheHits": 5,
+    "cachedClips": 33,
+    "decodedCacheBudgetBytes": 100663296,
+    "decodedCacheBytes": 95954896,
+    "decodes": 33,
+    "metadataEntries": 416,
+    "players": 26
+  },
+  "audioAfter": {
+    "cacheHits": 99,
+    "cachedClips": 47,
+    "decodedCacheBudgetBytes": 100663296,
+    "decodedCacheBytes": 98845772,
+    "decodes": 47,
+    "metadataEntries": 420,
+    "players": 30
+  }
+}
